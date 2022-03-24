@@ -6,5 +6,8 @@
   "repository": "https://github.com/ShZh-libraries/sznn",
   "author": "Sh-Zh-7",
   "license": "Apache-2.0",
-  "private": false
+  "private": false,
+  "devDependencies": {
+    "typescript": "^4.6.2"
+  }
 }
