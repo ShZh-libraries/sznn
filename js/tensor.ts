@@ -22,15 +22,23 @@ export class Tensor {
     ndim: number;
     dtype: DType;
 
-    constructor(data: InputArray, shape: number | number[], dtype?: DType) {
-        if (!Array.isArray(shape)) {
-            shape = Array.of(shape);
-        }
-        this.shape = shape;
-        this.ndim = shape.length;
+    private constructor(data: InputArray, shape?: number | number[], dtype?: DType) {
+        this.shape = shape
+            ? Array.isArray(shape)? shape : Array.of(shape) 
+            : this.inferShape(data);
+
+        this.ndim = this.shape.length;
         this.dtype = dtype || DType.float32;
 
         this.flattenInput(data);
+    }
+
+    static withData(data: InputArray, dtype?: DType) {
+        return new Tensor(data, undefined, dtype);
+    }
+
+    static withShape(shape: number | number[], dtype?: DType) {
+        return new Tensor([], shape, dtype);        
     }
 
     private flattenInput(data: InputArray) {
@@ -46,12 +54,25 @@ export class Tensor {
             case DType.float64: this.data = new Float64Array(dataLength); break;
         }
 
-        switch(this.ndim) {
-            case 1: flattenTensor1d(this.data, data as number[], this.shape); break;
-            case 2: flattenTensor2d(this.data, data as number[][], this.shape); break;
-            case 3: flattenTensor3d(this.data, data as number[][][], this.shape); break;
-            case 4: flattenTensor4d(this.data, data as number[][][][], this.shape); break;
+        if (data.length != 0) {
+            switch(this.ndim) {
+                case 1: flattenTensor1d(this.data, data as number[], this.shape); break;
+                case 2: flattenTensor2d(this.data, data as number[][], this.shape); break;
+                case 3: flattenTensor3d(this.data, data as number[][][], this.shape); break;
+                case 4: flattenTensor4d(this.data, data as number[][][][], this.shape); break;
+            }
         }
+    }
+
+    private inferShape(data: InputArray): number[] {
+        let shape: number[] = [];
+        let curObj = data;
+        while (Array.isArray(curObj)) {
+            shape.push(curObj.length);
+            curObj = curObj[0] as InputArray;
+        }
+
+        return shape;
     }
 }
 
