@@ -1,70 +1,110 @@
-type TensorDataType = 
-    Int8Array | Int16Array | Int32Array |
-    Uint8Array | Uint16Array | Uint32Array | Uint8ClampedArray |
-    Float32Array | Float64Array;
+import { onnx } from "onnx-proto";
 
 enum DType {
     int8,
     int16,
     int32,
+    int64,
     uint8,
     uint16,
     uint32,
+    uint64,
     float32,
     float64,
 }
+
+type TensorDataType = 
+    Int8Array | Int16Array | Int32Array | BigInt64Array |
+    Uint8Array | Uint16Array | Uint32Array | BigUint64Array |
+    Float32Array | Float64Array;
 
 type InputArray = number[] | number[][] | number[][][] | number[][][][];
 
 export class Tensor {
     data!: TensorDataType;
-    shape: number[];
-    ndim: number;
-    dtype: DType;
+    shape!: number[];
+    ndim!: number;
+    dtype!: DType;
 
-    private constructor(data: InputArray, shape?: number | number[], dtype?: DType) {
-        this.shape = shape
-            ? Array.isArray(shape)? shape : Array.of(shape) 
-            : this.inferShape(data);
-
-        this.ndim = this.shape.length;
-        this.dtype = dtype || DType.float32;
-
-        this.flattenInput(data);
-    }
-
-    static withData(data: InputArray, dtype?: DType) {
-        return new Tensor(data, undefined, dtype);
-    }
-
-    static withShape(shape: number | number[], dtype?: DType) {
-        return new Tensor([], shape, dtype);        
-    }
-
-    private flattenInput(data: InputArray) {
+    allocateWithShape() {
         const dataLength = this.shape.reduceRight((x, y) => x * y);
         switch(this.dtype) {
             case DType.int8: this.data = new Int8Array(dataLength); break;
             case DType.int16: this.data = new Int16Array(dataLength); break;
             case DType.int32: this.data = new Int32Array(dataLength); break;
+            case DType.int64: this.data = new BigInt64Array(dataLength); break;
             case DType.uint8: this.data = new Uint8Array(dataLength); break;
             case DType.uint16: this.data = new Uint16Array(dataLength); break;
             case DType.uint32: this.data = new Uint32Array(dataLength); break;
+            case DType.uint64: this.data = new BigUint64Array(dataLength); break;
             case DType.float32: this.data = new Float32Array(dataLength); break;
             case DType.float64: this.data = new Float64Array(dataLength); break;
         }
+    }
+}
 
-        if (data.length != 0) {
-            switch(this.ndim) {
-                case 1: flattenTensor1d(this.data, data as number[], this.shape); break;
-                case 2: flattenTensor2d(this.data, data as number[][], this.shape); break;
-                case 3: flattenTensor3d(this.data, data as number[][][], this.shape); break;
-                case 4: flattenTensor4d(this.data, data as number[][][][], this.shape); break;
-            }
-        }
+export class TensorBuilder {
+    static withData(data: InputArray, dtype?: DType): Tensor {
+        // Set normal attributes
+        let tensor = new Tensor();
+        tensor.shape = this.inferShape(data);
+        tensor.ndim = tensor.shape.length;
+        tensor.dtype = dtype || DType.float32;
+        // Move input array to tensor.data field
+        tensor.allocateWithShape();
+        this.flattenInput(data, tensor);
+
+        return tensor;
     }
 
-    private inferShape(data: InputArray): number[] {
+    static withShape(shape: number[], dtype?: DType): Tensor {
+        let tensor = new Tensor();
+        tensor.shape = shape;
+        tensor.ndim = tensor.shape.length;
+        tensor.dtype = dtype || DType.float32;
+        // Initialize for data field
+        tensor.allocateWithShape();
+
+        return tensor;
+    }
+
+    static withInitializer(initializer: onnx.TensorProto): Tensor {
+        let tensor = new Tensor();
+        tensor.shape = initializer.dims as number[];
+        tensor.ndim = tensor.shape.length;
+        switch (initializer.dataType) {
+            case 1: 
+                tensor.dtype = DType.float32; 
+                tensor.data = Float32Array.from(initializer.floatData);
+                break;
+            case 6: 
+                tensor.dtype = DType.int32; 
+                tensor.data = Int32Array.from(initializer.int32Data);
+                break;
+            case 7: 
+                tensor.dtype = DType.int64; 
+                for (let index = 0; index < initializer.int64Data.length; index++) {
+                    tensor.data[index] = initializer.int64Data[index] as number;
+                }
+                break;
+            case 11: 
+                tensor.dtype = DType.float64; 
+                tensor.data = Float64Array.from(initializer.doubleData);
+                break;
+            case 13: 
+                tensor.dtype = DType.uint64;
+                for (let index = 0; index < initializer.uint64Data.length; index++) {
+                    tensor.data[index] = initializer.uint64Data[index] as number;
+                }
+                break;
+            default:
+                throw Error("Data type not support in ONNX!!");
+        }
+
+        return tensor;
+    }
+
+    private static inferShape(data: InputArray): number[] {
         let shape: number[] = [];
         let curObj = data;
         while (Array.isArray(curObj)) {
@@ -73,6 +113,17 @@ export class Tensor {
         }
 
         return shape;
+    }
+
+    private static flattenInput(src: InputArray, dst: Tensor): void {
+        if (src.length != 0) {
+            switch(dst.ndim) {
+                case 1: flattenTensor1d(dst.data, src as number[], dst.shape); break;
+                case 2: flattenTensor2d(dst.data, src as number[][], dst.shape); break;
+                case 3: flattenTensor3d(dst.data, src as number[][][], dst.shape); break;
+                case 4: flattenTensor4d(dst.data, src as number[][][][], dst.shape); break;
+            }
+        }
     }
 }
 
