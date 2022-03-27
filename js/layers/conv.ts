@@ -86,7 +86,7 @@ export function forward(data: Tensor, weight: Tensor, convAttr: ConvAttr): Tenso
                                     const kernelValue = weight.data[kernelIndex];
                                     const dataValue = data.data[dataIndex];
         
-                                    sum += (kernelValue as number) * (dataValue as number);
+                                    sum += kernelValue * dataValue;
                                 }
                             }
                         }

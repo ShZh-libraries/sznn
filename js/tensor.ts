@@ -1,21 +1,19 @@
 import { onnx } from "onnx-proto";
 
-enum DType {
+export enum DType {
     int8,
     int16,
     int32,
-    int64,
     uint8,
     uint16,
     uint32,
-    uint64,
     float32,
     float64,
 }
 
 type TensorDataType = 
-    Int8Array | Int16Array | Int32Array | BigInt64Array |
-    Uint8Array | Uint16Array | Uint32Array | BigUint64Array |
+    Int8Array | Int16Array | Int32Array |
+    Uint8Array | Uint16Array | Uint32Array |
     Float32Array | Float64Array;
 
 type InputArray = number[] | number[][] | number[][][] | number[][][][];
@@ -32,11 +30,9 @@ export class Tensor {
             case DType.int8: this.data = new Int8Array(dataLength); break;
             case DType.int16: this.data = new Int16Array(dataLength); break;
             case DType.int32: this.data = new Int32Array(dataLength); break;
-            case DType.int64: this.data = new BigInt64Array(dataLength); break;
             case DType.uint8: this.data = new Uint8Array(dataLength); break;
             case DType.uint16: this.data = new Uint16Array(dataLength); break;
             case DType.uint32: this.data = new Uint32Array(dataLength); break;
-            case DType.uint64: this.data = new BigUint64Array(dataLength); break;
             case DType.float32: this.data = new Float32Array(dataLength); break;
             case DType.float64: this.data = new Float64Array(dataLength); break;
         }
@@ -81,21 +77,9 @@ export class TensorBuilder {
                 tensor.dtype = DType.int32; 
                 tensor.data = Int32Array.from(initializer.int32Data);
                 break;
-            case 7: 
-                tensor.dtype = DType.int64; 
-                for (let index = 0; index < initializer.int64Data.length; index++) {
-                    tensor.data[index] = initializer.int64Data[index] as number;
-                }
-                break;
             case 11: 
                 tensor.dtype = DType.float64; 
                 tensor.data = Float64Array.from(initializer.doubleData);
-                break;
-            case 13: 
-                tensor.dtype = DType.uint64;
-                for (let index = 0; index < initializer.uint64Data.length; index++) {
-                    tensor.data[index] = initializer.uint64Data[index] as number;
-                }
                 break;
             default:
                 throw Error("Data type not support in ONNX!!");
