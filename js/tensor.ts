@@ -37,6 +37,23 @@ export class Tensor {
             case DType.float64: this.data = new Float64Array(dataLength); break;
         }
     }
+
+    reshape(shape: number[]) {
+        this.shape = shape;
+        this.ndim = this.shape.length;
+
+        return this;
+    }
+
+    copy() {
+        let tensor = new Tensor();
+        tensor.shape = this.shape.slice();
+        tensor.ndim = this.ndim;
+        tensor.dtype = this.dtype;
+        tensor.data = this.data.slice();
+
+        return tensor;
+    }
 }
 
 export class TensorBuilder {
