@@ -30,7 +30,7 @@ function handleAttribute(attributes: onnx.AttributeProto[]): ConvAttr {
                 result.strides = attribute.ints as number[];
                 break;
             default:
-                throw new Error(`Unknwo attribute ${attribute.name} in Convolutional layer!!`);
+                throw new Error(`Unknown attribute ${attribute.name} in Convolutional layer!!`);
         }
     }
 
