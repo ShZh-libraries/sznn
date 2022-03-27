@@ -12,7 +12,7 @@ export function handleBatchNorm(input: Tensor[]): Tensor[] {
     // Calculate shape
     let result = TensorBuilder.withShape(data.shape);
 
-    const dataLength = data.shape.reduceRight((x, y) => x * y);
+    const dataLength = data.data.length;
     for (let index = 0; index < dataLength; index++) {
             result.data[index] = 
                 (data.data[index] - mean.data[index]) / Math.sqrt(variance.data[index]) * scale.data[index] + bias.data[index];
