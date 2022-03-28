@@ -81,6 +81,16 @@ export class TensorBuilder {
         return tensor;
     }
 
+    static withAllArgs(data: TensorDataType, shape: number[], dtype?: DType): Tensor {
+        let tensor = new Tensor();
+        tensor.data = data;
+        tensor.shape = shape;
+        tensor.ndim = tensor.shape.length;
+        tensor.dtype = dtype || DType.float32;
+
+        return tensor;
+    }
+
     static withInitializer(initializer: onnx.TensorProto): Tensor {
         let tensor = new Tensor();
         tensor.shape = initializer.dims as number[];
