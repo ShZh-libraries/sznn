@@ -95,21 +95,47 @@ export class TensorBuilder {
         let tensor = new Tensor();
         tensor.shape = initializer.dims as number[];
         tensor.ndim = tensor.shape.length;
-        switch (initializer.dataType) {
-            case 1: 
-                tensor.dtype = DType.float32; 
-                tensor.data = Float32Array.from(initializer.floatData);
-                break;
-            case 6: 
-                tensor.dtype = DType.int32; 
-                tensor.data = Int32Array.from(initializer.int32Data);
-                break;
-            case 11: 
-                tensor.dtype = DType.float64; 
-                tensor.data = Float64Array.from(initializer.doubleData);
-                break;
-            default:
-                throw Error("Data type not support in ONNX!!");
+
+        if (initializer.rawData.length != 0) {
+            let buffer = initializer.rawData.buffer.slice(
+                initializer.rawData.byteOffset, 
+                initializer.rawData.byteOffset + initializer.rawData.byteLength
+            );
+            switch (initializer.dataType) {
+                case 1: 
+                    tensor.dtype = DType.float32; 
+                    tensor.data = new Float32Array(buffer);
+                    break;
+                case 6:
+                case 7:     // Currently int64 type is not supported yet
+                    tensor.dtype = DType.int32; 
+                    tensor.data = new Int32Array(buffer);
+                    break;
+                case 11: 
+                    tensor.dtype = DType.float64; 
+                    tensor.data = new Float64Array(buffer);
+                    break;
+                default:
+                    throw Error("Data type not support in ONNX!!");
+            }
+        } else {
+            switch (initializer.dataType) {
+                case 1: 
+                    tensor.dtype = DType.float32; 
+                    tensor.data = Float32Array.from(initializer.floatData);
+                    break;
+                case 6:
+                case 7:
+                    tensor.dtype = DType.int32; 
+                    tensor.data = Int32Array.from(initializer.int32Data);
+                    break;
+                case 11: 
+                    tensor.dtype = DType.float64; 
+                    tensor.data = Float64Array.from(initializer.doubleData);
+                    break;
+                default:
+                    throw Error("Data type not support in ONNX!!");
+            }
         }
 
         return tensor;
