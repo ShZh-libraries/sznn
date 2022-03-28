@@ -59,7 +59,7 @@ export class Model {
                     outputs = handleBatchNorm(inputTensors);
                     break;
                 case "Dropout":
-                    outputs = handleDropout(inputTensors, node.attribute! as onnx.AttributeProto[]);
+                    outputs = handleDropout(inputTensors);
                     break;
                 case "Relu":
                     outputs = handleRelu(inputTensors);
