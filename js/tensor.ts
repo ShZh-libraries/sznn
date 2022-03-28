@@ -125,9 +125,12 @@ export class TensorBuilder {
                     tensor.data = Float32Array.from(initializer.floatData);
                     break;
                 case 6:
-                case 7:
                     tensor.dtype = DType.int32; 
                     tensor.data = Int32Array.from(initializer.int32Data);
+                    break;
+                case 7:
+                    tensor.dtype = DType.int32; 
+                    tensor.data = Int32Array.from(initializer.int64Data as number[]);
                     break;
                 case 11: 
                     tensor.dtype = DType.float64; 
