@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Classification example</title>
+</head>
+<style>
+    div {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    h1 {
+        font-family: serif;
+    }
+
+    canvas {
+        border-radius: 0.3rem;
+
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)
+    }
+
+    button {
+        display: inline-block;
+
+        color: #fff;
+        background-color: #7952b3;
+        border-color: #7952b3;
+
+        padding: 0.8rem 2rem;
+
+        border: 1px solid transparent;
+        font-size: 1.25rem;
+        font-weight: 600;
+        border-radius: 0.3rem;
+        line-height: 1.5;
+
+        transition: 
+            color .15s ease-in-out,
+            background-color .15s ease-in-out,
+            border-color .15s ease-in-out;
+    }
+
+    button:hover {
+        background-color: #61428f;
+        border-color: #61428f;
+    }
+</style>
+<body>
+    <div>
+        <h1>Squeeze Net Classification!</h1>
+        <canvas height="224" width="224"></canvas>
+        <h2>""</h2>
+        <button id="btn">Upload your image!</button>
+    </div>
+</body>
+<script src="./dist/index.js"></script>
+</html>
