@@ -45,6 +45,14 @@ export class Tensor {
         return this;
     }
 
+    normalize(factor: number) {
+        for (let index = 0; index < this.data.length; index++) {
+            this.data[index] /= factor;
+        }
+
+        return this;
+    }
+
     copy() {
         let tensor = new Tensor();
         tensor.shape = this.shape.slice();
