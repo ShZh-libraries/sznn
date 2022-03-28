@@ -1,4 +1,4 @@
-import { forwardAvgPool2D, forwardMaxPool2D, PoolingAttr } from "../js/layers/pooling";
+import { forwardAvgPool2D, forwardMaxPool2D, handleGlobalAvgPool, PoolingAttr } from "../js/layers/pooling";
 import { TensorBuilder } from "../js/tensor";
 
 describe("Test JS backend for pooling layer", () => {
@@ -40,7 +40,15 @@ describe("Test JS backend for pooling layer", () => {
             expect(result.shape).toEqual([1, 2, 2, 2]);
             expect(result.data).toEqual(new Float32Array([
                 5, 6, 8, 9, 14, 15, 17, 18
-            ]))
+            ]));
         });
     });
+
+    describe("Test global avg pooling layer", () => {
+        test("Test normal global avg pooling layer", () => {
+            const results = handleGlobalAvgPool([src]);
+            expect(results[0].shape).toEqual([1, 2, 1, 1]);
+            expect(results[0].data).toEqual(new Float32Array([5, 14]));
+        });
+    })
 });

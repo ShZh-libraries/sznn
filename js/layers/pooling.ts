@@ -42,6 +42,14 @@ export function handleAvgPool2D(inputs: Tensor[], attributes: onnx.AttributeProt
     return [result];
 }
 
+export function handleGlobalAvgPool(inputs: Tensor[]): Tensor[] {
+    const globalAvgPoolingAttr = new PoolingAttr();
+    globalAvgPoolingAttr.kernelShape = [inputs[0].shape[2], inputs[0].shape[3]];
+    const result = forwardAvgPool2D(inputs[0], globalAvgPoolingAttr);
+
+    return [result];
+}
+
 export function forwardMaxPool2D(data: Tensor, maxPoolingAttr: PoolingAttr): Tensor {
     // Calculate shape
     const maxY = data.shape[2] + maxPoolingAttr.pads[0] + maxPoolingAttr.pads[2] - maxPoolingAttr.kernelShape[0];
