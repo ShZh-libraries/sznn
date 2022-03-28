@@ -20,7 +20,7 @@ describe("Test JS backend for convolutional layer", () => {
          const attr = new ConvAttr();
          attr.kernelShape = [3, 3];
    
-         const result = forward(data, weight, attr);
+         const result = forward(attr, data, weight);
 
          expect(result[0].shape).toEqual([1, 1, 3, 3]);
          expect(result[0].data).toEqual(new Float32Array([
@@ -33,7 +33,7 @@ describe("Test JS backend for convolutional layer", () => {
          attr.kernelShape = [3, 3];
          attr.pads = [1, 1, 1, 1];
    
-         const result = forward(data, weight, attr);
+         const result = forward(attr, data, weight);
          
          expect(result[0].shape).toEqual([1, 1, 5, 5]);
          expect(result[0].data).toEqual(new Float32Array([           
@@ -67,7 +67,7 @@ describe("Test JS backend for convolutional layer", () => {
          attr.kernelShape = [3, 3];
          attr.strides = [2, 2];
 
-         const result = forward(data, weight, attr);
+         const result = forward(attr, data, weight);
          
          expect(result[0].shape).toEqual([1, 1, 3, 2]);
          expect(result[0].data).toEqual(new Float32Array([
@@ -81,7 +81,7 @@ describe("Test JS backend for convolutional layer", () => {
          attr.pads = [1, 0, 1, 0];
          attr.strides = [2, 2];
 
-         const result = forward(data, weight, attr);
+         const result = forward(attr, data, weight);
 
          expect(result[0].shape).toEqual([1, 1, 4, 2]);
          expect(result[0].data).toEqual(new Float32Array([

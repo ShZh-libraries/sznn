@@ -39,12 +39,12 @@ function handleAttribute(attributes: onnx.AttributeProto[]): ConvAttr {
 
 export function handleConv(input: Tensor[], attributes: onnx.AttributeProto[]): Tensor[] {
     const convAttr = handleAttribute(attributes);
-    const result = forward(input[0], input[1], convAttr);
+    const result = forward(convAttr, input[0], input[1], input[2]);
 
     return result;
 }
 
-export function forward(data: Tensor, weight: Tensor, convAttr: ConvAttr): Tensor[] {
+export function forward(convAttr: ConvAttr, data: Tensor, weight: Tensor, bias?: Tensor): Tensor[] {
     // Calculate shape
     const resultSize = data.shape[0];
     const resultChannel = weight.shape[0] / convAttr.group;
@@ -91,7 +91,7 @@ export function forward(data: Tensor, weight: Tensor, convAttr: ConvAttr): Tenso
                             }
                         }
                     }
-                    result.data[resultIndex++] = sum;
+                    result.data[resultIndex++] = sum + (bias? bias.data[c] : 0);
                 }
             }
         }
