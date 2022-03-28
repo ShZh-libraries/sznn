@@ -7,6 +7,10 @@
   "author": "Sh-Zh-7",
   "license": "Apache-2.0",
   "private": false,
+  "scripts": {
+    "build": "webpack --config webpack.config.js",
+    "build:classify": "webpack --config ./examples/classify/webpack.config.js"
+  },
   "devDependencies": {
     "@types/jest": "^27.4.1",
     "@types/node": "^17.0.23",
