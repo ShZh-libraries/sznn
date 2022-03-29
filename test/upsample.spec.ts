@@ -10,7 +10,6 @@ describe("Test JS backends for upsample layer", () => {
 
         const result = forward(data, scales);
         expect(result.shape).toEqual([1, 1, 4, 6]);
-        console.log(result.data);
         
         expect(result.data).toEqual(new Float32Array([
             1, 1, 1, 2, 2, 2,
