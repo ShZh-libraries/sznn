@@ -24,6 +24,8 @@ export class Tensor {
     ndim!: number;
     dtype!: DType;
 
+    stride?: number[];
+
     allocateWithShape() {
         const dataLength = this.shape.reduceRight((x, y) => x * y);
         switch(this.dtype) {
@@ -38,8 +40,35 @@ export class Tensor {
         }
     }
 
+    atLoc(location: number[]) {
+        if (!this.stride) {
+            this.caclStride();
+        }
+
+        let index = 0;
+        for (let i = 0; i < this.ndim; i++) {
+            index += location[i] * this.stride![i];
+        }   
+
+        return index;
+    }
+
+    getLoc(index: number) {
+        if (!this.stride) {
+            this.caclStride();
+        }
+
+        let indexes = [];
+        for (let i = 0; i < this.ndim; i++) {
+            indexes.push(Math.floor(index / this.stride![i]));
+            index %= this.stride![i];
+        }
+
+        return indexes;
+    }
+
     reshape(shape: number[]) {
-        this.shape = shape;
+        this.shape = shape.slice();
         this.ndim = this.shape.length;
 
         return this;
@@ -61,6 +90,13 @@ export class Tensor {
         tensor.data = this.data.slice();
 
         return tensor;
+    }
+
+    private caclStride() {
+        this.stride = [1];
+        for (let i = 1; i < this.ndim; i++) {
+            this.stride.unshift(this.stride[0] * this.shape[this.ndim - i]);
+        }
     }
 }
 
