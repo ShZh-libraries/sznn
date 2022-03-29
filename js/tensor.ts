@@ -80,7 +80,7 @@ export class TensorBuilder {
 
     static withShape(shape: number[], dtype?: DType): Tensor {
         let tensor = new Tensor();
-        tensor.shape = shape;
+        tensor.shape = shape.slice();
         tensor.ndim = tensor.shape.length;
         tensor.dtype = dtype || DType.float32;
         // Initialize for data field
@@ -92,7 +92,7 @@ export class TensorBuilder {
     static withAllArgs(data: TensorDataType, shape: number[], dtype?: DType): Tensor {
         let tensor = new Tensor();
         tensor.data = data;
-        tensor.shape = shape;
+        tensor.shape = shape.slice();
         tensor.ndim = tensor.shape.length;
         tensor.dtype = dtype || DType.float32;
 

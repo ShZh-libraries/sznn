@@ -7,8 +7,7 @@ export function handleSoftmax(inputs: Tensor[]): Tensor[] {
 
 // For 1 x C x W x H tensor:
 export function forward(input: Tensor): Tensor {
-    const resultShape = input.shape.slice();
-    const result = TensorBuilder.withShape(resultShape);
+    const result = TensorBuilder.withShape(input.shape);
 
     let max = input.data[0];
     for (let c = 0; c < input.shape[1]; c++) {
