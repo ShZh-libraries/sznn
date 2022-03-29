@@ -26,9 +26,12 @@ export function handleAttributes(attributes: onnx.AttributeProto[]): PaddingAttr
     return attr;
 }
 
-// export function handlePadding(inputs: Tensor[], attributes: onnx.AttributeProto[]): Tensor[] {
-//     const attr = handleAttributes(attributes);
-// }
+export function handlePadding(inputs: Tensor[], attributes: onnx.AttributeProto[]): Tensor[] {
+    const paddingAttr = handleAttributes(attributes);
+    const result = forward(inputs[0], paddingAttr);
+
+    return [result];
+}
 
 export function forward(input: Tensor, attr: PaddingAttr): Tensor {
     let outputShape = [];

@@ -21,7 +21,7 @@ export function forward(input: Tensor, dims: number[]) {
     let inputIndex = 0;
     for (let index = 0; index < input.ndim + dims.length; index++) {
         if (dims.includes(index)) {
-            outputShape.push(0);
+            outputShape.push(1);
         } else {
             outputShape.push(input.shape[inputIndex++]);
         }
