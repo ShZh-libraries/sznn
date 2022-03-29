@@ -1,12 +1,22 @@
 import {onnx} from "onnx-proto";
 import { handleBatchNorm } from "./layers/batchnorm";
+import { handleBinaryOp } from "./layers/binaryop";
+import { handleCast } from "./layers/cast";
 import { handleConcat } from "./layers/concat";
+import { handleConstant } from "./layers/constant";
 import { handleConv } from "./layers/conv";
 import { handleDropout } from "./layers/dropout";
+import { handleFloor } from "./layers/floor";
+import { handleGather } from "./layers/gather";
+import { handleInstanceNorm } from "./layers/instancenorm";
+import { handlePadding } from "./layers/pad";
 import { handleAvgPool2D, handleGlobalAvgPool, handleMaxPool2D } from "./layers/pooling";
 import { handleLeakyRelu, handleRelu } from "./layers/relu";
 import { handleReshape } from "./layers/reshape";
+import { handleShape } from "./layers/shape";
+import { handleSlice } from "./layers/slice";
 import { handleSoftmax } from "./layers/softmax";
+import { handleUnsqueeze } from "./layers/unsqueeze";
 import { handleUpSample } from "./layers/upsample";
 import { Tensor } from "./tensor";
 import { TensorPool } from "./tensor_pool";
@@ -58,6 +68,45 @@ export class Model {
                 case "BatchNormalization":
                     outputs = handleBatchNorm(inputTensors);
                     break;
+                case "Add":
+                    outputs = handleBinaryOp(inputTensors, (x, y) => x + y);
+                    break;
+                case "Sub":
+                    outputs = handleBinaryOp(inputTensors, (x, y) => x - y);
+                    break;
+                case "Mul":
+                    outputs = handleBinaryOp(inputTensors, (x, y) => x * y);
+                    break;
+                case "Div":
+                    outputs = handleBinaryOp(inputTensors, (x, y) => x / y);
+                    break;
+                case "Cast":
+                    outputs = handleCast(inputTensors, node.attribute! as onnx.AttributeProto[]);
+                    break;
+                case "Constant":
+                    outputs = handleConstant(node.attribute! as onnx.AttributeProto[]);
+                    break;
+                case "Floor":
+                    outputs = handleFloor(inputTensors);
+                    break;
+                case "Gather":
+                    outputs = handleGather(inputTensors);
+                    break;
+                case "InstanceNormalization":
+                    outputs = handleInstanceNorm(inputTensors, node.attribute! as onnx.AttributeProto[]);
+                    break;
+                case "Pad":
+                    outputs = handlePadding(inputTensors, node.attribute! as onnx.AttributeProto[]);
+                    break;
+                case "Shape":
+                    outputs = handleShape(inputTensors);
+                    break;
+                case "Slice":
+                    outputs = handleSlice(inputTensors, node.attribute! as onnx.AttributeProto[]);
+                    break;
+                case "Unsqueeze":
+                    outputs = handleUnsqueeze(inputTensors, node.attribute! as onnx.AttributeProto[]);
+                    break;
                 case "Dropout":
                     outputs = handleDropout(inputTensors);
                     break;
@@ -76,7 +125,7 @@ export class Model {
                 case "GlobalAveragePool":
                     outputs = handleGlobalAvgPool(inputTensors);
                     break;
-                case "UpSample":
+                case "Upsample":
                     outputs = handleUpSample(inputTensors);
                     break;
                 case "Concat":
@@ -92,7 +141,7 @@ export class Model {
                     throw new Error(`Unknown op type ${node.opType}! The node name is ${node.name}`);
             }
 
-            // console.log(node.opType, outputs);
+            console.log(node.opType, outputs);
             for (let outIndex = 0; outIndex < node.output!.length; outIndex++) {
                 this.pool.set(node.output![outIndex], outputs[outIndex]);
             }
