@@ -141,7 +141,7 @@ export class Model {
                     throw new Error(`Unknown op type ${node.opType}! The node name is ${node.name}`);
             }
 
-            console.log(node.opType, outputs);
+            // console.log(node.opType, outputs);
             for (let outIndex = 0; outIndex < node.output!.length; outIndex++) {
                 this.pool.set(node.output![outIndex], outputs[outIndex]);
             }
