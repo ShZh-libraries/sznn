@@ -86,7 +86,7 @@ export function forwardMaxPool2D(input: Tensor, attr: PoolingAttr): Tensor {
           x <= maxX - attr.pads[1];
           x += attr.strides[1]
         ) {
-          let maxValue = input.atLoc([n, c, x, y]);
+          let maxValue = input.atLoc([n, c, y, x]);
           for (let ky = 0; ky < attr.kernelShape[0]; ky++) {
             // Kernel
             for (let kx = 0; kx < attr.kernelShape[1]; kx++) {
