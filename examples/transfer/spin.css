@@ -1,55 +1,55 @@
 .spin-dot {
-    display: block;
-    position: relative;
-    width: 20px;
-    height: 20px;
-    animation: rotate 1.2s linear 0s infinite;
+  display: block;
+  position: relative;
+  width: 20px;
+  height: 20px;
+  animation: rotate 1.2s linear 0s infinite;
 }
 
 .spin-dot-item {
-    position: absolute;
-    display: block;
-    width: 9px;
-    height: 9px;
-    background-color: #1890ff;
-    border-radius: 100%;
-    transform: scale(.75);
-    transform-origin: 50% 50%;
-    opacity: .3;
-    animation: spinMove 1s infinite linear alternate;
+  position: absolute;
+  display: block;
+  width: 9px;
+  height: 9px;
+  background-color: #1890ff;
+  border-radius: 100%;
+  transform: scale(0.75);
+  transform-origin: 50% 50%;
+  opacity: 0.3;
+  animation: spinMove 1s infinite linear alternate;
 }
 
 i:nth-child(1) {
-    left: 0;
-    top: 0;
+  left: 0;
+  top: 0;
 }
 
 i:nth-child(2) {
-    right: 0;
-    top: 0;
-    animation-delay: 0.4s;
+  right: 0;
+  top: 0;
+  animation-delay: 0.4s;
 }
 
 i:nth-child(3) {
-    right: 0;
-    bottom: 0;
-    animation-delay: 0.8s;
+  right: 0;
+  bottom: 0;
+  animation-delay: 0.8s;
 }
 
 i:nth-child(4) {
-    left: 0;
-    bottom: 0;
-    animation-delay: 1.2s;
+  left: 0;
+  bottom: 0;
+  animation-delay: 1.2s;
 }
 
 @keyframes spinMove {
-    to {
-        opacity: 1;
-    }
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes rotate {
-    to {
-        transform: rotate(360deg);
-    }
+  to {
+    transform: rotate(360deg);
+  }
 }

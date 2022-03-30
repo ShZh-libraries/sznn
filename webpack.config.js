@@ -1,27 +1,29 @@
 const { join } = require("path");
 const NodePolyfillPlugin = require("node-polyfill-webpack-plugin");
 
-module.exports = [{
-    mode: 'development',
-    devtool: 'source-map',
-    entry: './index.ts',
+module.exports = [
+  {
+    mode: "development",
+    devtool: "source-map",
+    entry: "./index.ts",
     module: {
-        rules: [{
-            test: /\.ts$/,
-            use: 'ts-loader',
-        }],
+      rules: [
+        {
+          test: /\.ts$/,
+          use: "ts-loader",
+        },
+      ],
     },
     resolve: {
-        extensions: ['.ts', '.js'],
-        fallback: {
-            'fs': false
-        }
+      extensions: [".ts", ".js"],
+      fallback: {
+        fs: false,
+      },
     },
-    plugins: [
-        new NodePolyfillPlugin()
-    ],
+    plugins: [new NodePolyfillPlugin()],
     output: {
-        filename: 'index.js',
-        path: join(__dirname, 'dist')
-    }
-}]
+      filename: "index.js",
+      path: join(__dirname, "dist"),
+    },
+  },
+];
