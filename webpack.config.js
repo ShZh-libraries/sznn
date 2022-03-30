@@ -22,6 +22,6 @@ module.exports = [{
     ],
     output: {
         filename: 'index.js',
-        path: join(__dirname, 'out')
+        path: join(__dirname, 'dist')
     }
 }]
