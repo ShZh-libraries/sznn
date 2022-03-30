@@ -37,67 +37,53 @@ function handleAttribute(attributes: onnx.AttributeProto[]): ConvAttr {
     return result;
 }
 
-export function handleConv(input: Tensor[], attributes: onnx.AttributeProto[]): Tensor[] {
+export function handleConv(inputs: Tensor[], attributes: onnx.AttributeProto[]): Tensor[] {
     const convAttr = handleAttribute(attributes);
-    const result = forward(convAttr, input[0], input[1], input[2]);
+    const output = forward(convAttr, inputs[0], inputs[1], inputs[2]);
 
-    return result;
+    return output;
 }
 
-export function forward(convAttr: ConvAttr, data: Tensor, weight: Tensor, bias?: Tensor): Tensor[] {
+export function forward(attr: ConvAttr, input: Tensor, weight: Tensor, bias?: Tensor): Tensor[] {
     // Calculate shape
-    const resultSize = data.shape[0];
-    const resultChannel = weight.shape[0] / convAttr.group;
-    const kernelHeight = weight.shape[2];
-    const kernelWidth = weight.shape[3];
+    const outputSize = input.shape[0];
+    const outputChannel = weight.shape[0] / attr.group;
 
-    const maxY = data.shape[2] + convAttr.pads[0] + convAttr.pads[2] - kernelHeight;
-    const maxX = data.shape[3] + convAttr.pads[1] + convAttr.pads[3] - kernelWidth;
-    const resultHeight = Math.floor(maxY / convAttr.strides[1]) + 1;
-    const resultWidth = Math.floor(maxX / convAttr.strides[0]) + 1;
-    const resultShape = [resultSize, resultChannel, resultHeight, resultWidth];
-    const result = TensorBuilder.withShape(resultShape);
- 
-    // Do convolution
-    const kernelChannelSize = convAttr.kernelShape[0] * convAttr.kernelShape[1];
-    const kernelSize = kernelChannelSize * weight.shape[1];
-    const dataChannelSize = data.shape[2] * data.shape[3];
-    const dataSize = dataChannelSize * data.shape[1];
+    const maxY = input.shape[2] + attr.pads[0] + attr.pads[2] - weight.shape[2];
+    const maxX = input.shape[3] + attr.pads[1] + attr.pads[3] - weight.shape[3];
+    const outputHeight = Math.floor(maxY / attr.strides[1]) + 1;
+    const outputWidth = Math.floor(maxX / attr.strides[0]) + 1;
+    const outputShape = [outputSize, outputChannel, outputHeight, outputWidth];
+    const output = TensorBuilder.withShape(outputShape);
 
     let resultIndex = 0;
-    for (let n = 0; n < resultSize; n++) {
-        for (let c = 0; c < resultChannel; c++) {
-            for (let y = 0; y <= maxY; y += convAttr.strides[1]) {
-                for (let x = 0; x <= maxX; x += convAttr.strides[0]) {
-                    const realY = y - convAttr.pads[0];
-                    const realX = x - convAttr.pads[1];
-
+    for (let n = 0; n < outputSize; n++) {
+        for (let c = 0; c < outputChannel; c++) {
+            for (let y = -attr.pads[0]; y <= maxY - attr.pads[0]; y += attr.strides[1]) {
+                for (let x = -attr.pads[1]; x <= maxX - attr.pads[1]; x += attr.strides[0]) {
                     let sum = 0;
-                    for (let ky = 0; ky < convAttr.kernelShape[1]; ky++) {
-                        for (let kx = 0; kx < convAttr.kernelShape[0]; kx++) {
-                            const dataX = realX + kx;
-                            const dataY = realY + ky;
+                    for (let ky = 0; ky < attr.kernelShape[1]; ky++) {
+                        for (let kx = 0; kx < attr.kernelShape[0]; kx++) {
+                            const cy = y + ky;
+                            const cx = x + kx;
 
-                            if (dataX >= 0 && dataX < data.shape[3] && dataY >= 0 && dataY < data.shape[2]) {
-                                for (let kc = 0; kc < weight.shape[1]; kc++) {
-                                    const kernelIndex = c * kernelSize + kc * kernelChannelSize + ky * convAttr.kernelShape[0] + kx;
-                                    const dataIndex = n * dataSize + kc * dataChannelSize + dataY * data.shape[3] + dataX;
-        
-                                    const kernelValue = weight.data[kernelIndex];
-                                    const dataValue = data.data[dataIndex];
+                            if (cx >= 0 && cx < input.shape[3] && cy >= 0 && cy < input.shape[2]) {
+                                for (let kc = 0; kc < weight.shape[1]; kc++) {        
+                                    const kernelValue = weight.atLoc([c, kc, ky, kx]);
+                                    const dataValue = input.atLoc([n, kc, cy, cx]);
         
                                     sum += kernelValue * dataValue;
                                 }
                             }
                         }
                     }
-                    result.data[resultIndex++] = sum + (bias? bias.data[c] : 0);
+                    output.data[resultIndex++] = sum + (bias? bias.data[c] : 0);
                 }
             }
         }
     }
 
-    return [result];
+    return [output];
 }
 
 // export function forward(data: Tensor, weight: Tensor, convAttr: ConvAttr): Tensor[] {

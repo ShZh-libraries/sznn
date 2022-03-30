@@ -1,23 +1,23 @@
 import { Tensor, TensorBuilder } from "../tensor";
 
 // TODO: attribute like epsilon
-export function handleBatchNorm(input: Tensor[]): Tensor[] {
+export function handleBatchNorm(inputs: Tensor[]): Tensor[] {
     // Extract weights
-    const data = input[0];
-    const scale = input[1];
-    const bias = input[2];
-    const mean = input[3];
-    const variance = input[4];
+    const data = inputs[0];
+    const scale = inputs[1];
+    const bias = inputs[2];
+    const mean = inputs[3];
+    const variance = inputs[4];
 
     // Calculate shape
-    let result = TensorBuilder.withShape(data.shape);
+    let output = TensorBuilder.withShape(data.shape);
 
     const dataLength = data.data.length;
     for (let index = 0; index < dataLength; index++) {
-            result.data[index] = 
+            output.data[index] = 
                 (data.data[index] - mean.data[index]) / Math.sqrt(variance.data[index]) * scale.data[index] + bias.data[index];
         
     }
 
-    return [result];
+    return [output];
 }

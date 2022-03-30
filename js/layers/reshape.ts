@@ -21,6 +21,6 @@ export function forward(input: Tensor, shape: number[]): Tensor {
         shape[negativeIndex] = remainedSize;
     }
 
-    const result = TensorBuilder.withAllArgs(input.data, shape, input.dtype);
-    return result;
+    const output = TensorBuilder.withAllArgs(input.data, shape, input.dtype);
+    return output;
 }

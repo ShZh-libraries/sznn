@@ -23,15 +23,15 @@ export function forward(a: Tensor, b: Tensor, op: BinaryFunc): Tensor {
         }
     } else {
         for (let i = 0; i < output.data.length; i++) {
-            const outputLoc = output.getLoc(i);
+            const outputLoc = output.indexToLoc(i);
 
             const aLoc = outputLoc.slice(-a.ndim);
             aBroadcastDim.forEach(dim => aLoc[dim] = 0);
-            const aIndex = a.atLoc(aLoc);
+            const aIndex = a.locToIndex(aLoc);
 
             const bLoc = outputLoc.slice(-b.ndim);
             bBroadcastDim.forEach(dim => bLoc[dim] = 0);
-            const bIndex = b.atLoc(bLoc);
+            const bIndex = b.locToIndex(bLoc);
 
             output.data[i] = op(a.data[aIndex], b.data[bIndex]);
         }

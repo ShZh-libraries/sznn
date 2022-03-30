@@ -30,108 +30,92 @@ function handleAttribute(attributes: onnx.AttributeProto[]): PoolingAttr {
 
 export function handleMaxPool2D(inputs: Tensor[], attributes: onnx.AttributeProto[]): Tensor[] {
     const maxPoolingAttr = handleAttribute(attributes);
-    const result = forwardMaxPool2D(inputs[0], maxPoolingAttr);
+    const output = forwardMaxPool2D(inputs[0], maxPoolingAttr);
     
-    return [result];
+    return [output];
 }
 
 export function handleAvgPool2D(inputs: Tensor[], attributes: onnx.AttributeProto[]): Tensor[] {
     const avgPoolingAttr = handleAttribute(attributes);
-    const result = forwardAvgPool2D(inputs[0], avgPoolingAttr);
+    const output = forwardAvgPool2D(inputs[0], avgPoolingAttr);
 
-    return [result];
+    return [output];
 }
 
 export function handleGlobalAvgPool(inputs: Tensor[]): Tensor[] {
     const globalAvgPoolingAttr = new PoolingAttr();
     globalAvgPoolingAttr.kernelShape = [inputs[0].shape[2], inputs[0].shape[3]];
-    const result = forwardAvgPool2D(inputs[0], globalAvgPoolingAttr);
+    const output = forwardAvgPool2D(inputs[0], globalAvgPoolingAttr);
 
-    return [result];
+    return [output];
 }
 
-export function forwardMaxPool2D(data: Tensor, maxPoolingAttr: PoolingAttr): Tensor {
+export function forwardMaxPool2D(input: Tensor, attr: PoolingAttr): Tensor {
     // Calculate shape
-    const maxY = data.shape[2] + maxPoolingAttr.pads[0] + maxPoolingAttr.pads[2] - maxPoolingAttr.kernelShape[0];
-    const maxX = data.shape[3] + maxPoolingAttr.pads[1] + maxPoolingAttr.pads[3] - maxPoolingAttr.kernelShape[1];
-    const resultHeight = Math.floor(maxY / maxPoolingAttr.strides[0]) + 1;
-    const resultWidth = Math.floor(maxX / maxPoolingAttr.strides[1]) + 1;
+    const maxY = input.shape[2] + attr.pads[0] + attr.pads[2] - attr.kernelShape[0];
+    const maxX = input.shape[3] + attr.pads[1] + attr.pads[3] - attr.kernelShape[1];
+    const outputHeight = Math.floor(maxY / attr.strides[0]) + 1;
+    const outputWidth = Math.floor(maxX / attr.strides[1]) + 1;
+    const output = TensorBuilder.withShape([input.shape[0], input.shape[1], outputHeight, outputWidth]);
 
-    const dataChannelSize = data.shape[2] * data.shape[3];
-    const dataSize = data.shape[1] * dataChannelSize;
-    
-    const result = TensorBuilder.withShape([data.shape[0], data.shape[1], resultHeight, resultWidth]);
-    let resultIndex = 0;
-    for (let n = 0; n < data.shape[0]; n++) {
-        for (let c = 0; c < data.shape[1]; c++) {
-            for (let y = 0; y <= maxY; y += maxPoolingAttr.strides[0]) {
-                for (let x = 0; x <= maxX; x += maxPoolingAttr.strides[1]) {
-                    const realY = y - maxPoolingAttr.pads[0];
-                    const realX = x - maxPoolingAttr.pads[1];
-
-                    let maxValue = data.data[n * dataSize + c * dataChannelSize + realY * data.shape[3] + realX];
-                    for (let ky = 0; ky < maxPoolingAttr.kernelShape[0]; ky++) {
-                        for (let kx = 0; kx < maxPoolingAttr.kernelShape[1]; kx++) {
-                            const dataY = realY + ky;
-                            const dataX = realX + kx;
-
+    let outputIndex = 0;
+    for (let n = 0; n < input.shape[0]; n++) {
+        for (let c = 0; c < input.shape[1]; c++) {
+            for (let y = -attr.pads[0]; y <= maxY - attr.pads[0]; y += attr.strides[0]) {
+                for (let x = -attr.pads[1]; x <= maxX - attr.pads[1]; x += attr.strides[1]) {
+                    let maxValue = input.atLoc([n, c, x, y]);
+                    for (let ky = 0; ky < attr.kernelShape[0]; ky++) {  // Kernel
+                        for (let kx = 0; kx < attr.kernelShape[1]; kx++) {
+                            const cy = y + ky;  // Current
+                            const cx = x + kx;
                             let currentValue = 0;
-                            if (dataY >= 0 && dataY < data.shape[2] && dataX >= 0 && dataX < data.shape[3]) {
-                                currentValue = data.data[n * dataSize + c * dataChannelSize + dataY * data.shape[3] + dataX];
+                            if (cy >= 0 && cy < input.shape[2] && cx >= 0 && cx < input.shape[3]) {
+                                currentValue = input.atLoc([n, c, cy, cx]);
                             }
-
                             if (currentValue > maxValue) {
                                 maxValue = currentValue;
                             }
                         }
                     }
 
-                    result.data[resultIndex++] = maxValue;
+                    output.data[outputIndex++] = maxValue;
                 }
             }
         }
     }
 
-    return result;
+    return output;
 }
 
-export function forwardAvgPool2D(data: Tensor, avgPoolingAttr: PoolingAttr): Tensor {
+export function forwardAvgPool2D(input: Tensor, attr: PoolingAttr): Tensor {
+    const kernelSize = attr.kernelShape[0] * attr.kernelShape[1];
     // Calculate shape
-    const maxY = data.shape[2] + avgPoolingAttr.pads[0] + avgPoolingAttr.pads[2] - avgPoolingAttr.kernelShape[0];
-    const maxX = data.shape[3] + avgPoolingAttr.pads[1] + avgPoolingAttr.pads[3] - avgPoolingAttr.kernelShape[1];
-    const resultHeight = Math.floor(maxY / avgPoolingAttr.strides[0]) + 1;
-    const resultWidth = Math.floor(maxX / avgPoolingAttr.strides[1]) + 1;
+    const maxY = input.shape[2] + attr.pads[0] + attr.pads[2] - attr.kernelShape[0];
+    const maxX = input.shape[3] + attr.pads[1] + attr.pads[3] - attr.kernelShape[1];
+    const outputHeight = Math.floor(maxY / attr.strides[0]) + 1;
+    const outputWidth = Math.floor(maxX / attr.strides[1]) + 1;
+    const output = TensorBuilder.withShape([input.shape[0], input.shape[1], outputHeight, outputWidth]);
 
-    const kernelSize = avgPoolingAttr.kernelShape[0] * avgPoolingAttr.kernelShape[1];
-    const dataChannelSize = data.shape[2] * data.shape[3];
-    const dataSize = data.shape[1] * dataChannelSize;
-    
-    const result = TensorBuilder.withShape([data.shape[0], data.shape[1], resultHeight, resultWidth]);
-    let resultIndex = 0;
-    for (let n = 0; n < data.shape[0]; n++) {
-        for (let c = 0; c < data.shape[1]; c++) {
-            for (let y = 0; y <= maxY; y += avgPoolingAttr.strides[0]) {
-                for (let x = 0; x <= maxX; x += avgPoolingAttr.strides[1]) {
-                    const realY = y - avgPoolingAttr.pads[0];
-                    const realX = x - avgPoolingAttr.pads[1];
-
+    let outputIndex = 0;
+    for (let n = 0; n < input.shape[0]; n++) {
+        for (let c = 0; c < input.shape[1]; c++) {
+            for (let y = -attr.pads[0]; y <= maxY - attr.pads[0]; y += attr.strides[0]) {
+                for (let x = -attr.pads[1]; x <= maxX - attr.pads[1]; x += attr.strides[1]) {
                     let sum = 0;
-                    for (let ky = 0; ky < avgPoolingAttr.kernelShape[0]; ky++) {
-                        for (let kx = 0; kx < avgPoolingAttr.kernelShape[1]; kx++) {
-                            const dataY = realY + ky;
-                            const dataX = realX + kx;
-
-                            if (dataY >= 0 && dataY < data.shape[2] && dataX >= 0 && dataX < data.shape[3]) {
-                                sum += data.data[n * dataSize + c * dataChannelSize + dataY * data.shape[3] + dataX];
+                    for (let ky = 0; ky < attr.kernelShape[0]; ky++) {
+                        for (let kx = 0; kx < attr.kernelShape[1]; kx++) {
+                            const cy = y + ky;
+                            const cx = x + kx;
+                            if (cy >= 0 && cy < input.shape[2] && cx >= 0 && cx < input.shape[3]) {
+                                sum += input.atLoc([n, c, cy, cx]);
                             }
                         }
                     }
-
-                    result.data[resultIndex++] = sum / kernelSize;
+                    output.data[outputIndex++] = sum / kernelSize;
                 }
             }
         }
     }
 
-    return result;
+    return output;
 }

@@ -3,9 +3,9 @@ import { Tensor } from "../tensor";
 
 export function handleInstanceNorm(inputs: Tensor[], attributes: onnx.AttributeProto[]): Tensor[] {
     const epsilon = attributes[0].f;
-    const result = forward(inputs[0], inputs[1], inputs[2], epsilon);
+    const output = forward(inputs[0], inputs[1], inputs[2], epsilon);
 
-    return [result];
+    return [output];
 }
 
 // Not consider number dim

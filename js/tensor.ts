@@ -40,7 +40,7 @@ export class Tensor {
         }
     }
 
-    atLoc(location: number[]) {
+    locToIndex(location: number[]): number {
         if (!this.stride) {
             this.caclStride();
         }
@@ -53,7 +53,7 @@ export class Tensor {
         return index;
     }
 
-    getLoc(index: number) {
+    indexToLoc(index: number): number[] {
         if (!this.stride) {
             this.caclStride();
         }
@@ -65,6 +65,11 @@ export class Tensor {
         }
 
         return indexes;
+    }
+
+    atLoc(location: number[]): number {
+        const index = this.locToIndex(location);
+        return this.data[index];
     }
 
     reshape(shape: number[]) {

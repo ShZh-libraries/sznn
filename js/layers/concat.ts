@@ -1,11 +1,11 @@
 import { onnx } from "onnx-proto";
 import { Tensor, TensorBuilder } from "../tensor";
 
-export function handleConcat(input: Tensor[], attribute: onnx.AttributeProto[]): Tensor[] {
-    const axis = attribute[0].i as number;
-    const result = forward(input, axis);
+export function handleConcat(inputs: Tensor[], attributes: onnx.AttributeProto[]): Tensor[] {
+    const axis = attributes[0].i as number;
+    const output = forward(inputs, axis);
 
-    return [result];
+    return [output];
 }
 
 export function forward(inputs: Tensor[], axis: number): Tensor {
@@ -25,7 +25,7 @@ export function forward(inputs: Tensor[], axis: number): Tensor {
     }
 
     // Transform other tensors to 2D form and concat them with axis=1
-    const resultShape = getConcatShape(inputs, axis);
+    const outputShape = getConcatShape(inputs, axis);
     const transformedTensors = inputs.map(input => {
         let height, width;
         if (axis != 0) {
@@ -41,9 +41,9 @@ export function forward(inputs: Tensor[], axis: number): Tensor {
     });
 
     const transformedResult = concat2DAxis1(transformedTensors);
-    const result = transformedResult.reshape(resultShape);
+    const output = transformedResult.reshape(outputShape);
 
-    return result;
+    return output;
 }
 
 function getConcatShape(data: Tensor[], axis: number): number[] {

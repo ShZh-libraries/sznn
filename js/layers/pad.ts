@@ -28,9 +28,9 @@ export function handleAttributes(attributes: onnx.AttributeProto[]): PaddingAttr
 
 export function handlePadding(inputs: Tensor[], attributes: onnx.AttributeProto[]): Tensor[] {
     const paddingAttr = handleAttributes(attributes);
-    const result = forward(inputs[0], paddingAttr);
+    const output = forward(inputs[0], paddingAttr);
 
-    return [result];
+    return [output];
 }
 
 export function forward(input: Tensor, attr: PaddingAttr): Tensor {
@@ -42,7 +42,7 @@ export function forward(input: Tensor, attr: PaddingAttr): Tensor {
 
     // Passive mode
     for (let index = 0; index < output.data.length; index++) {
-        const outputLoc = output.getLoc(index);
+        const outputLoc = output.indexToLoc(index);
 
         if (outputLoc.some((loc, dim) => 
             loc < attr.pads[dim] || 
@@ -68,7 +68,7 @@ export function forward(input: Tensor, attr: PaddingAttr): Tensor {
                         }
                     }
                     
-                    const inputIdx = input.atLoc(inputLoc);
+                    const inputIdx = input.locToIndex(inputLoc);
                     output.data[index] = input.data[inputIdx];
                     break;
                 }
@@ -83,7 +83,7 @@ export function forward(input: Tensor, attr: PaddingAttr): Tensor {
                             inputLoc.push(outputLoc[i] - attr.pads[i]);
                         }
                     }
-                    const inputIdx = input.atLoc(inputLoc);
+                    const inputIdx = input.locToIndex(inputLoc);
                     output.data[index] = input.data[inputIdx];
                     break;
                 }
@@ -92,7 +92,7 @@ export function forward(input: Tensor, attr: PaddingAttr): Tensor {
             }
         } else {
             const inputLoc = outputLoc.map((loc, dim) => loc - attr.pads[dim]);
-            const inputIdx = input.atLoc(inputLoc);
+            const inputIdx = input.locToIndex(inputLoc);
             
             output.data[index] = input.data[inputIdx];
         }
