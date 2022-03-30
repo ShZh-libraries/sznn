@@ -45,7 +45,7 @@ startBtn!.addEventListener("click", async () => {
 
   // Load model and do inference
   const model = await loadModel("./model/mosaic.onnx");
-  const result = model.foward(tensor)[0];
+  const result = model.forward(tensor)[0];
 
   // [3, 224, 224] -> [224, 224, 3]
   let redChannel = [];

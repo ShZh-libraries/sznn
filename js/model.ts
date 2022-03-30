@@ -9,7 +9,7 @@ export async function loadModel(path: string): Promise<Model> {
   return model;
 }
 
-export async function loadONNXModel(path: string): Promise<onnx.ModelProto> {
+async function loadONNXModel(path: string): Promise<onnx.ModelProto> {
   const modelFile = await fetch(path);
   const modelFileContent = await modelFile.arrayBuffer();
   const model = onnx.ModelProto.decode(new Uint8Array(modelFileContent));
@@ -26,7 +26,7 @@ export class Model {
     this.dict = new TensorDict().init(onnxModel.graph!.initializer!);
   }
 
-  foward(input: Tensor): Tensor[] {
+  forward(input: Tensor): Tensor[] {
     // Put input tensor to tensor pool
     const inputName = this.onnxModel.graph!.node![0]!.input![0]!;
     this.dict.set(inputName, input);
