@@ -15,6 +15,9 @@ export function forward(input: Tensor, scales: Tensor): Tensor {
   }
   let output = TensorBuilder.withShape(outputShape);
 
+  const inputChannelSize = input.shape[2] * input.shape[3];
+  const inputSize = input.shape[1] * inputChannelSize;
+
   let index = 0;
   for (let n = 0; n < input.shape[0]; n++) {
     for (let scaleN = 0; scaleN < scales.data[0]; scaleN++) {
@@ -24,7 +27,8 @@ export function forward(input: Tensor, scales: Tensor): Tensor {
             for (let scaleH = 0; scaleH < scales.data[2]; scaleH++) {
               for (let x = 0; x < input.shape[3]; x++) {
                 for (let scaleW = 0; scaleW < scales.data[3]; scaleW++) {
-                  output.data[index++] = input.atLoc([n, c, y, x]);
+                  const idx = n * inputSize + c * inputChannelSize + y * input.shape[3] + x;
+                  output.data[index++] = input.data[idx];
                 }
               }
             }

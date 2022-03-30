@@ -73,6 +73,9 @@ export function forwardMaxPool2D(input: Tensor, attr: PoolingAttr): Tensor {
     outputWidth,
   ]);
 
+  const inputChannelSize = input.shape[2] * input.shape[3];
+  const inputSize = input.shape[1] * inputChannelSize;
+
   let outputIndex = 0;
   for (let n = 0; n < input.shape[0]; n++) {
     for (let c = 0; c < input.shape[1]; c++) {
@@ -86,7 +89,8 @@ export function forwardMaxPool2D(input: Tensor, attr: PoolingAttr): Tensor {
           x <= maxX - attr.pads[1];
           x += attr.strides[1]
         ) {
-          let maxValue = input.atLoc([n, c, y, x]);
+          let maxIdx = n * inputSize + c * inputChannelSize + y * input.shape[3] + x;
+          let maxValue = input.data[maxIdx];
           for (let ky = 0; ky < attr.kernelShape[0]; ky++) {
             // Kernel
             for (let kx = 0; kx < attr.kernelShape[1]; kx++) {
@@ -99,7 +103,8 @@ export function forwardMaxPool2D(input: Tensor, attr: PoolingAttr): Tensor {
                 cx >= 0 &&
                 cx < input.shape[3]
               ) {
-                currentValue = input.atLoc([n, c, cy, cx]);
+                const currentIdx = n * inputSize + c * inputChannelSize + cy * input.shape[3] + cx;
+                currentValue = input.data[currentIdx];
               }
               if (currentValue > maxValue) {
                 maxValue = currentValue;
@@ -132,6 +137,9 @@ export function forwardAvgPool2D(input: Tensor, attr: PoolingAttr): Tensor {
     outputWidth,
   ]);
 
+  const inputChannelSize = input.shape[2] * input.shape[3];
+  const inputSize = input.shape[1] * inputChannelSize;
+
   let outputIndex = 0;
   for (let n = 0; n < input.shape[0]; n++) {
     for (let c = 0; c < input.shape[1]; c++) {
@@ -156,7 +164,8 @@ export function forwardAvgPool2D(input: Tensor, attr: PoolingAttr): Tensor {
                 cx >= 0 &&
                 cx < input.shape[3]
               ) {
-                sum += input.atLoc([n, c, cy, cx]);
+                const curIdx = n * inputSize + c * inputChannelSize + cy * input.shape[3] + cx
+                sum += input.data[curIdx];
               }
             }
           }

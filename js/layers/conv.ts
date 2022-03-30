@@ -66,6 +66,11 @@ export function forward(
   const outputShape = [outputSize, outputChannel, outputHeight, outputWidth];
   const output = TensorBuilder.withShape(outputShape);
 
+  const kernelChannelSize = weight.shape[2] * weight.shape[3];
+  const kernelSize = weight.shape[1] * kernelChannelSize;
+  const inputChannelSize = input.shape[2] * input.shape[3];
+  const inputSize = input.shape[1] * inputChannelSize;
+
   let resultIndex = 0;
   for (let n = 0; n < outputSize; n++) {
     for (let c = 0; c < outputChannel; c++) {
@@ -92,8 +97,12 @@ export function forward(
                 cy < input.shape[2]
               ) {
                 for (let kc = 0; kc < weight.shape[1]; kc++) {
-                  const kernelValue = weight.atLoc([c, kc, ky, kx]);
-                  const dataValue = input.atLoc([n, kc, cy, cx]);
+                  // DO NOT use atLoc, it will affect performance
+                  const kernelIdx = c * kernelSize + kc * kernelChannelSize + ky * weight.shape[3] + kx;
+                  const dataIdx = n * inputSize + kc * inputChannelSize + cy * input.shape[3] + cx;
+
+                  const kernelValue = weight.data[kernelIdx];
+                  const dataValue = input.data[dataIdx];
 
                   sum += kernelValue * dataValue;
                 }
