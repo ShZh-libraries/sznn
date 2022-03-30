@@ -1,11 +1,10 @@
 const { join } = require("path");
-const NodePolyfillPlugin = require("node-polyfill-webpack-plugin");
 
 module.exports = [
   {
     mode: "development",
     devtool: "source-map",
-    entry: "./index.ts",
+    entry: "./js/index.ts",
     module: {
       rules: [
         {
@@ -16,14 +15,11 @@ module.exports = [
     },
     resolve: {
       extensions: [".ts", ".js"],
-      fallback: {
-        fs: false,
-      },
     },
-    plugins: [new NodePolyfillPlugin()],
     output: {
-      filename: "index.js",
+      // filename: "sznn.js",
       path: join(__dirname, "dist"),
+      library: "sznn",
     },
   },
 ];
