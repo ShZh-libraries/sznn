@@ -42,7 +42,7 @@ export class Tensor {
 
     locToIndex(location: number[]): number {
         if (!this.stride) {
-            this.caclStride();
+            this.calcStride();
         }
 
         let index = 0;
@@ -55,7 +55,7 @@ export class Tensor {
 
     indexToLoc(index: number): number[] {
         if (!this.stride) {
-            this.caclStride();
+            this.calcStride();
         }
 
         let indexes = [];
@@ -97,7 +97,7 @@ export class Tensor {
         return tensor;
     }
 
-    private caclStride() {
+    private calcStride() {
         this.stride = [1];
         for (let i = 1; i < this.ndim; i++) {
             this.stride.unshift(this.stride[0] * this.shape[this.ndim - i]);
@@ -213,6 +213,27 @@ export class TensorBuilder {
                 case 4: flattenTensor4d(dst.data, src as number[][][][], dst.shape); break;
             }
         }
+    }
+}
+
+export class TensorDict {
+    private pool: Map<string, Tensor> = new Map();
+
+    get(name: string): Tensor | undefined {
+        return this.pool.get(name);
+    }
+
+    set(name: string, tensor: Tensor): void {
+        this.pool.set(name, tensor);
+    }
+
+    init(initializers: onnx.ITensorProto[]) {
+        for (const initializer of initializers) {
+            const tensor = TensorBuilder.withInitializer(initializer as onnx.TensorProto);
+            this.pool.set((initializer as onnx.TensorProto).name, tensor);
+        }
+
+        return this;
     }
 }
 
