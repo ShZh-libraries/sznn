@@ -132,6 +132,9 @@ export class Model {
                 case "Sqrt":
                     outputs = handleUnaryOp(inputTensors, x => Math.sqrt(x));
                     break;
+                case "Sigmoid":
+                    outputs = handleUnaryOp(inputTensors, x => 1 / (1 + Math.exp(-x)));
+                    break;
                 case "Tan":
                     outputs = handleUnaryOp(inputTensors, x => Math.tan(x));
                     break;
@@ -150,6 +153,9 @@ export class Model {
                 case "Div":
                     outputs = handleBinaryOp(inputTensors, (x, y) => x / y);
                     break;
+                // case "Equal":
+                //     outputs = handleBinaryOp(inputTensors, (x, y) => x == y);
+                //     break;
                 case "Cast":
                     outputs = handleCast(inputTensors, node.attribute! as onnx.AttributeProto[]);
                     break;
