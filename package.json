@@ -9,7 +9,8 @@
   "private": false,
   "scripts": {
     "build": "webpack --config webpack.config.js",
-    "build:classify": "webpack --config ./examples/classify/webpack.config.js"
+    "build:classify": "webpack --config ./examples/classify/webpack.config.js",
+    "build:transfer": "webpack --config ./examples/transfer/webpack.config.js"
   },
   "devDependencies": {
     "@types/jest": "^27.4.1",
