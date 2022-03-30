@@ -6,7 +6,6 @@ import { handleConcat } from "./layers/concat";
 import { handleConstant } from "./layers/constant";
 import { handleConv } from "./layers/conv";
 import { handleDropout } from "./layers/dropout";
-import { handleFloor } from "./layers/floor";
 import { handleGather } from "./layers/gather";
 import { handleInstanceNorm } from "./layers/instancenorm";
 import { handlePadding } from "./layers/pad";
@@ -16,6 +15,7 @@ import { handleReshape } from "./layers/reshape";
 import { handleShape } from "./layers/shape";
 import { handleSlice } from "./layers/slice";
 import { handleSoftmax } from "./layers/softmax";
+import { handleUnaryOp } from "./layers/unaryop";
 import { handleUnsqueeze } from "./layers/unsqueeze";
 import { handleUpSample } from "./layers/upsample";
 import { Tensor } from "./tensor";
@@ -68,6 +68,76 @@ export class Model {
                 case "BatchNormalization":
                     outputs = handleBatchNorm(inputTensors);
                     break;
+                case "Abs":
+                    outputs = handleUnaryOp(inputTensors, x => Math.abs(x));
+                    break;
+                case "Acos":
+                    outputs = handleUnaryOp(inputTensors, x => Math.acos(x));
+                    break;
+                case "Acosh":
+                    outputs = handleUnaryOp(inputTensors, x => Math.acosh(x));
+                    break;
+                case "Asin":
+                    outputs = handleUnaryOp(inputTensors, x => Math.asin(x));
+                    break;
+                case "Asinh":
+                    outputs = handleUnaryOp(inputTensors, x => Math.asinh(x));
+                    break;
+                case "Atan":
+                    outputs = handleUnaryOp(inputTensors, x => Math.atan(x));
+                    break;
+                case "Atanh":
+                    outputs = handleUnaryOp(inputTensors, x => Math.atanh(x));
+                    break;
+                case "Ceil":
+                    outputs = handleUnaryOp(inputTensors, x => Math.ceil(x));
+                    break;
+                case "Floor":
+                    outputs = handleUnaryOp(inputTensors, x => Math.floor(x));
+                    break;
+                case "Round":
+                    outputs = handleUnaryOp(inputTensors, x => Math.round(x));
+                    break;
+                case "Cos":
+                    outputs = handleUnaryOp(inputTensors, x => Math.cos(x));
+                    break;
+                case "Cosh":
+                    outputs = handleUnaryOp(inputTensors, x => Math.cosh(x));
+                    break;
+                // case "IsInf":
+                //     outputs = handleUnaryOp(inputTensors, x => isFinite(x));
+                //     break;
+                // case "IsNaN"
+                case "Identity":
+                    outputs = handleUnaryOp(inputTensors, x => x);
+                    break;
+                case "Log":
+                    outputs = handleUnaryOp(inputTensors, x => Math.log(x));
+                    break;
+                case "Neg":
+                    outputs = handleUnaryOp(inputTensors, x => -x);
+                    break;
+                // case "Not":
+                //     outputs = handleUnaryOp(inputTensors, x => !x);
+                //     break;
+                case "Sign":
+                    outputs = handleUnaryOp(inputTensors, x => Math.sign(x));
+                    break;
+                case "Sin":
+                    outputs = handleUnaryOp(inputTensors, x => Math.sin(x));
+                    break;
+                case "Sinh":
+                    outputs = handleUnaryOp(inputTensors, x => Math.sinh(x));
+                    break;
+                case "Sqrt":
+                    outputs = handleUnaryOp(inputTensors, x => Math.sqrt(x));
+                    break;
+                case "Tan":
+                    outputs = handleUnaryOp(inputTensors, x => Math.tan(x));
+                    break;
+                case "Tanh":
+                    outputs = handleUnaryOp(inputTensors, x => Math.tanh(x));
+                    break;
                 case "Add":
                     outputs = handleBinaryOp(inputTensors, (x, y) => x + y);
                     break;
@@ -85,9 +155,6 @@ export class Model {
                     break;
                 case "Constant":
                     outputs = handleConstant(node.attribute! as onnx.AttributeProto[]);
-                    break;
-                case "Floor":
-                    outputs = handleFloor(inputTensors);
                     break;
                 case "Gather":
                     outputs = handleGather(inputTensors);
