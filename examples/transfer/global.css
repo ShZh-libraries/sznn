@@ -1,0 +1,18 @@
+button {
+    display: inline-block;
+
+    border: 1px solid transparent;
+    font-size: 1.25rem;
+    border-radius: 0.3rem;
+    line-height: 1.5;
+
+    transition: 
+        color .15s ease-in-out,
+        background-color .15s ease-in-out,
+        border-color .15s ease-in-out;
+}
+
+canvas {
+    border-radius: 0.3rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)
+}

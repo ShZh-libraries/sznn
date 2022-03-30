@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Style transfer example</title>
+    <link rel="stylesheet" href="./global.css">
+    <link rel="stylesheet" href="./spin.css">
+    <style>
+        button#upload-img {
+            position: absolute;
+            font-size: 1.25rem;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+
+            background-color: transparent;
+        }
+
+        button#upload-img:hover {
+            cursor: pointer;
+            color: white;
+            background-color: rgba(0, 0, 0, .8);
+        }
+
+        button#start {
+            margin-top: 4rem;
+            padding: 0.8rem 2rem;
+
+            color: #fff;
+            background-color: #7952b3;
+            border-color: #7952b3;
+        }
+
+        button#start:hover {
+            background-color: #61428f;
+            border-color: #61428f;
+        }
+
+        .icon {
+            font-size: 3rem;
+            font-weight: 400;
+            margin: auto 1rem;
+        }
+    </style>
+</head>
+<body>
+    <main style="display: flex; flex-direction: column; align-items: center;">
+        <h1 style="font-size: 3rem; font-family: serif; margin-bottom: 3rem;">
+            Fast Neural Style Transfer
+        </h1>
+        <div id="imgs" style="display: flex; align-items: center;">
+            <div width="224" height="224" style="position: relative;">
+                <canvas id="input-img" height="224" width="224"></canvas>
+                <button id="upload-img">
+                    <span role="img" aria-label="upload">
+                        <svg viewBox="64 64 896 896" focusable="false" data-icon="upload" width="1.25rem" height="1.25rem" fill="currentColor" aria-hidden="true">
+                            <path d="M400 317.7h73.9V656c0 4.4 3.6 8 8 8h60c4.4 0 8-3.6 8-8V317.7H624c6.7 0 10.4-7.7 6.3-12.9L518.3 163a8 8 0 00-12.6 0l-112 141.7c-4.1 5.3-.4 13 6.3 13zM878 626h-60c-4.4 0-8 3.6-8 8v154H214V634c0-4.4-3.6-8-8-8h-60c-4.4 0-8 3.6-8 8v198c0 17.7 14.3 32 32 32h684c17.7 0 32-14.3 32-32V634c0-4.4-3.6-8-8-8z"></path>
+                        </svg>
+                    </span>
+                    <span>Upload</span>
+                </button>
+            </div>
+            <span class="icon"> + </span>
+            <img src="./style.jpg" alt="Mosaic style image" width="224" height="224" />
+            <span class="icon"> = </span>
+            <div style="position: relative; width: 224px; height: 224px;">
+                <div id="loading" style="position: absolute; left: 0; top: 0; width: 100%; height: 100%;
+                    display: none; flex-direction: column; justify-content: center; align-items: center;">
+                    <span class="spin-dot">
+                        <i class="spin-dot-item"></i>
+                        <i class="spin-dot-item"></i>
+                        <i class="spin-dot-item"></i>
+                        <i class="spin-dot-item"></i>
+                    </span>
+                    <p style="font-weight: 500;">Loading...</p>
+                </div>
+                <canvas id="output-img" height="224" width="224" style="position: absolute; left: 0; top: 0;"></canvas>
+            </div>
+        </div>
+        <button id="start">Start Transfer!!</button>
+    </main>
+</body>
+<script src="./dist/index.js" type="module"></script>
+</html>
