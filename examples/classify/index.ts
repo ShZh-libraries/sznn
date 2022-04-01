@@ -1,5 +1,5 @@
 import { loadModel } from "../../js/model";
-import { imageToTensor, loadImage } from "../../utils/image";
+import { imageToTensor, loadImage } from "../../utils/cv";
 import { imagenetClasses } from "./image_net";
 
 const HEIGHT = 224;

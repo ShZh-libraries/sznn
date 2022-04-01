@@ -1,6 +1,6 @@
 import { loadModel } from "../../js/model";
 import { Tensor } from "../../js/tensor";
-import { Image, imageToTensor, loadImage } from "../../utils/image";
+import { Image, imageToTensor, loadImage } from "../../utils/cv";
 
 const WIDTH = 224;
 const HEIGHT = 224;
