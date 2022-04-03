@@ -1,4 +1,5 @@
 import { onnx } from "onnx-proto";
+import { handle } from "./handler";
 import { Tensor } from "./rs/pkg";
 import { TensorDict } from "./tensor";
 

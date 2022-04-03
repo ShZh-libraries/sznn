@@ -5,7 +5,7 @@ const WasmPackPlugin = require("@wasm-tool/wasm-pack-plugin");
 module.exports = {
     mode: "development",
     devtool: "source-map",
-    entry: './bootstrap.ts',
+    entry: './src/bootstrap.ts',
     module: {
         rules: [
             {
@@ -24,7 +24,7 @@ module.exports = {
     plugins: [
         new HtmlWebpackPlugin(),
         new WasmPackPlugin({
-            crateDirectory: path.resolve(__dirname, "rs"),
+            crateDirectory: path.resolve(__dirname, "src/rs"),
         })
     ],
     experiments: {
