@@ -1,7 +1,5 @@
-use wasm_bindgen::prelude::*;
 pub mod tensor;
+pub mod layers;
 
-#[wasm_bindgen]
-pub fn add(a: u32, b: u32) -> u32 {
-    a + b
-}
+pub use tensor::*;
+pub use layers::*;

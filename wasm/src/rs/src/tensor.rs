@@ -12,7 +12,8 @@ pub enum DType {
     Float64,
 }
 
-enum TensorDataType {
+#[derive(PartialEq, Debug)]
+pub enum TensorDataType {
     Int8(Vec<i8>),
     Int16(Vec<i16>),
     Int32(Vec<i32>),
@@ -25,10 +26,11 @@ enum TensorDataType {
 
 #[wasm_bindgen]
 pub struct Tensor {
-    data: TensorDataType,
+    #[wasm_bindgen(skip)]
+    pub data: TensorDataType,
     shape: Vec<usize>,
-    ndim: usize,
-    length: usize,
+    pub ndim: usize,
+    pub length: usize,
 }
 
 #[wasm_bindgen]
@@ -151,12 +153,59 @@ impl Tensor {
     pub fn set_data_with_f64_array(&mut self, data: &js_sys::Float64Array) {
         self.data = TensorDataType::Float64(data.to_vec());
     }
+}
 
-    pub fn get_ndim(self) -> usize {
+impl Tensor {
+    pub fn new() -> Self {
+        Self {
+            data: TensorDataType::Int8(Vec::new()),
+            shape: Vec::new(),
+            ndim: 0,
+            length: 0,
+        }
+    }
+
+    #[inline]
+    pub fn get_ndim(&self) -> usize {
         self.ndim
     }
 
-    pub fn get_length(self) -> usize {
+    #[inline]
+    pub fn get_length(&self) -> usize {
         self.length
+    }
+
+    #[inline]
+    pub fn get_shape(&self) -> Vec<usize> {
+        self.shape.clone()
+    }
+
+    pub fn set_vec_shape(&mut self, shape: Vec<usize>) {
+        self.ndim = shape.len();
+        self.length = shape.iter().fold(1, |res, val| res * val );
+        self.shape = shape.clone();
+    }
+
+    pub fn with_shape(shape: Vec<usize>, dtype: Option<DType>) -> Tensor {
+        let dtype = dtype.unwrap_or_else(|| DType::Float64);
+        let ndim = shape.len();
+        let length = shape.iter().fold(1, |res, val| res * val );
+        let data = match dtype {
+            DType::Int8 => TensorDataType::Int8(vec![0; length]),
+            DType::Int16 => TensorDataType::Int16(vec![0; length]),
+            DType::Int32 => TensorDataType::Int32(vec![0; length]),
+            DType::UInt8 => TensorDataType::UInt8(vec![0; length]),
+            DType::UInt16 => TensorDataType::UInt16(vec![0; length]),
+            DType::UInt32 => TensorDataType::UInt32(vec![0; length]),
+            DType::Float32 => TensorDataType::Float32(vec![0.; length]),
+            DType::Float64 => TensorDataType::Float64(vec![0.; length]),
+        };
+
+        Tensor {
+            data,
+            shape,
+            ndim,
+            length,
+        }
     }
 }
