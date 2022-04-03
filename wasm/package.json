@@ -4,8 +4,7 @@
         "serve": "webpack-dev-server"
     },
     "dependencies": {
-        "onnx-proto": "^8.0.1",
-        "wasm": "file:./rs/pkg"
+        "onnx-proto": "^8.0.1"
     },
     "devDependencies": {
         "@wasm-tool/wasm-pack-plugin": "^1.6.0",
