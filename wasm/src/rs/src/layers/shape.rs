@@ -1,44 +1,42 @@
-use crate::{Tensor, TensorDataType};
+use crate::{Tensor, DTypes};
 
 pub fn forward(input: &Tensor) -> Tensor {
-    let mut output = Tensor::new();
-
     let shape = input.get_shape();
-    output.set_vec_shape(vec![shape.len()]);
-    output.data = match &input.data {
-        TensorDataType::Int8(_) => {
+    let out_shape = vec![shape.len()];
+    let out_data = match &input.get_data() {
+        DTypes::I8(_) => {
             let out = shape.iter().map(|&x| x as i8).collect();
-            TensorDataType::Int8(out)
+            DTypes::I8(out)
         },
-        TensorDataType::Int16(_) => {
+        DTypes::I16(_) => {
             let out = shape.iter().map(|&x| x as i16).collect();
-            TensorDataType::Int16(out)
+            DTypes::I16(out)
         },
-        TensorDataType::Int32(_) => {
+        DTypes::I32(_) => {
             let out = shape.iter().map(|&x| x as i32).collect();
-            TensorDataType::Int32(out)
+            DTypes::I32(out)
         },
-        TensorDataType::UInt8(_) => {
+        DTypes::U8(_) => {
             let out = shape.iter().map(|&x| x as u8).collect();
-            TensorDataType::UInt8(out)
+            DTypes::U8(out)
         },
-        TensorDataType::UInt16(_) => {
+        DTypes::U16(_) => {
             let out = shape.iter().map(|&x| x as u16).collect();
-            TensorDataType::UInt16(out)
+            DTypes::U16(out)
         },
-        TensorDataType::UInt32(_) => {
+        DTypes::U32(_) => {
             let out = shape.iter().map(|&x| x as u32).collect();
-            TensorDataType::UInt32(out)
+            DTypes::U32(out)
         },
-        TensorDataType::Float32(_) => {
+        DTypes::F32(_) => {
             let out = shape.iter().map(|&x| x as f32).collect();
-            TensorDataType::Float32(out)
+            DTypes::F32(out)
         },
-        TensorDataType::Float64(_) => {
+        DTypes::F64(_) => {
             let out = shape.iter().map(|&x| x as f64).collect();
-            TensorDataType::Float64(out)
+            DTypes::F64(out)
         },
     };
 
-    output
+    Tensor::new(out_data, out_shape)
 }

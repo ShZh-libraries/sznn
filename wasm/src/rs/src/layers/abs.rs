@@ -1,54 +1,53 @@
 use wasm_bindgen::prelude::*;
 
-use crate::tensor::{TensorDataType, Tensor};
+use crate::tensor::{DTypes, Tensor};
 
 
 #[wasm_bindgen]
 pub fn forward(input: &Tensor) -> Tensor {
-    let mut output = Tensor::new();
-    output.set_vec_shape(input.get_shape());
-    output.data = match &input.data {
-        TensorDataType::Int8(arr) => {
+    let out_shape = input.get_shape();
+    let out_data = match &input.get_data() {
+        DTypes::I8(arr) => {
             let out = arr
                 .iter()
                 .map(|x| x.abs() )
                 .collect::<Vec<_>>();
-            TensorDataType::Int8(out)
+            DTypes::I8(out)
         },
-        TensorDataType::Int16(arr) => {
+        DTypes::I16(arr) => {
             let out = arr
                 .iter()
                 .map(|x| x.abs() )
                 .collect::<Vec<_>>();
-            TensorDataType::Int16(out)
+            DTypes::I16(out)
         }
-        TensorDataType::Int32(arr) => {
+        DTypes::I32(arr) => {
             let out = arr
                 .iter()
                 .map(|x| x.abs() )
                 .collect::<Vec<_>>();
-            TensorDataType::Int32(out)
+            DTypes::I32(out)
         }
-        TensorDataType::Float32(arr) => {
+        DTypes::F32(arr) => {
             let out = arr
                 .iter()
                 .map(|x| x.abs() )
                 .collect::<Vec<_>>();
-            TensorDataType::Float32(out)
+            DTypes::F32(out)
         }
-        TensorDataType::Float64(arr) => {
+        DTypes::F64(arr) => {
             let out = arr
                 .iter()
                 .map(|x| x.abs() )
                 .collect::<Vec<_>>();
-            TensorDataType::Float64(out)
+            DTypes::F64(out)
         }
         _ => {
             panic!("Operation not supported on target type!");
         }
     };
 
-    output
+    Tensor::new(out_data, out_shape)
 }
 
 #[cfg(test)]
@@ -57,16 +56,17 @@ mod tests {
 
     #[test]
     fn test_abs_forward() {
-        let mut input = Tensor::new();
-        input.set_vec_shape(vec![2, 2]);
-        input.data = TensorDataType::Int32(vec![1, -2, -3, 4]);
+        let input = Tensor::new(
+            DTypes::I32(vec![1, -2, -3, 4]),
+            vec![2, 2]
+        );
     
         let output = forward(&input);
     
         assert_eq!(output.get_length(), 4);
-        assert_eq!(output.get_ndim(), 2);
+        assert_eq!(output.get_dim(), 2);
         assert_eq!(output.get_shape(), vec![2, 2]);
-        assert_eq!(output.data, TensorDataType::Int32(vec![1, 2, 3, 4]));       
+        assert_eq!(*output.get_data(), DTypes::I32(vec![1, 2, 3, 4]));       
     }
 }
 
