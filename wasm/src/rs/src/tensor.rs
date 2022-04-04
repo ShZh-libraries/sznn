@@ -185,4 +185,9 @@ impl Tensor {
     pub fn set_shape(&mut self, shape: Vec<usize>) {
         self.shape = shape.clone();
     }
+
+    pub fn reshape(&mut self, shape: Vec<usize>) -> Self {
+        self.set_shape(shape);
+        (*self).clone()
+    }
 }
