@@ -3,7 +3,7 @@ use wasm_bindgen::prelude::*;
 use crate::{Tensor, TensorDataType};
 
 #[wasm_bindgen]
-pub fn forwardReLu(input: &Tensor) -> Tensor {
+pub fn forward_relu(input: &Tensor) -> Tensor {
     let mut output = Tensor::new();
     output.set_vec_shape(input.get_shape());
     output.data = match &input.data {
@@ -28,7 +28,7 @@ pub fn forwardReLu(input: &Tensor) -> Tensor {
 }
 
 #[wasm_bindgen]
-pub fn forwardLeakyReLu(input: &Tensor, alpha: f64) -> Tensor {
+pub fn forward_leaky_relu(input: &Tensor, alpha: f64) -> Tensor {
     let mut output = Tensor::new();
     output.set_vec_shape(input.get_shape());
     output.data = match &input.data {
