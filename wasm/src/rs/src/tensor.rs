@@ -12,7 +12,7 @@ pub enum DType {
     Float64,
 }
 
-#[derive(PartialEq, Debug)]
+#[derive(PartialEq, Debug, Clone)]
 pub enum TensorDataType {
     Int8(Vec<i8>),
     Int16(Vec<i16>),
@@ -25,6 +25,7 @@ pub enum TensorDataType {
 }
 
 #[wasm_bindgen]
+#[derive(Clone)]
 pub struct Tensor {
     #[wasm_bindgen(skip)]
     pub data: TensorDataType,
