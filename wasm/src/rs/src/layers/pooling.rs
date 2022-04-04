@@ -175,6 +175,12 @@ pub fn forward_avgpool_2d(
     output
 }
 
+
+pub fn forward_global_avgpool(input: &Tensor) -> Tensor {
+    let in_shape = input.get_shape();
+    forward_avgpool_2d(input, in_shape[2], in_shape[3], 0, 0, 0, 0, 1, 1)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
