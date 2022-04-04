@@ -11,35 +11,35 @@ pub fn forward(input: &Tensor) -> Tensor {
         TensorDataType::Int8(arr) => {
             let out = arr
                 .iter()
-                .map(|x| if *x < 0 { -*x } else { *x } )
+                .map(|x| x.abs() )
                 .collect::<Vec<_>>();
             TensorDataType::Int8(out)
         },
         TensorDataType::Int16(arr) => {
             let out = arr
                 .iter()
-                .map(|x| if *x < 0 { -*x } else { *x } )
+                .map(|x| x.abs() )
                 .collect::<Vec<_>>();
             TensorDataType::Int16(out)
         }
         TensorDataType::Int32(arr) => {
             let out = arr
                 .iter()
-                .map(|x| if *x < 0 { -*x } else { *x } )
+                .map(|x| x.abs() )
                 .collect::<Vec<_>>();
             TensorDataType::Int32(out)
         }
         TensorDataType::Float32(arr) => {
             let out = arr
                 .iter()
-                .map(|x| if *x < 0. { -*x } else { *x } )
+                .map(|x| x.abs() )
                 .collect::<Vec<_>>();
             TensorDataType::Float32(out)
         }
         TensorDataType::Float64(arr) => {
             let out = arr
                 .iter()
-                .map(|x| if *x < 0. { -*x } else { *x } )
+                .map(|x| x.abs() )
                 .collect::<Vec<_>>();
             TensorDataType::Float64(out)
         }
