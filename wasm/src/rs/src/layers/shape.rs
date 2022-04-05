@@ -1,6 +1,9 @@
+use wasm_bindgen::prelude::wasm_bindgen;
+
 use crate::{Tensor, DTypes};
 
-pub fn forward(input: &Tensor) -> Tensor {
+#[wasm_bindgen]
+pub fn handle_shape(input: &Tensor) -> Tensor {
     let shape = input.get_shape();
     let out_shape = vec![shape.len()];
     let out_data = match &input.get_data() {

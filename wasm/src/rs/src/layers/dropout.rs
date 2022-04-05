@@ -3,6 +3,6 @@ use wasm_bindgen::prelude::*;
 use crate::Tensor;
 
 #[wasm_bindgen]
-pub fn forward(input: &Tensor) -> Tensor {
+pub fn handle_dropout(input: &Tensor) -> Tensor {
     input.clone()
 }

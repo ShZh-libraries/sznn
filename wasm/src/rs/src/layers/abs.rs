@@ -2,9 +2,8 @@ use wasm_bindgen::prelude::*;
 
 use crate::tensor::{DTypes, Tensor};
 
-
 #[wasm_bindgen]
-pub fn forward(input: &Tensor) -> Tensor {
+pub fn handle_abs(input: &Tensor) -> Tensor {
     let out_shape = input.get_shape();
     let out_data = match &input.get_data() {
         DTypes::I8(arr) => {
@@ -61,7 +60,7 @@ mod tests {
             vec![2, 2]
         );
     
-        let output = forward(&input);
+        let output = handle_abs(&input);
     
         assert_eq!(output.get_length(), 4);
         assert_eq!(output.get_dim(), 2);

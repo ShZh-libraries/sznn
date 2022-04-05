@@ -1,6 +1,9 @@
+use wasm_bindgen::prelude::wasm_bindgen;
+
 use crate::{Tensor, DTypes};
 
-pub fn forward(    
+#[wasm_bindgen]
+pub fn handle_conv(    
     kernel_height: usize, kernel_width: usize,
     pad_top: usize, pad_left: usize, 
     pad_bottom: usize, pad_right: usize, 
@@ -127,7 +130,7 @@ mod tests {
             1., 1., 1.
         ]), vec![1, 1, 3, 3]);
 
-        let output = forward(3, 3, 0, 0, 0, 0, 1, 1, &input, &weight, None);
+        let output = handle_conv(3, 3, 0, 0, 0, 0, 1, 1, &input, &weight, None);
         assert_eq!(output.get_shape(), vec![1, 1, 3, 3]);
         assert_eq!(*output.get_data(), DTypes::F64(vec![54., 63., 72., 99., 108., 117., 144., 153., 162.]));
     }
@@ -147,7 +150,7 @@ mod tests {
             1., 1., 1.
         ]), vec![1, 1, 3, 3]);
 
-        let output = forward(3, 3, 1, 1, 1, 1, 1, 1, &input, &weight, None);
+        let output = handle_conv(3, 3, 1, 1, 1, 1, 1, 1, &input, &weight, None);
         assert_eq!(output.get_shape(), vec![1, 1, 5, 5]);
         assert_eq!(*output.get_data(), DTypes::F64(vec![
             12., 21., 27., 33., 24., 33., 54., 63., 72., 
@@ -173,7 +176,7 @@ mod tests {
             1., 1., 1.
         ]), vec![1, 1, 3, 3]);
 
-        let output = forward(3, 3, 0, 0, 0, 0, 2, 2, &input, &weight, None);
+        let output = handle_conv(3, 3, 0, 0, 0, 0, 2, 2, &input, &weight, None);
         assert_eq!(output.get_shape(), vec![1, 1, 3, 2]);
         assert_eq!(*output.get_data(), DTypes::F64(vec![
             54., 72., 144., 162., 234., 252.
@@ -197,7 +200,7 @@ mod tests {
             1., 1., 1.
         ]), vec![1, 1, 3, 3]);
 
-        let output = forward(3, 3, 1, 0, 1, 0, 2, 2, &input, &weight, None);
+        let output = handle_conv(3, 3, 1, 0, 1, 0, 2, 2, &input, &weight, None);
         assert_eq!(output.get_shape(), vec![1, 1, 4, 2]);
         assert_eq!(*output.get_data(), DTypes::F64(vec![
             21., 33., 99., 117., 189., 207., 171., 183.

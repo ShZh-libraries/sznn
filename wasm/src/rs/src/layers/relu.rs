@@ -3,7 +3,7 @@ use wasm_bindgen::prelude::*;
 use crate::{Tensor, DTypes};
 
 #[wasm_bindgen]
-pub fn forward_relu(input: &Tensor) -> Tensor {
+pub fn handle_relu(input: &Tensor) -> Tensor {
     let out_shape = input.get_shape();
     let out_data = match &input.get_data() {
         DTypes::I8(arr) => {
@@ -48,7 +48,7 @@ pub fn forward_relu(input: &Tensor) -> Tensor {
 }
 
 #[wasm_bindgen]
-pub fn forward_leaky_relu(input: &Tensor, alpha: f64) -> Tensor {
+pub fn handle_leaky_relu(input: &Tensor, alpha: f64) -> Tensor {
     let out_shape = input.get_shape();
     let out_data = match &input.get_data() {
         DTypes::F32(arr) => {

@@ -1,6 +1,9 @@
+use wasm_bindgen::prelude::wasm_bindgen;
+
 use crate::{Tensor, DTypes};
 
-pub fn forward_maxpool_2d(
+#[wasm_bindgen]
+pub fn handle_maxpool_2d(
     input: &Tensor,
     kernel_height: usize, kernel_width: usize,
     pad_top: usize, pad_left: usize, 
@@ -90,7 +93,8 @@ pub fn forward_maxpool_2d(
     output
 }
 
-pub fn forward_avgpool_2d(
+#[wasm_bindgen]
+pub fn handle_avgpool_2d(
     input: &Tensor,
     kernel_height: usize, kernel_width: usize,
     pad_top: usize, pad_left: usize, 
@@ -175,10 +179,10 @@ pub fn forward_avgpool_2d(
     output
 }
 
-
-pub fn forward_global_avgpool(input: &Tensor) -> Tensor {
+#[wasm_bindgen]
+pub fn handle_global_avgpool(input: &Tensor) -> Tensor {
     let in_shape = input.get_shape();
-    forward_avgpool_2d(input, in_shape[2], in_shape[3], 0, 0, 0, 0, 1, 1)
+    handle_avgpool_2d(input, in_shape[2], in_shape[3], 0, 0, 0, 0, 1, 1)
 }
 
 #[cfg(test)]
@@ -195,7 +199,7 @@ mod tests {
             vec![1, 2, 3, 3]
         );
     
-        let output = forward_maxpool_2d(&input, 2, 2, 0, 0, 0, 0, 1, 1);
+        let output = handle_maxpool_2d(&input, 2, 2, 0, 0, 0, 0, 1, 1);
     
         assert_eq!(output.get_shape(), vec![1, 2, 2, 2]);
         assert_eq!(*output.get_data(), DTypes::F32(vec![5., 6., 8., 9., 14., 15., 17., 18.]));
@@ -211,7 +215,7 @@ mod tests {
             vec![1, 2, 3, 3]
         );
     
-        let output = forward_avgpool_2d(&input, 2, 2, 0, 0, 0, 0, 1, 1);
+        let output = handle_avgpool_2d(&input, 2, 2, 0, 0, 0, 0, 1, 1);
     
         assert_eq!(output.get_shape(), vec![1, 2, 2, 2]);
         assert_eq!(*output.get_data(), DTypes::F64(vec![3., 4., 6., 7., 12., 13., 15., 16.]));

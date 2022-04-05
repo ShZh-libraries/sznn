@@ -1,3 +1,3 @@
-import { add } from "./rs/pkg"
+import * as wasm from "./rs/pkg"
 
-console.log(add(1, 2));
+// console.log(add(1, 2));

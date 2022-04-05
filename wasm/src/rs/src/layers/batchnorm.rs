@@ -3,7 +3,7 @@ use wasm_bindgen::prelude::*;
 use crate::{Tensor, DTypes};
 
 #[wasm_bindgen]
-pub fn forward(input: &Tensor, scale: &Tensor, bias: &Tensor, mean: &Tensor, variance: &Tensor) -> Tensor {
+pub fn handle_batchnorm(input: &Tensor, scale: &Tensor, bias: &Tensor, mean: &Tensor, variance: &Tensor) -> Tensor {
     let out_shape = input.get_shape();
     let out_data = match &input.get_data() {
         DTypes::F32(arr) => {

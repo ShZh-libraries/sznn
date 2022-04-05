@@ -1,6 +1,11 @@
-use crate::{Tensor, DTypes};
+use wasm_bindgen::prelude::wasm_bindgen;
 
-pub fn forward(inputs: Vec<Tensor>, axis: usize) -> Tensor {
+use crate::{Tensor, DTypes, TensorList};
+
+#[wasm_bindgen]
+pub fn handle_concat(inputs: TensorList, axis: usize) -> Tensor {
+    let inputs = inputs.get();
+
     if inputs.len() == 1 {
         return inputs[0].clone();
     }
@@ -437,7 +442,8 @@ mod tests {
             vec![3]
         );
     
-        let output = forward(vec![input1, input2], 0);
+        let tensor_list = TensorList::new(vec![input1, input2]);
+        let output = handle_concat(tensor_list, 0);
     
         assert_eq!(output.get_shape(), vec![6]);
         assert_eq!(*output.get_data(), DTypes::I32(vec![1, 2, 3, 4, 5, 6]));       
@@ -454,7 +460,8 @@ mod tests {
             vec![2, 3]
         );
     
-        let output = forward(vec![input1, input2], 0);
+        let tensor_list = TensorList::new(vec![input1, input2]);
+        let output = handle_concat(tensor_list, 0);
     
         assert_eq!(output.get_shape(), vec![4, 3]);
         assert_eq!(*output.get_data(), DTypes::I32(vec![1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4]));       
@@ -471,7 +478,8 @@ mod tests {
             vec![2, 3]
         );
     
-        let output = forward(vec![input1, input2], 1);
+        let tensor_list = TensorList::new(vec![input1, input2]);
+        let output = handle_concat(tensor_list, 1);
     
         assert_eq!(output.get_shape(), vec![4, 3]);
         assert_eq!(*output.get_data(), DTypes::I32(vec![1, 1, 1, 3, 3, 3, 2, 2, 2, 4, 4, 4]));       
@@ -496,7 +504,8 @@ mod tests {
             vec![3, 3, 3]
         );
     
-        let output = forward(vec![input1, input2], 0);
+        let tensor_list = TensorList::new(vec![input1, input2]);
+        let output = handle_concat(tensor_list, 0);
     
         assert_eq!(output.get_shape(), vec![6, 3, 3]);
         assert_eq!(*output.get_data(), DTypes::I32(vec![
@@ -526,7 +535,8 @@ mod tests {
             vec![3, 3, 3]
         );
     
-        let output = forward(vec![input1, input2], 1);
+        let tensor_list = TensorList::new(vec![input1, input2]);
+        let output = handle_concat(tensor_list, 1);
     
         assert_eq!(output.get_shape(), vec![3, 6, 3]);
         assert_eq!(*output.get_data(), DTypes::I32(vec![
@@ -556,7 +566,8 @@ mod tests {
             vec![3, 3, 3]
         );
     
-        let output = forward(vec![input1, input2], 2);
+        let tensor_list = TensorList::new(vec![input1, input2]);
+        let output = handle_concat(tensor_list, 2);
     
         assert_eq!(output.get_shape(), vec![3, 3, 6]);
         assert_eq!(*output.get_data(), DTypes::I32(vec![

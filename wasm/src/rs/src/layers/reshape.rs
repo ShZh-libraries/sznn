@@ -1,11 +1,16 @@
-use crate::tensor::Tensor;
+use wasm_bindgen::prelude::wasm_bindgen;
 
-pub fn forward(input: &Tensor, shape: &mut Vec<isize>) -> Tensor {
+use crate::{tensor::Tensor, DTypes};
+
+#[wasm_bindgen]
+pub fn handle_reshape(input: &Tensor, shape: Tensor) -> Tensor {
+    let mut shape = if let DTypes::I32(arr) = shape.get_data() { arr.clone() } else { panic!("The shape's dtype is not i32!!") };
+
     // Deal with zero
     let input_shape = input.get_shape();
     for index in 0..shape.len() {
         if shape[index] == 0 {
-            shape[index] = input_shape[index] as isize;
+            shape[index] = input_shape[index] as i32;
         }
     }
 
@@ -14,7 +19,7 @@ pub fn forward(input: &Tensor, shape: &mut Vec<isize>) -> Tensor {
     if let Some(idx) = negative_idx {
         let remain_len = shape.iter().fold(1, |res, val| res * val) as usize;
         let remain_size = input.get_length() / remain_len;
-        shape[idx] = remain_size as isize;
+        shape[idx] = remain_size as i32;
     }
 
     let out_data = input.get_data().clone();

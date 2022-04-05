@@ -41,9 +41,9 @@ export class Model {
           node.attribute! as onnx.AttributeProto[]
         );
   
-        for (let outIndex = 0; outIndex < node.output!.length; outIndex++) {
-          this.dict.set(node.output![outIndex], outputs[outIndex]);
-        }
+        // for (let outIndex = 0; outIndex < node.output!.length; outIndex++) {
+        //   this.dict.set(node.output![outIndex], outputs[outIndex]);
+        // }
       }
   
       // Get result out of tensor pool

@@ -32,6 +32,11 @@ pub struct Tensor {
 }
 
 #[wasm_bindgen]
+pub struct TensorList {
+    tensors: Vec<Tensor>
+}
+
+#[wasm_bindgen]
 impl Tensor {
     #[wasm_bindgen(js_name = setShape)]
     pub fn set_shape_wiht_array(&mut self, shape: &js_sys::Array) {
@@ -189,5 +194,28 @@ impl Tensor {
     pub fn reshape(&mut self, shape: Vec<usize>) -> Self {
         self.set_shape(shape);
         (*self).clone()
+    }
+}
+
+#[wasm_bindgen]
+impl TensorList {
+    pub fn append(&mut self, tensor: &Tensor) {
+        self.tensors.push(tensor.clone());
+    }
+}
+
+impl TensorList {
+    pub fn new(tensors: Vec<Tensor>) -> Self {
+        Self { tensors }
+    }
+
+    #[inline]
+    pub fn set(&mut self, tensors: Vec<Tensor>) {
+        self.tensors = tensors;
+    }
+
+    #[inline]
+    pub fn get(&self) -> Vec<Tensor> {
+        self.tensors.clone()
     }
 }
