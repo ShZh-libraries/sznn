@@ -1,4 +1,4 @@
-import { forward } from "../js/layers/binaryop";
+import { handleBinaryOp } from "../js/layers/binaryop";
 import { TensorBuilder } from "../js/tensor";
 
 describe("Test JS backends for binary op", () => {
@@ -12,7 +12,7 @@ describe("Test JS backends for binary op", () => {
       [7, 8],
     ]);
 
-    const result = forward(a, b, (x, y) => x * y);
+    const result = handleBinaryOp(a, b, (x, y) => x * y);
     expect(result.shape).toEqual([2, 2]);
     expect(result.data).toEqual(new Float32Array([5, 12, 21, 32]));
   });
@@ -24,7 +24,7 @@ describe("Test JS backends for binary op", () => {
     ]);
     const b = TensorBuilder.withData([2]);
 
-    const result = forward(a, b, (x, y) => x + y);
+    const result = handleBinaryOp(a, b, (x, y) => x + y);
     expect(result.shape).toEqual([2, 2]);
     expect(result.data).toEqual(new Float32Array([3, 4, 5, 6]));
   });

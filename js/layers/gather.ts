@@ -1,13 +1,7 @@
 import { Tensor, TensorBuilder } from "../tensor";
 
 // With axis = 0 and inputs[2] only has 1 dim
-export function handleGather(inputs: Tensor[]): Tensor[] {
-  const output = forward(inputs[0], inputs[1]);
-
-  return [output];
-}
-
-export function forward(input: Tensor, indices: Tensor): Tensor {
+export function handleGather(input: Tensor, indices: Tensor): Tensor {
   // let outputShape = input.shape.slice();
   // outputShape[indices.data[0]] = 1;
 

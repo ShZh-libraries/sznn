@@ -1,7 +1,7 @@
 import { onnx } from "onnx-proto";
 import { DType, Tensor } from "../tensor";
 
-export function handleConstant(attributes: onnx.AttributeProto[]): Tensor[] {
+export function handleConstant(attributes: onnx.AttributeProto[]): Tensor {
   let output = new Tensor();
   output.shape = attributes[0].t!.dims! as number[];
   output.ndim = output.shape.length;
@@ -57,5 +57,5 @@ export function handleConstant(attributes: onnx.AttributeProto[]): Tensor[] {
       throw Error("Data type not support in ONNX!!");
   }
 
-  return [output];
+  return output;
 }

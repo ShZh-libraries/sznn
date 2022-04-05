@@ -1,17 +1,6 @@
-import { onnx } from "onnx-proto";
 import { Tensor, TensorBuilder } from "../tensor";
 
-export function handleConcat(
-  inputs: Tensor[],
-  attributes: onnx.AttributeProto[]
-): Tensor[] {
-  const axis = attributes[0].i as number;
-  const output = forward(inputs, axis);
-
-  return [output];
-}
-
-export function forward(inputs: Tensor[], axis: number): Tensor {
+export function handleConcat(inputs: Tensor[], axis: number): Tensor {
   // Special cases
   if (inputs.length == 1) {
     return inputs[0];

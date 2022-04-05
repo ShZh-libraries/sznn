@@ -1,64 +1,7 @@
-import { onnx } from "onnx-proto";
+import { PoolingAttr } from "../../core/attr/pooling";
 import { Tensor, TensorBuilder } from "../tensor";
 
-export class PoolingAttr {
-  kernelShape: number[] = [];
-  pads: number[] = [0, 0, 0, 0];
-  strides: number[] = [1, 1];
-}
-
-function handleAttribute(attributes: onnx.AttributeProto[]): PoolingAttr {
-  let result: PoolingAttr = new PoolingAttr();
-  for (const attribute of attributes) {
-    switch (attribute.name) {
-      case "kernel_shape":
-        result.kernelShape = attribute.ints as number[];
-        break;
-      case "pads":
-        result.pads = attribute.ints as number[];
-        break;
-      case "strides":
-        result.strides = attribute.ints as number[];
-        break;
-      default:
-        throw new Error(
-          `Unknown attribute ${attribute.name} in MaxPooling layer!!`
-        );
-    }
-  }
-
-  return result;
-}
-
-export function handleMaxPool2D(
-  inputs: Tensor[],
-  attributes: onnx.AttributeProto[]
-): Tensor[] {
-  const maxPoolingAttr = handleAttribute(attributes);
-  const output = forwardMaxPool2D(inputs[0], maxPoolingAttr);
-
-  return [output];
-}
-
-export function handleAvgPool2D(
-  inputs: Tensor[],
-  attributes: onnx.AttributeProto[]
-): Tensor[] {
-  const avgPoolingAttr = handleAttribute(attributes);
-  const output = forwardAvgPool2D(inputs[0], avgPoolingAttr);
-
-  return [output];
-}
-
-export function handleGlobalAvgPool(inputs: Tensor[]): Tensor[] {
-  const globalAvgPoolingAttr = new PoolingAttr();
-  globalAvgPoolingAttr.kernelShape = [inputs[0].shape[2], inputs[0].shape[3]];
-  const output = forwardAvgPool2D(inputs[0], globalAvgPoolingAttr);
-
-  return [output];
-}
-
-export function forwardMaxPool2D(input: Tensor, attr: PoolingAttr): Tensor {
+export function handleMaxPool2D(input: Tensor, attr: PoolingAttr): Tensor {
   // Calculate shape
   const maxY =
     input.shape[2] + attr.pads[0] + attr.pads[2] - attr.kernelShape[0];
@@ -121,7 +64,7 @@ export function forwardMaxPool2D(input: Tensor, attr: PoolingAttr): Tensor {
   return output;
 }
 
-export function forwardAvgPool2D(input: Tensor, attr: PoolingAttr): Tensor {
+export function handleAvgPool2D(input: Tensor, attr: PoolingAttr): Tensor {
   const kernelSize = attr.kernelShape[0] * attr.kernelShape[1];
   // Calculate shape
   const maxY =
@@ -174,6 +117,15 @@ export function forwardAvgPool2D(input: Tensor, attr: PoolingAttr): Tensor {
       }
     }
   }
+
+  return output;
+}
+
+
+export function handleGlobalAvgPool(input: Tensor): Tensor {
+  const globalAvgPoolingAttr = new PoolingAttr();
+  globalAvgPoolingAttr.kernelShape = [input.shape[2], input.shape[3]];
+  const output = handleAvgPool2D(input, globalAvgPoolingAttr);
 
   return output;
 }

@@ -1,10 +1,10 @@
-import { forward } from "../js/layers/softmax";
+import { handleSoftmax } from "../js/layers/softmax";
 import { TensorBuilder } from "../js/tensor";
 
 describe("Test JS backend for softmax layer", () => {
   test("Test default softmax", () => {
     const src = TensorBuilder.withData([[-1, 0, 1]]);
-    const result = forward(src);
+    const result = handleSoftmax(src);
 
     expect(result.shape).toEqual([1, 3]);
     expect(result.data).toEqual(

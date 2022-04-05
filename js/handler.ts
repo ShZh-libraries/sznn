@@ -23,168 +23,229 @@ import { handleSoftmax } from "./layers/softmax";
 import { handleUnaryOp } from "./layers/unaryop";
 import { handleUnsqueeze } from "./layers/unsqueeze";
 import { handleUpSample } from "./layers/upsample";
+import { getConvAttr } from "../core/attr/conv";
+import { getPaddingAttr } from "../core/attr/padding";
+import { getSliceAttr } from "../core/attr/slice";
+import { getPoolingAttr } from "../core/attr/pooling";
 
 export function handle(
   opType: string,
   inputs: Tensor[],
   attrs: onnx.AttributeProto[]
-): Tensor[] {
-  let outputs: Tensor[];
+): Tensor | Tensor[] {
+  let output: Tensor | Tensor[];
 
   switch (opType) {
-    case "Conv":
-      outputs = handleConv(inputs, attrs);
+    case "Conv": {
+      const attr = getConvAttr(attrs);
+      output = handleConv(attr, inputs[0], inputs[1], inputs[2]);
       break;
-    case "BatchNormalization":
-      outputs = handleBatchNorm(inputs);
+    }
+    case "BatchNormalization": {
+      output = handleBatchNorm(inputs[0], inputs[1], inputs[2], inputs[3], inputs[4]);
       break;
-    case "Abs":
-      outputs = handleUnaryOp(inputs, (x) => Math.abs(x));
+    }
+    case "Abs": {
+      output = handleUnaryOp(inputs[0], (x) => Math.abs(x));
       break;
-    case "Acos":
-      outputs = handleUnaryOp(inputs, (x) => Math.acos(x));
+    }
+    case "Acos": {
+      output = handleUnaryOp(inputs[0], (x) => Math.acos(x));
       break;
-    case "Acosh":
-      outputs = handleUnaryOp(inputs, (x) => Math.acosh(x));
+    }
+    case "Acosh": {
+      output = handleUnaryOp(inputs[0], (x) => Math.acosh(x));
       break;
-    case "Asin":
-      outputs = handleUnaryOp(inputs, (x) => Math.asin(x));
+    }
+    case "Asin": {
+      output = handleUnaryOp(inputs[0], (x) => Math.asin(x));
       break;
-    case "Asinh":
-      outputs = handleUnaryOp(inputs, (x) => Math.asinh(x));
+    }
+    case "Asinh": {
+      output = handleUnaryOp(inputs[0], (x) => Math.asinh(x));
+      break; 
+    }
+    case "Atan": {
+      output = handleUnaryOp(inputs[0], (x) => Math.atan(x));
       break;
-    case "Atan":
-      outputs = handleUnaryOp(inputs, (x) => Math.atan(x));
+    }
+    case "Atanh": {
+      output = handleUnaryOp(inputs[0], (x) => Math.atanh(x));
       break;
-    case "Atanh":
-      outputs = handleUnaryOp(inputs, (x) => Math.atanh(x));
+    }
+    case "Ceil": {
+      output = handleUnaryOp(inputs[0], (x) => Math.ceil(x));
       break;
-    case "Ceil":
-      outputs = handleUnaryOp(inputs, (x) => Math.ceil(x));
+    }
+    case "Floor": {
+      output = handleUnaryOp(inputs[0], (x) => Math.floor(x));
       break;
-    case "Floor":
-      outputs = handleUnaryOp(inputs, (x) => Math.floor(x));
+    }
+    case "Round": {
+      output = handleUnaryOp(inputs[0], (x) => Math.round(x));
       break;
-    case "Round":
-      outputs = handleUnaryOp(inputs, (x) => Math.round(x));
+    }
+    case "Cos": {
+      output = handleUnaryOp(inputs[0], (x) => Math.cos(x));
       break;
-    case "Cos":
-      outputs = handleUnaryOp(inputs, (x) => Math.cos(x));
+    }
+    case "Cosh": {
+      output = handleUnaryOp(inputs[0], (x) => Math.cosh(x));
       break;
-    case "Cosh":
-      outputs = handleUnaryOp(inputs, (x) => Math.cosh(x));
-      break;
+    }
     // case "IsInf":
-    //     outputs = handleUnaryOp(inputTensors, x => isFinite(x));
+    //     output = handleUnaryOp(inputTensors, x => isFinite(x));
     //     break;
     // case "IsNaN"
-    case "Identity":
-      outputs = handleUnaryOp(inputs, (x) => x);
+    case "Identity": {
+      output = handleUnaryOp(inputs[0], (x) => x);
+      break; 
+    }
+    case "Log": {
+      output = handleUnaryOp(inputs[0], (x) => Math.log(x));
       break;
-    case "Log":
-      outputs = handleUnaryOp(inputs, (x) => Math.log(x));
-      break;
-    case "Neg":
-      outputs = handleUnaryOp(inputs, (x) => -x);
-      break;
+    }
+    case "Neg": {
+      output = handleUnaryOp(inputs[0], (x) => -x);
+      break; 
+    }
     // case "Not":
-    //     outputs = handleUnaryOp(inputTensors, x => !x);
+    //     output = handleUnaryOp(inputTensors, x => !x);
     //     break;
-    case "Sign":
-      outputs = handleUnaryOp(inputs, (x) => Math.sign(x));
+    case "Sign": {
+      output = handleUnaryOp(inputs[0], (x) => Math.sign(x));
       break;
-    case "Sin":
-      outputs = handleUnaryOp(inputs, (x) => Math.sin(x));
+    }
+    case "Sin": {
+      output = handleUnaryOp(inputs[0], (x) => Math.sin(x));
       break;
-    case "Sinh":
-      outputs = handleUnaryOp(inputs, (x) => Math.sinh(x));
+    }
+    case "Sinh": {
+      output = handleUnaryOp(inputs[0], (x) => Math.sinh(x));
       break;
-    case "Sqrt":
-      outputs = handleUnaryOp(inputs, (x) => Math.sqrt(x));
+    }
+    case "Sqrt": {
+      output = handleUnaryOp(inputs[0], (x) => Math.sqrt(x));
       break;
-    case "Sigmoid":
-      outputs = handleUnaryOp(inputs, (x) => 1 / (1 + Math.exp(-x)));
+    }
+    case "Sigmoid": {
+      output = handleUnaryOp(inputs[0], (x) => 1 / (1 + Math.exp(-x)));
+      break; 
+    }
+    case "Tan": {
+      output = handleUnaryOp(inputs[0], (x) => Math.tan(x));
       break;
-    case "Tan":
-      outputs = handleUnaryOp(inputs, (x) => Math.tan(x));
+    }
+    case "Tanh": {
+      output = handleUnaryOp(inputs[0], (x) => Math.tanh(x));
       break;
-    case "Tanh":
-      outputs = handleUnaryOp(inputs, (x) => Math.tanh(x));
+    }
+    case "Add": {
+      output = handleBinaryOp(inputs[0], inputs[1], (x, y) => x + y);
       break;
-    case "Add":
-      outputs = handleBinaryOp(inputs, (x, y) => x + y);
+    }
+    case "Sub": {
+      output = handleBinaryOp(inputs[0], inputs[1], (x, y) => x - y);
       break;
-    case "Sub":
-      outputs = handleBinaryOp(inputs, (x, y) => x - y);
+    }
+    case "Mul": {
+      output = handleBinaryOp(inputs[0], inputs[1], (x, y) => x * y);
       break;
-    case "Mul":
-      outputs = handleBinaryOp(inputs, (x, y) => x * y);
+    }
+    case "Div": {
+      output = handleBinaryOp(inputs[0], inputs[1], (x, y) => x / y);
       break;
-    case "Div":
-      outputs = handleBinaryOp(inputs, (x, y) => x / y);
-      break;
+    }
     // case "Equal":
-    //     outputs = handleBinaryOp(inputTensors, (x, y) => x == y);
+    //     output = handleBinaryOp(inputTensors, (x, y) => x == y);
     //     break;
-    case "Cast":
-      outputs = handleCast(inputs, attrs);
+    case "Cast": {
+      const to = attrs[0].i as number;
+      output = handleCast(inputs[0], to);
       break;
-    case "Constant":
-      outputs = handleConstant(attrs);
+    }
+    case "Constant": {
+      output = handleConstant(attrs);
       break;
-    case "Gather":
-      outputs = handleGather(inputs);
+    }
+    case "Gather": {
+      output = handleGather(inputs[0], inputs[1]);
+      break; 
+    }
+    case "InstanceNormalization": {
+      const epsilon = attrs[0].f;
+      output = handleInstanceNorm(inputs[0], inputs[1], inputs[2], epsilon);
       break;
-    case "InstanceNormalization":
-      outputs = handleInstanceNorm(inputs, attrs);
+    }
+    case "Pad": {
+      const attr = getPaddingAttr(attrs);
+      output = handlePadding(inputs[0], attr);
       break;
-    case "Pad":
-      outputs = handlePadding(inputs, attrs);
+    }
+    case "Shape": {
+      output = handleShape(inputs);
       break;
-    case "Shape":
-      outputs = handleShape(inputs);
+    }
+    case "Slice": {
+      const attr = getSliceAttr(attrs);
+      output = handleSlice(inputs[0], attr);
       break;
-    case "Slice":
-      outputs = handleSlice(inputs, attrs);
+    }
+    case "Unsqueeze": {
+      const dims = attrs[0].ints as number[];
+      output = handleUnsqueeze(inputs[0], dims);
       break;
-    case "Unsqueeze":
-      outputs = handleUnsqueeze(inputs, attrs);
+    }
+    case "Dropout": {
+      output = handleDropout(inputs[0]);
       break;
-    case "Dropout":
-      outputs = handleDropout(inputs);
+    }
+    case "Relu": {
+      output = handleRelu(inputs[0]);
       break;
-    case "Relu":
-      outputs = handleRelu(inputs);
+    }
+    case "LeakyRelu": {
+      const alpha = attrs[0].f;
+      output = handleLeakyRelu(inputs[0], alpha);
       break;
-    case "LeakyRelu":
-      outputs = handleLeakyRelu(inputs, attrs);
+    }
+    case "MaxPool": {
+      const attr = getPoolingAttr(attrs);
+      output = handleMaxPool2D(inputs[0], attr);
       break;
-    case "MaxPool":
-      outputs = handleMaxPool2D(inputs, attrs);
+    }
+    case "AveragePool": {
+      const attr = getPoolingAttr(attrs);
+      output = handleAvgPool2D(inputs[0], attr);
       break;
-    case "AveragePool":
-      outputs = handleAvgPool2D(inputs, attrs);
+    }
+    case "GlobalAveragePool": {
+      output = handleGlobalAvgPool(inputs[0]);
       break;
-    case "GlobalAveragePool":
-      outputs = handleGlobalAvgPool(inputs);
+    }
+    case "Upsample": {
+      output = handleUpSample(inputs[0], inputs[1]);
       break;
-    case "Upsample":
-      outputs = handleUpSample(inputs);
+    }
+    case "Concat": {
+      let axis = attrs[0].i as number;
+      output = handleConcat(inputs, axis);
       break;
-    case "Concat":
-      outputs = handleConcat(inputs, attrs);
+    }
+    case "Softmax": {
+      output = handleSoftmax(inputs[0]);
       break;
-    case "Softmax":
-      outputs = handleSoftmax(inputs);
+    }
+    case "Reshape": {
+      const shape = Array.from(inputs[1].data);
+      output = handleReshape(inputs[0], shape);
       break;
-    case "Reshape":
-      outputs = handleReshape(inputs);
-      break;
+    }
     default:
       throw new Error(`Unknown op type ${opType}!`);
   }
 
-  // console.log(opType, outputs);
+  // console.log(opType, output);
 
-  return outputs;
+  return output;
 }

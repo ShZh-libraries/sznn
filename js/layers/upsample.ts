@@ -1,13 +1,6 @@
 import { Tensor, TensorBuilder } from "../tensor";
 
-// This operator is already deprecated
-// No need to analysis attribute
-export function handleUpSample(inputs: Tensor[]): Tensor[] {
-  const output = forward(inputs[0], inputs[1]);
-  return [output];
-}
-
-export function forward(input: Tensor, scales: Tensor): Tensor {
+export function handleUpSample(input: Tensor, scales: Tensor): Tensor {
   // Calculate shape
   let outputShape = [];
   for (let shapeIndex = 0; shapeIndex < input.ndim; shapeIndex++) {

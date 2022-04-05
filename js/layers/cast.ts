@@ -1,18 +1,7 @@
-import { onnx } from "onnx-proto";
 import { DType, Tensor } from "../tensor";
 
-export function handleCast(
-  inputs: Tensor[],
-  attributes: onnx.AttributeProto[]
-): Tensor[] {
-  let to = attributes[0].i as number;
-  const output = forawrd(inputs[0], to);
-
-  return [output];
-}
-
 // See https://github.com/onnx/onnx/blob/96516aecd4c110b0ac57eba08ac236ebf7205728/onnx/onnx.in.proto#L484
-export function forawrd(input: Tensor, to: number): Tensor {
+export function handleCast(input: Tensor, to: number): Tensor {
   let output = input.copy();
 
   switch (to) {

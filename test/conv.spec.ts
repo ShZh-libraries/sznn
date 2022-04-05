@@ -1,5 +1,6 @@
 import { TensorBuilder } from "../js/tensor";
-import { ConvAttr, forward } from "../js/layers/conv";
+import { handleConv } from "../js/layers/conv";
+import { ConvAttr } from "../core/attr/conv";
 
 describe("Test JS backend for convolutional layer", () => {
   describe("Test convolution with/without paddings", () => {
@@ -28,10 +29,10 @@ describe("Test JS backend for convolutional layer", () => {
       const attr = new ConvAttr();
       attr.kernelShape = [3, 3];
 
-      const result = forward(attr, data, weight);
+      const result = handleConv(attr, data, weight);
 
-      expect(result[0].shape).toEqual([1, 1, 3, 3]);
-      expect(result[0].data).toEqual(
+      expect(result.shape).toEqual([1, 1, 3, 3]);
+      expect(result.data).toEqual(
         new Float32Array([54, 63, 72, 99, 108, 117, 144, 153, 162])
       );
     });
@@ -40,10 +41,10 @@ describe("Test JS backend for convolutional layer", () => {
       attr.kernelShape = [3, 3];
       attr.pads = [1, 1, 1, 1];
 
-      const result = forward(attr, data, weight);
+      const result = handleConv(attr, data, weight);
 
-      expect(result[0].shape).toEqual([1, 1, 5, 5]);
-      expect(result[0].data).toEqual(
+      expect(result.shape).toEqual([1, 1, 5, 5]);
+      expect(result.data).toEqual(
         new Float32Array([
           12, 21, 27, 33, 24, 33, 54, 63, 72, 51, 63, 99, 108, 117, 81, 93, 144,
           153, 162, 111, 72, 111, 117, 123, 84,
@@ -81,10 +82,10 @@ describe("Test JS backend for convolutional layer", () => {
       attr.kernelShape = [3, 3];
       attr.strides = [2, 2];
 
-      const result = forward(attr, data, weight);
+      const result = handleConv(attr, data, weight);
 
-      expect(result[0].shape).toEqual([1, 1, 3, 2]);
-      expect(result[0].data).toEqual(
+      expect(result.shape).toEqual([1, 1, 3, 2]);
+      expect(result.data).toEqual(
         new Float32Array([54, 72, 144, 162, 234, 252])
       );
     });
@@ -95,10 +96,10 @@ describe("Test JS backend for convolutional layer", () => {
       attr.pads = [1, 0, 1, 0];
       attr.strides = [2, 2];
 
-      const result = forward(attr, data, weight);
+      const result = handleConv(attr, data, weight);
 
-      expect(result[0].shape).toEqual([1, 1, 4, 2]);
-      expect(result[0].data).toEqual(
+      expect(result.shape).toEqual([1, 1, 4, 2]);
+      expect(result.data).toEqual(
         new Float32Array([21, 33, 99, 117, 189, 207, 171, 183])
       );
     });

@@ -1,18 +1,7 @@
-import { onnx } from "onnx-proto";
 import { Tensor } from "../tensor";
 
-export function handleInstanceNorm(
-  inputs: Tensor[],
-  attributes: onnx.AttributeProto[]
-): Tensor[] {
-  const epsilon = attributes[0].f;
-  const output = forward(inputs[0], inputs[1], inputs[2], epsilon);
-
-  return [output];
-}
-
 // Not consider number dim
-export function forward(
+export function handleInstanceNorm(
   input: Tensor,
   weight: Tensor,
   bias: Tensor,

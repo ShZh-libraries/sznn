@@ -1,60 +1,12 @@
-import { onnx } from "onnx-proto";
+import { ConvAttr } from "../../core/attr/conv";
 import { Tensor, TensorBuilder } from "../tensor";
 
-export class ConvAttr {
-  autoPad: string = "NOTSET";
-  dilations: number[] = [];
-  group: number = 1;
-  kernelShape: number[] = [];
-  pads: number[] = [0, 0, 0, 0];
-  strides: number[] = [1, 1];
-}
-
-function handleAttribute(attributes: onnx.AttributeProto[]): ConvAttr {
-  let result: ConvAttr = new ConvAttr();
-  for (const attribute of attributes) {
-    switch (attribute.name) {
-      case "dilations":
-        result.dilations = attribute.ints as number[];
-        break;
-      case "group":
-        result.group = attribute.i as number;
-        break;
-      case "kernel_shape":
-        result.kernelShape = attribute.ints as number[];
-        break;
-      case "pads":
-        result.pads = attribute.ints as number[];
-        break;
-      case "strides":
-        result.strides = attribute.ints as number[];
-        break;
-      default:
-        throw new Error(
-          `Unknown attribute ${attribute.name} in Convolutional layer!!`
-        );
-    }
-  }
-
-  return result;
-}
-
 export function handleConv(
-  inputs: Tensor[],
-  attributes: onnx.AttributeProto[]
-): Tensor[] {
-  const convAttr = handleAttribute(attributes);
-  const output = forward(convAttr, inputs[0], inputs[1], inputs[2]);
-
-  return output;
-}
-
-export function forward(
   attr: ConvAttr,
   input: Tensor,
   weight: Tensor,
   bias?: Tensor
-): Tensor[] {
+): Tensor {
   // Calculate shape
   const outputSize = input.shape[0];
   const outputChannel = weight.shape[0] / attr.group;
@@ -115,7 +67,7 @@ export function forward(
     }
   }
 
-  return [output];
+  return output;
 }
 
 // export function forward(data: Tensor, weight: Tensor, convAttr: ConvAttr): Tensor[] {

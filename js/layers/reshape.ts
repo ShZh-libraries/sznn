@@ -1,11 +1,7 @@
 import { Tensor, TensorBuilder } from "../tensor";
 
-export function handleReshape(inputs: Tensor[]): Tensor[] {
-  return [forward(inputs[0], Array.from(inputs[1].data))];
-}
-
 // TODO: forward inplace!
-export function forward(input: Tensor, shape: number[]): Tensor {
+export function handleReshape(input: Tensor, shape: number[]): Tensor {
   // Deal with zero
   for (let index = 0; index < shape.length; index++) {
     if (shape[index] == 0) {

@@ -1,4 +1,4 @@
-import { forward } from "../js/layers/instancenorm";
+import { handleInstanceNorm } from "../js/layers/instancenorm";
 import { TensorBuilder } from "../js/tensor";
 
 describe("Test JS backends for instance normalization", () => {
@@ -7,7 +7,7 @@ describe("Test JS backends for instance normalization", () => {
     const weight = TensorBuilder.withData([1, 1.5]);
     const bias = TensorBuilder.withData([0, 1]);
 
-    const result = forward(input, weight, bias, 0);
+    const result = handleInstanceNorm(input, weight, bias, 0);
     expect(result.shape).toEqual([1, 2, 1, 3]);
     expect(result.data).toEqual(
       new Float32Array([

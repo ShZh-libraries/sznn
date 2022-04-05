@@ -1,17 +1,6 @@
-import { onnx } from "onnx-proto";
 import { Tensor } from "../tensor";
 
-export function handleUnsqueeze(
-  inputs: Tensor[],
-  attributes: onnx.AttributeProto[]
-): Tensor[] {
-  const dims = attributes[0].ints as number[];
-  const output = forward(inputs[0], dims);
-
-  return [output];
-}
-
-export function forward(input: Tensor, dims: number[]) {
+export function handleUnsqueeze(input: Tensor, dims: number[]) {
   let output = input.copy();
 
   const nonNegativeDims = dims.map((dim) => {

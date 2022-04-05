@@ -34,14 +34,18 @@ export class Model {
     // Do forwarding
     for (const node of this.onnxModel.graph!.node!) {
       const inputs = node.input!.map((name) => this.dict.get(name)!)!;
-      const outputs = handle(
+      const output = handle(
         node.opType!,
         inputs,
         node.attribute! as onnx.AttributeProto[]
       );
 
-      for (let outIndex = 0; outIndex < node.output!.length; outIndex++) {
-        this.dict.set(node.output![outIndex], outputs[outIndex]);
+      if (Array.isArray(output)) {
+        for (let outIndex = 0; outIndex < node.output!.length; outIndex++) {
+          this.dict.set(node.output![outIndex], output[outIndex]);
+        }
+      } else {
+        this.dict.set(node.output![0], output);
       }
     }
 

@@ -1,4 +1,5 @@
-import { forward, PaddingAttr } from "../js/layers/pad";
+import { PaddingAttr } from "../core/attr/padding";
+import { handlePadding } from "../js/layers/pad";
 import { TensorBuilder } from "../js/tensor";
 
 describe("Test JS backend for padding layer", () => {
@@ -13,7 +14,7 @@ describe("Test JS backend for padding layer", () => {
   test("Test constant padding", () => {
     attr.mode = "constant";
 
-    const output = forward(input, attr);
+    const output = handlePadding(input, attr);
     expect(output.shape).toEqual([3, 4]);
     expect(output.data).toEqual(
       new Float32Array([0, 0, 1, 1.2, 0, 0, 2.3, 3.4, 0, 0, 4.5, 5.7])
@@ -23,7 +24,7 @@ describe("Test JS backend for padding layer", () => {
   test("Test reflect padding", () => {
     attr.pads = [1, 1, 1, 1];
     attr.mode = "reflect";
-    const output = forward(input, attr);
+    const output = handlePadding(input, attr);
 
     expect(output.shape).toEqual([5, 4]);
     expect(output.data).toEqual(
@@ -37,7 +38,7 @@ describe("Test JS backend for padding layer", () => {
   test("Test edge padding", () => {
     attr.pads = [0, 2, 0, 0];
     attr.mode = "edge";
-    const output = forward(input, attr);
+    const output = handlePadding(input, attr);
 
     expect(output.shape).toEqual([3, 4]);
     expect(output.data).toEqual(

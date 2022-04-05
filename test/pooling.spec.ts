@@ -1,8 +1,8 @@
+import { PoolingAttr } from "../core/attr/pooling";
 import {
-  forwardAvgPool2D,
-  forwardMaxPool2D,
+  handleAvgPool2D,
+  handleMaxPool2D,
   handleGlobalAvgPool,
-  PoolingAttr,
 } from "../js/layers/pooling";
 import { TensorBuilder } from "../js/tensor";
 
@@ -28,7 +28,7 @@ describe("Test JS backend for pooling layer", () => {
       avgPoolingAttr.kernelShape = [2, 2];
       avgPoolingAttr.strides = [1, 1];
 
-      const result = forwardAvgPool2D(src, avgPoolingAttr);
+      const result = handleAvgPool2D(src, avgPoolingAttr);
       expect(result.shape).toEqual([1, 2, 2, 2]);
       expect(result.data).toEqual(
         new Float32Array([3, 4, 6, 7, 12, 13, 15, 16])
@@ -42,7 +42,7 @@ describe("Test JS backend for pooling layer", () => {
       maxPoolingAttr.kernelShape = [2, 2];
       maxPoolingAttr.strides = [1, 1];
 
-      const result = forwardMaxPool2D(src, maxPoolingAttr);
+      const result = handleMaxPool2D(src, maxPoolingAttr);
 
       expect(result.shape).toEqual([1, 2, 2, 2]);
       expect(result.data).toEqual(
@@ -53,9 +53,9 @@ describe("Test JS backend for pooling layer", () => {
 
   describe("Test global avg pooling layer", () => {
     test("Test normal global avg pooling layer", () => {
-      const results = handleGlobalAvgPool([src]);
-      expect(results[0].shape).toEqual([1, 2, 1, 1]);
-      expect(results[0].data).toEqual(new Float32Array([5, 14]));
+      const results = handleGlobalAvgPool(src);
+      expect(results.shape).toEqual([1, 2, 1, 1]);
+      expect(results.data).toEqual(new Float32Array([5, 14]));
     });
   });
 });

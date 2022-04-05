@@ -1,4 +1,5 @@
-import { forward, SliceAttr } from "../js/layers/slice";
+import { SliceAttr } from "../core/attr/slice";
+import { handleSlice } from "../js/layers/slice";
 import { TensorBuilder } from "../js/tensor";
 
 describe("Test JS backend for slice layer", () => {
@@ -9,7 +10,7 @@ describe("Test JS backend for slice layer", () => {
     sliceAttr.starts = [2];
     sliceAttr.ends = [4];
 
-    const output = forward(input, sliceAttr);
+    const output = handleSlice(input, sliceAttr);
 
     expect(output.shape).toEqual([2]);
     expect(output.data).toEqual(new Float32Array([255, 255]));

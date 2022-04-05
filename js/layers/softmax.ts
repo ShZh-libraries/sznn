@@ -1,12 +1,7 @@
 import { Tensor, TensorBuilder } from "../tensor";
 
-// The default axis is 1
-export function handleSoftmax(inputs: Tensor[]): Tensor[] {
-  return [forward(inputs[0])];
-}
-
 // For 1 x C x W x H tensor:
-export function forward(input: Tensor): Tensor {
+export function handleSoftmax(input: Tensor): Tensor {
   const output = TensorBuilder.withShape(input.shape);
 
   let max = input.data[0];

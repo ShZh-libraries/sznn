@@ -1,4 +1,4 @@
-import { forward } from "../js/layers/upsample";
+import { handleUpSample } from "../js/layers/upsample";
 import { TensorBuilder } from "../js/tensor";
 
 describe("Test JS backends for upsample layer", () => {
@@ -13,7 +13,7 @@ describe("Test JS backends for upsample layer", () => {
     ]);
     const scales = TensorBuilder.withData([1, 1, 2, 3]);
 
-    const result = forward(data, scales);
+    const result = handleUpSample(data, scales);
     expect(result.shape).toEqual([1, 1, 4, 6]);
 
     expect(result.data).toEqual(

@@ -2,15 +2,8 @@ import { Tensor, TensorBuilder } from "../tensor";
 
 type BinaryFunc = (x: number, y: number) => number;
 
-export function handleBinaryOp(inputs: Tensor[], op: BinaryFunc): Tensor[] {
-  const a = inputs[0];
-  const b = inputs[1];
-  const output = forward(a, b, op);
 
-  return [output];
-}
-
-export function forward(a: Tensor, b: Tensor, op: BinaryFunc): Tensor {
+export function handleBinaryOp(a: Tensor, b: Tensor, op: BinaryFunc): Tensor {
   const outputShape = getBroadcastShape(a.shape, b.shape);
   const output = TensorBuilder.withShape(outputShape);
 
