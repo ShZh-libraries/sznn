@@ -1,4 +1,4 @@
-import { loadModel } from "../../js/model";
+import { loadModel } from "sznn-js";
 import { imageToTensor, loadImage } from "../../utils/cv";
 import { imagenetClasses } from "./image_net";
 
