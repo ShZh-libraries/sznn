@@ -32,7 +32,8 @@ export function handleMaxPool2D(input: Tensor, attr: PoolingAttr): Tensor {
           x <= maxX - attr.pads[1];
           x += attr.strides[1]
         ) {
-          let maxIdx = n * inputSize + c * inputChannelSize + y * input.shape[3] + x;
+          let maxIdx =
+            n * inputSize + c * inputChannelSize + y * input.shape[3] + x;
           let maxValue = input.data[maxIdx];
           for (let ky = 0; ky < attr.kernelShape[0]; ky++) {
             // Kernel
@@ -46,7 +47,11 @@ export function handleMaxPool2D(input: Tensor, attr: PoolingAttr): Tensor {
                 cx >= 0 &&
                 cx < input.shape[3]
               ) {
-                const currentIdx = n * inputSize + c * inputChannelSize + cy * input.shape[3] + cx;
+                const currentIdx =
+                  n * inputSize +
+                  c * inputChannelSize +
+                  cy * input.shape[3] +
+                  cx;
                 currentValue = input.data[currentIdx];
               }
               if (currentValue > maxValue) {
@@ -107,7 +112,11 @@ export function handleAvgPool2D(input: Tensor, attr: PoolingAttr): Tensor {
                 cx >= 0 &&
                 cx < input.shape[3]
               ) {
-                const curIdx = n * inputSize + c * inputChannelSize + cy * input.shape[3] + cx
+                const curIdx =
+                  n * inputSize +
+                  c * inputChannelSize +
+                  cy * input.shape[3] +
+                  cx;
                 sum += input.data[curIdx];
               }
             }
@@ -120,7 +129,6 @@ export function handleAvgPool2D(input: Tensor, attr: PoolingAttr): Tensor {
 
   return output;
 }
-
 
 export function handleGlobalAvgPool(input: Tensor): Tensor {
   const globalAvgPoolingAttr = new PoolingAttr();

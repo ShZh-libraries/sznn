@@ -2,7 +2,11 @@ import { Tensor, TensorBuilder } from "../tensor";
 
 // TODO: attribute like epsilon
 export function handleBatchNorm(
-  data: Tensor, scale: Tensor, bias: Tensor, mean: Tensor, variance: Tensor
+  data: Tensor,
+  scale: Tensor,
+  bias: Tensor,
+  mean: Tensor,
+  variance: Tensor
 ): Tensor {
   // Calculate shape
   let output = TensorBuilder.withShape(data.shape);

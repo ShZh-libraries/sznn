@@ -54,10 +54,12 @@ class TensorBuilder {
           tensor.setDataWithF32Array(Float32Array.from(initializer.floatData));
           break;
         case 6:
-          tensor.setDataWithI32Array(Int32Array.from(initializer.int32Data))
+          tensor.setDataWithI32Array(Int32Array.from(initializer.int32Data));
           break;
         case 7:
-          tensor.setDataWithI32Array(Int32Array.from(initializer.int64Data as number[]));
+          tensor.setDataWithI32Array(
+            Int32Array.from(initializer.int64Data as number[])
+          );
           break;
         case 11:
           tensor.setDataWithF64Array(Float64Array.from(initializer.doubleData));

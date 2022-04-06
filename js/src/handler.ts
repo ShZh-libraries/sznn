@@ -42,7 +42,13 @@ export function handle(
       break;
     }
     case "BatchNormalization": {
-      output = handleBatchNorm(inputs[0], inputs[1], inputs[2], inputs[3], inputs[4]);
+      output = handleBatchNorm(
+        inputs[0],
+        inputs[1],
+        inputs[2],
+        inputs[3],
+        inputs[4]
+      );
       break;
     }
     case "Abs": {
@@ -63,7 +69,7 @@ export function handle(
     }
     case "Asinh": {
       output = handleUnaryOp(inputs[0], (x) => Math.asinh(x));
-      break; 
+      break;
     }
     case "Atan": {
       output = handleUnaryOp(inputs[0], (x) => Math.atan(x));
@@ -99,7 +105,7 @@ export function handle(
     // case "IsNaN"
     case "Identity": {
       output = handleUnaryOp(inputs[0], (x) => x);
-      break; 
+      break;
     }
     case "Log": {
       output = handleUnaryOp(inputs[0], (x) => Math.log(x));
@@ -107,7 +113,7 @@ export function handle(
     }
     case "Neg": {
       output = handleUnaryOp(inputs[0], (x) => -x);
-      break; 
+      break;
     }
     // case "Not":
     //     output = handleUnaryOp(inputTensors, x => !x);
@@ -130,7 +136,7 @@ export function handle(
     }
     case "Sigmoid": {
       output = handleUnaryOp(inputs[0], (x) => 1 / (1 + Math.exp(-x)));
-      break; 
+      break;
     }
     case "Tan": {
       output = handleUnaryOp(inputs[0], (x) => Math.tan(x));
@@ -170,7 +176,7 @@ export function handle(
     }
     case "Gather": {
       output = handleGather(inputs[0], inputs[1]);
-      break; 
+      break;
     }
     case "InstanceNormalization": {
       const epsilon = attrs[0].f;

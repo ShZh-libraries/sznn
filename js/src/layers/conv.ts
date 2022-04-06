@@ -50,8 +50,16 @@ export function handleConv(
               ) {
                 for (let kc = 0; kc < weight.shape[1]; kc++) {
                   // DO NOT use atLoc, it will affect performance
-                  const kernelIdx = c * kernelSize + kc * kernelChannelSize + ky * weight.shape[3] + kx;
-                  const dataIdx = n * inputSize + kc * inputChannelSize + cy * input.shape[3] + cx;
+                  const kernelIdx =
+                    c * kernelSize +
+                    kc * kernelChannelSize +
+                    ky * weight.shape[3] +
+                    kx;
+                  const dataIdx =
+                    n * inputSize +
+                    kc * inputChannelSize +
+                    cy * input.shape[3] +
+                    cx;
 
                   const kernelValue = weight.data[kernelIdx];
                   const dataValue = input.data[dataIdx];

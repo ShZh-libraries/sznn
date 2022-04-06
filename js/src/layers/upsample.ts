@@ -20,7 +20,11 @@ export function handleUpSample(input: Tensor, scales: Tensor): Tensor {
             for (let scaleH = 0; scaleH < scales.data[2]; scaleH++) {
               for (let x = 0; x < input.shape[3]; x++) {
                 for (let scaleW = 0; scaleW < scales.data[3]; scaleW++) {
-                  const idx = n * inputSize + c * inputChannelSize + y * input.shape[3] + x;
+                  const idx =
+                    n * inputSize +
+                    c * inputChannelSize +
+                    y * input.shape[3] +
+                    x;
                   output.data[index++] = input.data[idx];
                 }
               }

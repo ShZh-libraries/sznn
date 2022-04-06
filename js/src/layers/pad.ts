@@ -1,7 +1,6 @@
 import { PaddingAttr } from "../../../core/attr/padding";
 import { Tensor, TensorBuilder } from "../tensor";
 
-
 export function handlePadding(input: Tensor, attr: PaddingAttr): Tensor {
   let outputShape = [];
   for (let index = 0; index < input.ndim; index++) {
