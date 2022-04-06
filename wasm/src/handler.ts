@@ -26,7 +26,7 @@ export function handle(
                 attr.kernelShape[0], attr.kernelShape[1],
                 attr.pads[0], attr.pads[1], attr.pads[2], attr.pads[3],
                 attr.strides[0], attr.strides[1], 
-                inputs[0], inputs[1], inputs[3]
+                inputs[0], inputs[1], inputs[2]
             );
             break;
         }
@@ -83,10 +83,14 @@ export function handle(
         }
         case "Reshape": {
             output = handle_reshape(inputs[0], inputs[1]);
+            break;
         }
         default:
             throw new Error(`Unknown op type ${opType}!`);
     }
+
+    console.log(opType, output.toArray(), output.shapeToArray());
+
 
     return output;
 }

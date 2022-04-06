@@ -245,7 +245,7 @@ export function handle(
       throw new Error(`Unknown op type ${opType}!`);
   }
 
-  // console.log(opType, output);
+  console.log(opType, output);
 
   return output;
 }

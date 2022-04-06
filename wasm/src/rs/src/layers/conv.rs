@@ -1,4 +1,4 @@
-use wasm_bindgen::prelude::wasm_bindgen;
+use wasm_bindgen::{prelude::wasm_bindgen, JsValue};
 
 use crate::{Tensor, DTypes};
 
@@ -13,14 +13,14 @@ pub fn handle_conv(
     let mut output = Tensor::new_empty();
 
     let in_shape = input.get_shape();
+    let weight_shape = weight.get_shape();
     let max_y = in_shape[2] + pad_top + pad_bottom - kernel_height;
     let max_x = in_shape[3] + pad_left + pad_right - kernel_width;
     let out_height = max_y / stride_y + 1;
     let out_width = max_x / stride_x + 1;
-    let out_shape = vec![in_shape[0], in_shape[1], out_height, out_width];
+    let out_shape = vec![in_shape[0], weight_shape[0], out_height, out_width];
     output.set_shape(out_shape);
 
-    let weight_shape = weight.get_shape();
     let kernel_channel_size = weight_shape[2] * weight_shape[3];
     let kernel_size = weight_shape[1] * kernel_channel_size;
     let in_channel_size = in_shape[2] * in_shape[3];
@@ -34,7 +34,7 @@ pub fn handle_conv(
             let mut out_idx = 0;
             let mut out_data = vec![0.; output.get_length()];
             for n in 0..in_shape[0] {
-                for c in 0..in_shape[1] {
+                for c in 0..weight_shape[0] {
                     for y in (-(pad_top as isize)..=(max_y - pad_top) as isize).step_by(stride_y) {
                         for x in (-(pad_left as isize)..=(max_x - pad_left) as isize).step_by(stride_x) {
                             let mut sum = 0.;
@@ -46,7 +46,7 @@ pub fn handle_conv(
                                     if cy >= 0 && cy < in_shape[2] as isize && cx >= 0 && cx < in_shape[3] as isize {
                                         for kc in 0..weight_shape[1] {
                                             let ker_idx = c * kernel_size + kc * kernel_channel_size + ky * weight_shape[3] + kx;
-                                            let cur_idx = n * in_size + c * in_channel_size + cy as usize * in_shape[3] + cx as usize;
+                                            let cur_idx = n * in_size + kc * in_channel_size + cy as usize * in_shape[3] + cx as usize;
                                             
                                             let ker_val = weight_data[ker_idx];
                                             let cur_val = arr[cur_idx];
@@ -72,7 +72,7 @@ pub fn handle_conv(
             let mut out_idx = 0;
             let mut out_data = vec![0.; output.get_length()];
             for n in 0..in_shape[0] {
-                for c in 0..in_shape[1] {
+                for c in 0..weight_shape[0] {
                     for y in (-(pad_top as isize)..=(max_y - pad_top) as isize).step_by(stride_y) {
                         for x in (-(pad_left as isize)..=(max_x - pad_left) as isize).step_by(stride_x) {
                             let mut sum = 0.;
@@ -84,7 +84,7 @@ pub fn handle_conv(
                                     if cy >= 0 && cy < in_shape[2] as isize && cx >= 0 && cx < in_shape[3] as isize {
                                         for kc in 0..weight_shape[1] {
                                             let ker_idx = c * kernel_size + kc * kernel_channel_size + ky * weight_shape[3] + kx;
-                                            let cur_idx = n * in_size + c * in_channel_size + cy as usize * in_shape[3] + cx as usize;
+                                            let cur_idx = n * in_size + kc * in_channel_size + cy as usize * in_shape[3] + cx as usize;
                                             
                                             let ker_val = weight_data[ker_idx];
                                             let cur_val = arr[cur_idx];

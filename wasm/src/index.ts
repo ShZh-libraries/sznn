@@ -1,3 +1,2 @@
-import * as wasm from "./rs/pkg"
-
-// console.log(add(1, 2));
+export { Tensor } from "./rs/pkg";
+export { loadModel, Model } from "./model";

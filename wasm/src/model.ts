@@ -28,6 +28,8 @@ export class Model {
     }
   
     forward(input: Tensor): Tensor[] {
+      console.log("This is wasm!");
+      
       // Put input tensor to tensor pool
       const inputName = this.onnxModel.graph!.node![0]!.input![0]!;
       this.dict.set(inputName, input);
@@ -41,9 +43,13 @@ export class Model {
           node.attribute! as onnx.AttributeProto[]
         );
   
-        // for (let outIndex = 0; outIndex < node.output!.length; outIndex++) {
-        //   this.dict.set(node.output![outIndex], outputs[outIndex]);
-        // }
+        if (Array.isArray(outputs)) {
+          for (let outIndex = 0; outIndex < node.output!.length; outIndex++) {
+            this.dict.set(node.output![outIndex], outputs[outIndex]);
+          }
+        } else {
+          this.dict.set(node.output![0], outputs);
+        }
       }
   
       // Get result out of tensor pool
