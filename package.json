@@ -13,8 +13,9 @@
     "lint": "eslint --fix --ext .ts",
     "lint-check": "eslint --ext .ts",
     "build:js": "webpack --config js/webpack.config.js",
-    "build:classify": "webpack --config ./examples/classify/webpack.config.js",
-    "build:transfer": "webpack --config ./examples/transfer/webpack.config.js"
+    "build:wasm": "webpack --config wasm/webpack.config.js",
+    "build:classify": "webpack --config examples/classify/webpack.config.js",
+    "build:transfer": "webpack --config examples/transfer/webpack.config.js"
   },
   "devDependencies": {
     "@types/jest": "^27.4.1",

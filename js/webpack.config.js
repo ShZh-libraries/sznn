@@ -1,10 +1,10 @@
-const { join } = require("path");
+const path = require('path');
 
 module.exports = [
   {
     mode: "development",
     devtool: "source-map",
-    entry: "./src/index.ts",
+    entry: path.join(__dirname, "src", "index.ts"),
     module: {
       rules: [
         {
@@ -18,7 +18,7 @@ module.exports = [
     },
     output: {
       filename: "index.js",
-      path: join(__dirname, "dist"),
+      path: path.join(__dirname, "dist"),
       library: "sznn_js",
       libraryTarget: "umd"
     },

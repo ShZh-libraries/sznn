@@ -1,11 +1,11 @@
-const { join } = require("path");
+const path = require('path');
 const NodePolyfillPlugin = require("node-polyfill-webpack-plugin");
 
 module.exports = [
   {
     mode: "development",
     devtool: "source-map",
-    entry: "./index.ts",
+    entry: path.join(__dirname, "index.ts"),
     module: {
       rules: [
         {
@@ -23,7 +23,7 @@ module.exports = [
     plugins: [new NodePolyfillPlugin()],
     output: {
       filename: "index.js",
-      path: join(__dirname, "./dist"),
+      path: path.join(__dirname, "./dist"),
     },
   },
 ];
