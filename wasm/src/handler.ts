@@ -89,7 +89,7 @@ export function handle(
             throw new Error(`Unknown op type ${opType}!`);
     }
 
-    console.log(opType, output.toArray(), output.shapeToArray());
+    // console.log(opType, output.toArray(), output.shapeToArray());
 
 
     return output;
