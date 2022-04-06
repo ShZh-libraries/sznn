@@ -1,0 +1,8 @@
+.github/
+node_modules/
+src/
+test/
+tsconfig.json
+*.config.js
+*.tgz
+yarn.lock

@@ -1,0 +1,8 @@
+.github/
+node_modules/
+pkg/
+src/
+tsconfig.json
+*.config.js
+yarn.lock
+*.tgz
