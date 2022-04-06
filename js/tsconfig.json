@@ -1,16 +1,16 @@
 {
-  "exclude": ["test/**/*.spec.ts"],
-    "compilerOptions": {
-      "target": "es2016",                                  /* Set the JavaScript language version for emitted JavaScript and include compatible library declarations. */
-      "moduleResolution": "node",                       /* Specify how TypeScript looks up a file from a given module specifier. */
-      "sourceMap": true,                                /* Create source map files for emitted JavaScript files. */
-      // "outFile": "./",                                  /* Specify a file that bundles all outputs into one JavaScript file. If `declaration` is true, also designates a file that bundles all .d.ts output. */
-      "outDir": "dist",                                   /* Specify an output folder for all emitted files. */
-      "esModuleInterop": true,                             /* Emit additional JavaScript to ease support for importing CommonJS modules. This enables `allowSyntheticDefaultImports` for type compatibility. */
-      "forceConsistentCasingInFileNames": true,            /* Ensure that casing is correct in imports. */
-      "declaration": true,
-      "strict": true,                                      /* Enable all strict type-checking options. */
-      "skipLibCheck": true                                 /* Skip type checking all .d.ts files. */
-    }
+  "exclude": [
+    "test/**/*.spec.ts"
+  ],
+  "compilerOptions": {
+    "target": "es2016",
+    "moduleResolution": "node",
+    "sourceMap": true,
+    "outDir": "dist",
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "declaration": true,
+    "strict": true,
+    "skipLibCheck": true
   }
-  
+}
