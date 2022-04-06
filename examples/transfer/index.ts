@@ -1,13 +1,12 @@
-import { loadModel } from "../../js/model";
-import { Tensor } from "../../js/tensor";
-import { Image, imageToTensor, loadImage } from "../../utils/cv";
+import { loadModel } from "sznn-js";
+import { imageToTensor, loadImage } from "../../utils/cv";
 
 const WIDTH = 224;
 const HEIGHT = 224;
 const CHANNEL = WIDTH * HEIGHT;
 
-let image: Image;
-let tensor: Tensor;
+let tensor;
+let image;
 
 const uploadBtn = document.querySelector("#upload-img");
 uploadBtn!.addEventListener("click", async () => {

@@ -5,7 +5,7 @@ module.exports = [
   {
     mode: "development",
     devtool: "source-map",
-    entry: "./examples/transfer/index.ts",
+    entry: "./index.ts",
     module: {
       rules: [
         {
