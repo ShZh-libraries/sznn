@@ -1,3 +1,5 @@
+#![allow(non_snake_case)]
+
 use wasm_bindgen::prelude::wasm_bindgen;
 
 use crate::{Tensor, DTypes, TensorList};
