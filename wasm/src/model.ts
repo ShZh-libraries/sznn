@@ -2,18 +2,11 @@ import { onnx } from "onnx-proto";
 import { handle } from "./handler";
 import { Tensor } from "./rs/pkg";
 import { TensorDict } from "./tensor";
+import { loadONNXModel } from "../../core/model";
 
 export async function loadModel(path: string): Promise<Model> {
   const onnxModel = await loadONNXModel(path);
   const model = new Model(onnxModel);
-
-  return model;
-}
-
-async function loadONNXModel(path: string): Promise<onnx.ModelProto> {
-  const modelFile = await fetch(path);
-  const modelFileContent = await modelFile.arrayBuffer();
-  const model = onnx.ModelProto.decode(new Uint8Array(modelFileContent));
 
   return model;
 }
