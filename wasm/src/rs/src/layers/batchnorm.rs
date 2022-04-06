@@ -2,7 +2,7 @@ use wasm_bindgen::prelude::*;
 
 use crate::{Tensor, DTypes};
 
-#[wasm_bindgen]
+#[wasm_bindgen(js_name = handleBatchNorm)]
 pub fn handle_batchnorm(input: &Tensor, scale: &Tensor, bias: &Tensor, mean: &Tensor, variance: &Tensor) -> Tensor {
     let out_shape = input.get_shape();
     let out_data = match &input.get_data() {

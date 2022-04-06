@@ -2,7 +2,7 @@ use wasm_bindgen::prelude::*;
 
 use crate::tensor::{DTypes, Tensor};
 
-#[wasm_bindgen]
+#[wasm_bindgen(js_name = handleAbs)]
 pub fn handle_abs(input: &Tensor) -> Tensor {
     let out_shape = input.get_shape();
     let out_data = match &input.get_data() {

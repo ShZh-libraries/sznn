@@ -2,7 +2,7 @@ use wasm_bindgen::prelude::wasm_bindgen;
 
 use crate::{Tensor, DTypes};
 
-#[wasm_bindgen]
+#[wasm_bindgen(js_name = handleShape)]
 pub fn handle_shape(input: &Tensor) -> Tensor {
     let shape = input.get_shape();
     let out_shape = vec![shape.len()];

@@ -2,7 +2,7 @@ use wasm_bindgen::prelude::*;
 
 use crate::{Tensor, DTypes};
 
-#[wasm_bindgen]
+#[wasm_bindgen(js_name = handleRelu)]
 pub fn handle_relu(input: &Tensor) -> Tensor {
     let out_shape = input.get_shape();
     let out_data = match &input.get_data() {
@@ -47,7 +47,7 @@ pub fn handle_relu(input: &Tensor) -> Tensor {
     Tensor::new(out_data, out_shape)
 }
 
-#[wasm_bindgen]
+#[wasm_bindgen(js_name = handleLeakyRelu)]
 pub fn handle_leaky_relu(input: &Tensor, alpha: f64) -> Tensor {
     let out_shape = input.get_shape();
     let out_data = match &input.get_data() {

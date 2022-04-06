@@ -1,8 +1,8 @@
-use wasm_bindgen::{prelude::wasm_bindgen, JsValue};
+use wasm_bindgen::{prelude::wasm_bindgen};
 
 use crate::{Tensor, DTypes};
 
-#[wasm_bindgen]
+#[wasm_bindgen(js_name = handleConv)]
 pub fn handle_conv(    
     kernel_height: usize, kernel_width: usize,
     pad_top: usize, pad_left: usize, 

@@ -2,7 +2,7 @@ use wasm_bindgen::prelude::wasm_bindgen;
 
 use crate::{Tensor, DTypes};
 
-#[wasm_bindgen]
+#[wasm_bindgen(js_name = handleMaxPool2D)]
 pub fn handle_maxpool_2d(
     input: &Tensor,
     kernel_height: usize, kernel_width: usize,
@@ -93,7 +93,7 @@ pub fn handle_maxpool_2d(
     output
 }
 
-#[wasm_bindgen]
+#[wasm_bindgen(js_name = handleAvgPool2D)]
 pub fn handle_avgpool_2d(
     input: &Tensor,
     kernel_height: usize, kernel_width: usize,
@@ -179,7 +179,7 @@ pub fn handle_avgpool_2d(
     output
 }
 
-#[wasm_bindgen]
+#[wasm_bindgen(js_name = handleGlobalAvgPool)]
 pub fn handle_global_avgpool(input: &Tensor) -> Tensor {
     let in_shape = input.get_shape();
     handle_avgpool_2d(input, in_shape[2], in_shape[3], 0, 0, 0, 0, 1, 1)

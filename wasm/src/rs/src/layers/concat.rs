@@ -2,7 +2,7 @@ use wasm_bindgen::prelude::wasm_bindgen;
 
 use crate::{Tensor, DTypes, TensorList};
 
-#[wasm_bindgen]
+#[wasm_bindgen(js_name = handleConcat)]
 pub fn handle_concat(inputs: TensorList, axis: usize) -> Tensor {
     let inputs = inputs.get();
 

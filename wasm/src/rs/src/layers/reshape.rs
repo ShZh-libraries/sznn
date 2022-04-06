@@ -2,7 +2,7 @@ use wasm_bindgen::prelude::wasm_bindgen;
 
 use crate::{tensor::Tensor, DTypes};
 
-#[wasm_bindgen]
+#[wasm_bindgen(js_name = handleReshape)]
 pub fn handle_reshape(input: &Tensor, shape: Tensor) -> Tensor {
     let mut shape = if let DTypes::I32(arr) = shape.get_data() { arr.clone() } else { panic!("The shape's dtype is not i32!!") };
 
