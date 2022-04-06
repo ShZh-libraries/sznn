@@ -1,7 +1,7 @@
 {
   "name": "sznn-js",
   "version": "1.0.0",
-  "description": "High performance nerual network framework running on Web.",
+  "description": "JS backend of sznn",
   "main": "dist/index.js",
   "types": "dist/js/src/index.d.ts",
   "repository": "https://github.com/ShZh-libraries/sznn",

@@ -1,4 +1,11 @@
 {
+    "name": "sznn_transfer_example",
+    "version": "1.0.0",
+    "description": "Running transfering task on sznn.",
+    "repository": "https://github.com/ShZh-libraries/sznn",
+    "author": "Sh-Zh-7",
+    "license": "Apache-2.0",
+    "private": false,
     "scripts": {
         "build": "webpack",
         "serve": "webpack-dev-server"

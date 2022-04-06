@@ -1,7 +1,7 @@
 {
     "name": "sznn-wasm",
     "version": "1.0.0",
-    "description": "High performance nerual network framework running on Web.",
+    "description": "WASM backend for sznn.",
     "main": "dist/index.js",
     "types": "dist/wasm/src/index.d.ts",
     "repository": "https://github.com/ShZh-libraries/sznn",
