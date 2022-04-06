@@ -1,4 +1,4 @@
-import { PaddingAttr } from "../../core/attr/padding";
+import { PaddingAttr } from "../../../core/attr/padding";
 import { Tensor, TensorBuilder } from "../tensor";
 
 

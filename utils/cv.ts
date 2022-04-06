@@ -1,5 +1,5 @@
 import * as Jimp from "jimp";
-import { DType, Tensor, TensorBuilder } from "../js/tensor";
+import { DType, Tensor, TensorBuilder } from "../js/src/tensor";
 
 export type Image = Jimp;
 

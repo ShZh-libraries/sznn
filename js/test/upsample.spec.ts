@@ -1,5 +1,5 @@
-import { handleUpSample } from "../js/layers/upsample";
-import { TensorBuilder } from "../js/tensor";
+import { handleUpSample } from "../src/layers/upsample";
+import { TensorBuilder } from "../src/tensor";
 
 describe("Test JS backends for upsample layer", () => {
   test("Test normal upsample layer", () => {

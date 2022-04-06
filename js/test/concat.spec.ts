@@ -1,5 +1,5 @@
-import { handleConcat } from "../js/layers/concat";
-import { TensorBuilder } from "../js/tensor";
+import { handleConcat } from "../src/layers/concat";
+import { TensorBuilder } from "../src/tensor";
 
 describe("Test JS backends for concat layer", () => {
   test("Test 1D tesnor concat", () => {

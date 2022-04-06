@@ -1,5 +1,5 @@
-import { handleRelu, handleLeakyRelu } from "../js/layers/relu";
-import { TensorBuilder } from "../js/tensor";
+import { handleRelu, handleLeakyRelu } from "../src/layers/relu";
+import { TensorBuilder } from "../src/tensor";
 
 describe("Test JS backend for relu layer", () => {
   test("Test relu", () => {

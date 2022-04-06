@@ -118,7 +118,7 @@ export class Tensor {
     return tensor;
   }
 
-  private calcStride() {
+  calcStride() {
     this.stride = [1];
     for (let i = 1; i < this.ndim; i++) {
       this.stride.unshift(this.stride[0] * this.shape[this.ndim - i]);

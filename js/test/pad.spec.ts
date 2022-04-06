@@ -1,6 +1,6 @@
-import { PaddingAttr } from "../core/attr/padding";
-import { handlePadding } from "../js/layers/pad";
-import { TensorBuilder } from "../js/tensor";
+import { PaddingAttr } from "../../core/attr/padding";
+import { handlePadding } from "../src/layers/pad";
+import { TensorBuilder } from "../src/tensor";
 
 describe("Test JS backend for padding layer", () => {
   const input = TensorBuilder.withData([

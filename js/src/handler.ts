@@ -23,10 +23,10 @@ import { handleSoftmax } from "./layers/softmax";
 import { handleUnaryOp } from "./layers/unaryop";
 import { handleUnsqueeze } from "./layers/unsqueeze";
 import { handleUpSample } from "./layers/upsample";
-import { getConvAttr } from "../core/attr/conv";
-import { getPaddingAttr } from "../core/attr/padding";
-import { getSliceAttr } from "../core/attr/slice";
-import { getPoolingAttr } from "../core/attr/pooling";
+import { getConvAttr } from "../../core/attr/conv";
+import { getPaddingAttr } from "../../core/attr/padding";
+import { getSliceAttr } from "../../core/attr/slice";
+import { getPoolingAttr } from "../../core/attr/pooling";
 
 export function handle(
   opType: string,

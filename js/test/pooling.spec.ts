@@ -1,10 +1,10 @@
-import { PoolingAttr } from "../core/attr/pooling";
+import { PoolingAttr } from "../../core/attr/pooling";
 import {
   handleAvgPool2D,
   handleMaxPool2D,
   handleGlobalAvgPool,
-} from "../js/layers/pooling";
-import { TensorBuilder } from "../js/tensor";
+} from "../src/layers/pooling";
+import { TensorBuilder } from "../src/tensor";
 
 describe("Test JS backend for pooling layer", () => {
   const src = TensorBuilder.withData([

@@ -1,5 +1,5 @@
-import { handleInstanceNorm } from "../js/layers/instancenorm";
-import { TensorBuilder } from "../js/tensor";
+import { handleInstanceNorm } from "../src/layers/instancenorm";
+import { TensorBuilder } from "../src/tensor";
 
 describe("Test JS backends for instance normalization", () => {
   test("Test instance normalization", () => {

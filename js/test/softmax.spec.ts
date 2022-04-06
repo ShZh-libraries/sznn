@@ -1,5 +1,5 @@
-import { handleSoftmax } from "../js/layers/softmax";
-import { TensorBuilder } from "../js/tensor";
+import { handleSoftmax } from "../src/layers/softmax";
+import { TensorBuilder } from "../src/tensor";
 
 describe("Test JS backend for softmax layer", () => {
   test("Test default softmax", () => {

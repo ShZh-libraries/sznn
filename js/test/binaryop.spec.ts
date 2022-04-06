@@ -1,5 +1,5 @@
-import { handleBinaryOp } from "../js/layers/binaryop";
-import { TensorBuilder } from "../js/tensor";
+import { handleBinaryOp } from "../src/layers/binaryop";
+import { TensorBuilder } from "../src/tensor";
 
 describe("Test JS backends for binary op", () => {
   test("Test multiplication", () => {

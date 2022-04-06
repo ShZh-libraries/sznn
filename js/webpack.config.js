@@ -4,7 +4,7 @@ module.exports = [
   {
     mode: "development",
     devtool: "source-map",
-    entry: "./js/index.ts",
+    entry: "./src/index.ts",
     module: {
       rules: [
         {
@@ -17,9 +17,10 @@ module.exports = [
       extensions: [".ts", ".js"],
     },
     output: {
-      // filename: "sznn.js",
+      filename: "index.js",
       path: join(__dirname, "dist"),
-      library: "sznn",
+      library: "sznn_js",
+      libraryTarget: "umd"
     },
   },
 ];

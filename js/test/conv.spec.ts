@@ -1,6 +1,6 @@
-import { TensorBuilder } from "../js/tensor";
-import { handleConv } from "../js/layers/conv";
-import { ConvAttr } from "../core/attr/conv";
+import { TensorBuilder } from "../src/tensor";
+import { handleConv } from "../src/layers/conv";
+import { ConvAttr } from "../../core/attr/conv";
 
 describe("Test JS backend for convolutional layer", () => {
   describe("Test convolution with/without paddings", () => {

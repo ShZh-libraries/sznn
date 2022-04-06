@@ -1,5 +1,5 @@
-import { handleGather } from "../js/layers/gather";
-import { TensorBuilder } from "../js/tensor";
+import { handleGather } from "../src/layers/gather";
+import { TensorBuilder } from "../src/tensor";
 
 describe("Test JS backends for gather layer", () => {
   test("Test simple gather", () => {

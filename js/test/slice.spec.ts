@@ -1,6 +1,6 @@
-import { SliceAttr } from "../core/attr/slice";
-import { handleSlice } from "../js/layers/slice";
-import { TensorBuilder } from "../js/tensor";
+import { SliceAttr } from "../../core/attr/slice";
+import { handleSlice } from "../src/layers/slice";
+import { TensorBuilder } from "../src/tensor";
 
 describe("Test JS backend for slice layer", () => {
   test("Test simple slice layer", () => {
