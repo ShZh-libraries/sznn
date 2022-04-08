@@ -19,6 +19,23 @@ export class Tensor {
     ndim!: number;
     dtype!: DType;
 
+    reshape(shape: number[]) {
+        this.shape = shape.slice();
+        this.ndim = this.shape.length;
+
+        return this;
+    }
+
+    copy() {
+        let tensor = new Tensor();
+        tensor.shape = this.shape.slice();
+        tensor.ndim = this.ndim;
+        tensor.dtype = this.dtype;
+        tensor.data = this.data.slice();
+
+        return tensor;
+    }
+
     getLength() {
         return this.shape.reduceRight((x, y) => x * y);
     }
@@ -44,7 +61,7 @@ export class Tensor {
             size: this.data.byteLength,
             usage: GPUBufferUsage.STORAGE
         });
-    
+
         const arrayBuffer = gpuBuffer.getMappedRange();
         switch (this.dtype) {
             // case DType.int32:
@@ -59,9 +76,9 @@ export class Tensor {
             default:
                 throw new Error("Type not support in Web GPU!");
         }
-    
+
         gpuBuffer.unmap();
-    
+
         return gpuBuffer;
     }
 
@@ -73,7 +90,7 @@ export class Tensor {
             size: dataLen,
             usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_SRC
         });
-    
+
         return gpuBuffer;
     }
 }
