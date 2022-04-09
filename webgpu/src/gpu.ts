@@ -46,12 +46,12 @@ export function setGPUReadBuffer(data: GPUDataType, dtype: DType, device: GPUDev
     return gpuBuffer;
 }
 
-export function loadWGSL(code: any, device: GPUDevice): GPUComputePipeline {
+export function loadWGSL(code: any, device: GPUDevice, entryPoint: string = "main"): GPUComputePipeline {
     const shaderModule = device.createShaderModule({ code });
     const computePipeline = device.createComputePipeline({
         compute: {
             module: shaderModule,
-            entryPoint: "main"
+            entryPoint
         }
     });
 

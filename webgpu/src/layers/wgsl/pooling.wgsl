@@ -15,7 +15,7 @@ let workgroup_size_z = 4;
 
 @stage(compute)
 @workgroup_size(workgroup_size_x, workgroup_size_y, workgroup_size_z)
-fn main(@builtin(global_invocation_id) global_id: vec3<u32>) {
+fn max_pool(@builtin(global_invocation_id) global_id: vec3<u32>) {
     let out_x = global_id.x;
     let out_y = global_id.y;
     let out_c = global_id.z;

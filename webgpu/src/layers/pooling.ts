@@ -34,14 +34,19 @@ export async function handleMaxPool2D(input: Tensor, attr: PoolingAttr, device: 
       attr.strides[0], attr.strides[1]
   ]), DType.uint32, device);
 
-  const computePipeline = loadWGSL(pooling, device);
+  const computePipeline = loadWGSL(pooling, device, "max_pool");
   const bindGroup = createBindGroup(computePipeline, [
       gpuInputBuffer, gpuInShapeBuffer, 
       gpuOutputBuffer, gpuOutShapeBuffer,
       gpuAttrBuffer
   ], device);
   // TODO
-  const commandEncoder = getCommandEncoder(computePipeline, bindGroup, [1], device);
+  const commandEncoder = getCommandEncoder(
+    computePipeline, 
+    bindGroup, 
+    [Math.ceil(output.shape[3] / 8), Math.ceil(output.shape[2] / 8), Math.ceil(output.shape[1] / 4)], 
+    device
+  );
 
   const resultBuffer = await getResult(commandEncoder, gpuOutputBuffer, output.data.byteLength, device);
   const resultArray = new Float32Array(resultBuffer);
