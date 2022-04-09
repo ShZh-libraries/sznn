@@ -14,7 +14,7 @@ export async function handleAbs(input: Tensor, device: GPUDevice): Promise<Tenso
 
     const bindGroup = createBindGroup(computePipeline, [gpuInputBuffer, gpuOutputBuffer, gpuMetaBuffer], device);
 
-    const commandEncoder = getCommandEncoder(computePipeline, bindGroup, device);
+    const commandEncoder = getCommandEncoder(computePipeline, bindGroup, [1], device);
 
     const resultBuffer = await getResult(commandEncoder, gpuOutputBuffer, output.data.byteLength, device);
     const resultArray = new Float32Array(resultBuffer);

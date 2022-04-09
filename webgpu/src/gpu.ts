@@ -78,12 +78,12 @@ export function createBindGroup(pipeline: GPUComputePipeline, buffers: GPUBuffer
     return bindGroup;
 }
 
-export function getCommandEncoder(pipeline: GPUComputePipeline, group: GPUBindGroup, device: GPUDevice): GPUCommandEncoder {
+export function getCommandEncoder(pipeline: GPUComputePipeline, group: GPUBindGroup, dispatch: number[], device: GPUDevice): GPUCommandEncoder {
     const commandEncoder = device.createCommandEncoder();
     const passEncoder = commandEncoder.beginComputePass();
     passEncoder.setPipeline(pipeline);
     passEncoder.setBindGroup(0, group);
-    passEncoder.dispatch(1);
+    passEncoder.dispatch(dispatch[0], dispatch[1], dispatch[2]);
     passEncoder.end();
 
     return commandEncoder;
