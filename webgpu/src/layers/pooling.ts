@@ -107,11 +107,11 @@ export async function handleAvgPool2D(input: Tensor, attr: PoolingAttr, device: 
 }
   
 
-  // export function handleGlobalAvgPool(input: Tensor): Tensor {
-  //   const globalAvgPoolingAttr = new PoolingAttr();
-  //   globalAvgPoolingAttr.kernelShape = [input.shape[2], input.shape[3]];
-  //   const output = handleAvgPool2D(input, globalAvgPoolingAttr);
-  
-  //   return output;
-  // }
+export async function handleGlobalAvgPool(input: Tensor, device: GPUDevice): Promise<Tensor> {
+  const globalAvgPoolingAttr = new PoolingAttr();
+  globalAvgPoolingAttr.kernelShape = [input.shape[2], input.shape[3]];
+  const output = await handleAvgPool2D(input, globalAvgPoolingAttr, device);
+
+  return output;
+}
   
