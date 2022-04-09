@@ -1,9 +1,16 @@
 import { onnx } from "onnx-proto";
+import { PaddingAttr } from "./padding";
 
 export class PoolingAttr {
   kernelShape: number[] = [];
   pads: number[] = [0, 0, 0, 0];
   strides: number[] = [1, 1];
+
+  getPaddingAttr(): PaddingAttr {
+    let paddingAttr = new PaddingAttr();
+    paddingAttr.pads = this.pads;
+    return paddingAttr;
+  }
 }
 
 export function getPoolingAttr(attributes: onnx.AttributeProto[]): PoolingAttr {
