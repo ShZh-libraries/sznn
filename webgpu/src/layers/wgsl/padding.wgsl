@@ -22,7 +22,7 @@ fn main(@builtin(global_invocation_id) global_id: vec3<u32>) {
     let out_y = global_id.y;
     let out_c = global_id.z;
 
-    if (out_x > out_shape[3] || out_y > out_shape[2] || out_c > out_shape[1]) {
+    if (out_x >= out_shape[3] || out_y >= out_shape[2] || out_c >= out_shape[1]) {
         return;
     }
 
