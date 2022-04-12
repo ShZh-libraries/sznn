@@ -3,6 +3,9 @@ import { handle } from "./handler";
 import { Tensor, TensorDict } from "./tensor";
 import { loadONNXModel } from "../../core/model";
 
+let startTime: number;
+let endTime: number;
+
 export async function loadModel(path: string): Promise<Model> {
   const onnxModel = await loadONNXModel(path);
   const model = new Model(onnxModel);
@@ -24,6 +27,11 @@ export class Model {
     const inputName = this.onnxModel.graph!.node![0]!.input![0]!;
     this.dict.set(inputName, input);
 
+    if (process.env.NODE_ENV !== "production") {
+      console.log("In development mode");
+      startTime = performance.now();
+    }
+
     // Do forwarding
     for (const node of this.onnxModel.graph!.node!) {
       const inputs = node.input!.map((name) => this.dict.get(name)!)!;
@@ -40,6 +48,11 @@ export class Model {
       } else {
         this.dict.set(node.output![0], output);
       }
+    }
+
+    if (process.env.NODE_ENV !== "production") {
+      endTime = performance.now();
+      console.log(`Time consumed ${endTime - startTime} ms.`);
     }
 
     // Get result out of tensor pool
