@@ -2,7 +2,7 @@ import { onnx } from "onnx-proto";
 import { handle } from "./handler";
 import { Tensor, TensorDict } from "./tensor";
 import { loadONNXModel } from "../../core/model";
-import { ModelStat } from "../../core/perf";
+import { ModelStat, calcOpMeanTime } from "../../core/perf";
 
 let startTime: number;
 let endTime: number;
@@ -74,6 +74,7 @@ export class Model {
 
     if (process.env.NODE_ENV !== "production") {
       console.log(stat);
+      console.log(calcOpMeanTime(stat));
     }
 
     return results;
