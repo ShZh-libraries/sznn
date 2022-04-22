@@ -1,7 +1,7 @@
 import { onnx } from "onnx-proto";
 import { DType, Tensor } from "./rs/pkg";
 
-type TensorDataType =
+export type TensorDataType =
   | Int8Array
   | Int16Array
   | Int32Array

@@ -1,6 +1,6 @@
 import init, { initThreadPool } from "./rs/pkg";
 import { loadModel, Model } from "./model";
-import { TensorBuilder } from "./tensor";
+import { TensorBuilder as WasmBuilder } from "./tensor";
 
 import * as Comlink from "comlink";
 
@@ -11,7 +11,7 @@ import * as Comlink from "comlink";
 
 Comlink.expose({
     loadModel,
-    TensorBuilder: TensorBuilder.withAllArgs,
+    withAllArgs: WasmBuilder.withAllArgs,
     Model: Comlink.proxy(Model)
 })
 
