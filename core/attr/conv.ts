@@ -1,4 +1,5 @@
 import { onnx } from "onnx-proto";
+import { PaddingAttr } from "./padding";
 
 export class ConvAttr {
   autoPad: string = "NOTSET";
@@ -7,6 +8,12 @@ export class ConvAttr {
   kernelShape: number[] = [];
   pads: number[] = [0, 0, 0, 0];
   strides: number[] = [1, 1];
+
+  getPaddingAttr(): PaddingAttr {
+    let paddingAttr = new PaddingAttr();
+    paddingAttr.pads = this.pads;
+    return paddingAttr;
+  }
 }
 
 export function getConvAttr(attributes: onnx.AttributeProto[]): ConvAttr {
