@@ -40,6 +40,7 @@ pub struct TensorList {
 impl Tensor {
     #[wasm_bindgen(constructor)]
     pub fn new_empty() -> Self {
+        console_error_panic_hook::set_once();
         Self {
             data: DTypes::F32(Vec::new()),
             shape: Vec::new(),

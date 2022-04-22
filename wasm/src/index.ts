@@ -1,8 +1,8 @@
-import { initThreadPool } from "./rs/pkg/index";
+import * as Comlink from "comlink";
+import { Tensor } from "./rs/pkg";
 
-(async () => {
-    await initThreadPool(navigator.hardwareConcurrency);
-})()
+const { loadModel, TensorBuilder, Model } = Comlink.wrap(
+    new Worker(new URL("./worker.ts", import.meta.url))
+);
 
-export { Tensor } from "./rs/pkg";
-export { loadModel, Model } from "./model";
+export { TensorBuilder, loadModel, Model, Tensor };

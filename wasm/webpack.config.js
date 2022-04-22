@@ -16,10 +16,10 @@ module.exports = {
     resolve: {
         extensions: [".ts", ".js"],
     },
-    output: {
-        path: path.resolve(__dirname, 'dist'),
-        filename: 'index.js',
-    },
+    // output: {
+    //     path: path.resolve(__dirname, 'dist'),
+    //     filename: 'index.js',
+    // },
     plugins: [
         new WasmPackPlugin({
             crateDirectory: path.resolve(__dirname, "src", "rs"),

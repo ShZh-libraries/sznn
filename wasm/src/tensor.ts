@@ -1,5 +1,15 @@
 import { onnx } from "onnx-proto";
-import { Tensor } from "./rs/pkg";
+import { DType, Tensor } from "./rs/pkg";
+
+type TensorDataType =
+  | Int8Array
+  | Int16Array
+  | Int32Array
+  | Uint8Array
+  | Uint16Array
+  | Uint32Array
+  | Float32Array
+  | Float64Array;
 
 export class TensorDict {
   private pool: Map<string, Tensor> = new Map();
@@ -24,7 +34,7 @@ export class TensorDict {
   }
 }
 
-class TensorBuilder {
+export class TensorBuilder {
   static withInitializer(initializer: onnx.TensorProto): Tensor {
     let tensor = new Tensor();
     tensor.setShape(initializer.dims as number[]);
@@ -68,6 +78,49 @@ class TensorBuilder {
           throw Error("Data type not support in ONNX!!");
       }
     }
+
+    return tensor;
+  }
+
+  static withAllArgs(
+    data: TensorDataType,
+    shape: number[],
+    dtype?: DType
+  ): Tensor {
+    let tensor = new Tensor();
+
+    if (dtype) {
+      switch (dtype) {
+        case DType.Int8:
+          tensor.setDataWithI8Array(data as Int8Array);
+          break;
+        case DType.Int16:
+          tensor.setDataWithI16Array(data as Int16Array);
+          break;
+        case DType.Int32:
+          tensor.setDataWithI32Array(data as Int32Array);
+          break;
+        case DType.UInt8:
+          tensor.setDataWithU8Array(data as Uint8Array);
+          break;
+        case DType.UInt16:
+          tensor.setDataWithU16Array(data as Uint16Array);
+          break;
+        case DType.UInt32:
+          tensor.setDataWithU32Array(data as Uint32Array);
+          break;
+        case DType.Float32:
+          tensor.setDataWithF32Array(data as Float32Array);
+          break;
+        case DType.Float64:
+          tensor.setDataWithF64Array(data as Float64Array);
+          break;
+      }
+    } else {
+      tensor.setDataWithF32Array(data as Float32Array);
+    }
+
+    tensor.setShape(shape);
 
     return tensor;
   }

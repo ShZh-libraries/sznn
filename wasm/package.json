@@ -2,7 +2,7 @@
   "name": "sznn-wasm",
   "version": "1.0.0",
   "description": "WASM backend for sznn.",
-  "main": "dist/index.js",
+  "main": "src/index.ts",
   "types": "dist/wasm/src/index.d.ts",
   "repository": "https://github.com/ShZh-libraries/sznn",
   "author": "Sh-Zh-7",
@@ -17,6 +17,7 @@
   },
   "devDependencies": {
     "@wasm-tool/wasm-pack-plugin": "^1.6.0",
+    "comlink": "^4.3.1",
     "ts-loader": "^9.2.8",
     "typescript": "^4.6.3",
     "webpack": "^5.71.0",
