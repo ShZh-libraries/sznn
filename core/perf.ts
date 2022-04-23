@@ -17,7 +17,6 @@ export function calcOpMeanTime(stats: ModelStat) {
             opTimesDict.set(stat.op, [stat.time]);
         }
     }
-    console.log(opTimesDict);
 
     let opStatDict = new Map<string, number>();
     for (const [op, times] of opTimesDict.entries()) {
@@ -26,4 +25,13 @@ export function calcOpMeanTime(stats: ModelStat) {
     }
 
     return opStatDict;
+}
+
+export function caclAllTime(stats: ModelStat): number {
+    let total = 0;
+    for (const stat of stats) {
+        total += stat.time;
+    }
+
+    return total;
 }
