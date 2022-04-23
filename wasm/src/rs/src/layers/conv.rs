@@ -39,9 +39,9 @@ pub fn handle_conv(
             } else {
                 panic!("Weight data type does not match input data type!")
             };
-            let bias_data = bias.map_or(None, |tensor| {
+            let bias_data = bias.map_or(vec![0.; output.get_length()], |tensor| {
                 if let DTypes::F32(data) = tensor.get_data() {
-                    Some(data.clone())
+                    data.to_vec()
                 } else {
                     panic!("Bias data type does not match input data type!!")
                 }
@@ -85,7 +85,7 @@ pub fn handle_conv(
                                     }
                                 }
                             }
-                            out_data[out_idx] = sum + bias_data.as_ref().map_or(0., |bias| bias[c]);
+                            out_data[out_idx] = sum + bias_data[c];
                             out_idx += 1;
                         }
                     }

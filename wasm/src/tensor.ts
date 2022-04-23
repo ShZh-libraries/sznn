@@ -82,6 +82,20 @@ export class TensorBuilder {
     return tensor;
   }
 
+  static withShape(shape: number[], dtype?: DType): Tensor {
+    let tensor = new Tensor();
+    tensor.setShape(shape);
+
+    const length = shape.reduceRight((x, y) => x * y);
+    const data = [];
+    for (let i = 0; i < length; i++) {
+      data[i] = 0;
+    }
+    tensor.setDataWithArray(data, dtype? dtype : DType.Float32);
+
+    return tensor;
+  }
+
   static withAllArgs(
     data: TensorDataType,
     shape: number[],
