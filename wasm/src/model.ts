@@ -3,7 +3,7 @@ import { handle } from "./handler";
 import { Tensor } from "./rs/pkg";
 import { TensorDict } from "./tensor";
 import { loadONNXModel } from "../../core/model";
-import { ModelStat } from "../../core/perf";
+import { caclAllTime, ModelStat } from "../../core/perf";
 import * as Comlink from "comlink";
 
 let startTime: number;
@@ -81,6 +81,7 @@ export class Model {
 
     if (process.env.NODE_ENV !== "production") {
       console.log(stat);
+      console.log(caclAllTime(stat));
     }
 
     return Comlink.proxy(results);
