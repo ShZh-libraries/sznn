@@ -23,7 +23,8 @@ module.exports = {
     plugins: [
         new WasmPackPlugin({
             crateDirectory: path.resolve(__dirname, "src", "rs"),
-            extraArgs: "--target web"
+            extraArgs: "--target web",
+            forceMode: "production",
         })
     ],
     experiments: {
