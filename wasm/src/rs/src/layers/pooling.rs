@@ -1,14 +1,18 @@
 use wasm_bindgen::prelude::wasm_bindgen;
 
-use crate::{Tensor, DTypes};
+use crate::{DTypes, Tensor};
 
 #[wasm_bindgen(js_name = handleMaxPool2D)]
 pub fn handle_maxpool_2d(
     input: &Tensor,
-    kernel_height: usize, kernel_width: usize,
-    pad_top: usize, pad_left: usize, 
-    pad_bottom: usize, pad_right: usize, 
-    stride_y: usize, stride_x: usize,
+    kernel_height: usize,
+    kernel_width: usize,
+    pad_top: usize,
+    pad_left: usize,
+    pad_bottom: usize,
+    pad_right: usize,
+    stride_y: usize,
+    stride_x: usize,
 ) -> Tensor {
     let mut output = Tensor::new_empty();
 
@@ -30,18 +34,32 @@ pub fn handle_maxpool_2d(
             for n in 0..in_shape[0] {
                 for c in 0..in_shape[1] {
                     for y in (-(pad_top as isize)..=(max_y - pad_top) as isize).step_by(stride_y) {
-                        for x in (-(pad_left as isize)..=(max_x - pad_left) as isize).step_by(stride_x) {
-                            let max_idx = n as isize * in_size as isize + c as isize * in_channel_size as isize + y * in_shape[3] as isize + x;
+                        for x in
+                            (-(pad_left as isize)..=(max_x - pad_left) as isize).step_by(stride_x)
+                        {
+                            let max_idx = n as isize * in_size as isize
+                                + c as isize * in_channel_size as isize
+                                + y * in_shape[3] as isize
+                                + x;
                             let mut max_val = arr[max_idx as usize];
                             for ky in 0..kernel_height {
                                 for kx in 0..kernel_width {
                                     let cy = y + ky as isize;
                                     let cx = x + kx as isize;
-                                    let val = if cy >= 0 && cy < in_shape[2] as isize && cx >= 0 && cx < in_shape[3] as isize {
-                                        let cur_idx = n * in_size + c * in_channel_size + cy as usize * in_shape[3] + cx as usize;
+                                    let val = if cy >= 0
+                                        && cy < in_shape[2] as isize
+                                        && cx >= 0
+                                        && cx < in_shape[3] as isize
+                                    {
+                                        let cur_idx = n * in_size
+                                            + c * in_channel_size
+                                            + cy as usize * in_shape[3]
+                                            + cx as usize;
                                         arr[cur_idx]
-                                    } else { 0. };
-        
+                                    } else {
+                                        0.
+                                    };
+
                                     if val > max_val {
                                         max_val = val;
                                     }
@@ -54,25 +72,39 @@ pub fn handle_maxpool_2d(
                 }
             }
             DTypes::F32(out_data)
-        },
+        }
         DTypes::F64(arr) => {
             let mut out_idx = 0;
             let mut out_data = vec![0.; output.get_length()];
             for n in 0..in_shape[0] {
                 for c in 0..in_shape[1] {
                     for y in (-(pad_top as isize)..=(max_y - pad_top) as isize).step_by(stride_y) {
-                        for x in (-(pad_left as isize)..=(max_x - pad_left) as isize).step_by(stride_x) {
-                            let max_idx = n as isize * in_size as isize + c as isize * in_channel_size as isize + y * in_shape[3] as isize + x;
+                        for x in
+                            (-(pad_left as isize)..=(max_x - pad_left) as isize).step_by(stride_x)
+                        {
+                            let max_idx = n as isize * in_size as isize
+                                + c as isize * in_channel_size as isize
+                                + y * in_shape[3] as isize
+                                + x;
                             let mut max_val = arr[max_idx as usize];
                             for ky in 0..kernel_height {
                                 for kx in 0..kernel_width {
                                     let cy = y + ky as isize;
                                     let cx = x + kx as isize;
-                                    let val = if cy >= 0 && cy < in_shape[2] as isize && cx >= 0 && cx < in_shape[3] as isize {
-                                        let cur_idx = n * in_size + c * in_channel_size + cy as usize * in_shape[3] + cx as usize;
+                                    let val = if cy >= 0
+                                        && cy < in_shape[2] as isize
+                                        && cx >= 0
+                                        && cx < in_shape[3] as isize
+                                    {
+                                        let cur_idx = n * in_size
+                                            + c * in_channel_size
+                                            + cy as usize * in_shape[3]
+                                            + cx as usize;
                                         arr[cur_idx]
-                                    } else { 0. };
-        
+                                    } else {
+                                        0.
+                                    };
+
                                     if val > max_val {
                                         max_val = val;
                                     }
@@ -85,21 +117,25 @@ pub fn handle_maxpool_2d(
                 }
             }
             DTypes::F64(out_data)
-        },
-        _ => panic!("Max pooling does not support these data types.")
+        }
+        _ => panic!("Max pooling does not support these data types."),
     };
     output.set_data(out_data);
-    
+
     output
 }
 
 #[wasm_bindgen(js_name = handleAvgPool2D)]
 pub fn handle_avgpool_2d(
     input: &Tensor,
-    kernel_height: usize, kernel_width: usize,
-    pad_top: usize, pad_left: usize, 
-    pad_bottom: usize, pad_right: usize, 
-    stride_y: usize, stride_x: usize,
+    kernel_height: usize,
+    kernel_width: usize,
+    pad_top: usize,
+    pad_left: usize,
+    pad_bottom: usize,
+    pad_right: usize,
+    stride_y: usize,
+    stride_x: usize,
 ) -> Tensor {
     let mut output = Tensor::new_empty();
 
@@ -122,17 +158,28 @@ pub fn handle_avgpool_2d(
             for n in 0..in_shape[0] {
                 for c in 0..in_shape[1] {
                     for y in (-(pad_top as isize)..=(max_y - pad_top) as isize).step_by(stride_y) {
-                        for x in (-(pad_left as isize)..=(max_x - pad_left) as isize).step_by(stride_x) {
+                        for x in
+                            (-(pad_left as isize)..=(max_x - pad_left) as isize).step_by(stride_x)
+                        {
                             let mut sum = 0.;
                             for ky in 0..kernel_height {
                                 for kx in 0..kernel_width {
                                     let cy = y + ky as isize;
                                     let cx = x + kx as isize;
-                                    let val = if cy >= 0 && cy < in_shape[2] as isize && cx >= 0 && cx < in_shape[3] as isize {
-                                        let cur_idx = n * in_size + c * in_channel_size + cy as usize * in_shape[3] + cx as usize;
+                                    let val = if cy >= 0
+                                        && cy < in_shape[2] as isize
+                                        && cx >= 0
+                                        && cx < in_shape[3] as isize
+                                    {
+                                        let cur_idx = n * in_size
+                                            + c * in_channel_size
+                                            + cy as usize * in_shape[3]
+                                            + cx as usize;
                                         arr[cur_idx]
-                                    } else { 0. };
-        
+                                    } else {
+                                        0.
+                                    };
+
                                     sum += val;
                                 }
                             }
@@ -143,24 +190,35 @@ pub fn handle_avgpool_2d(
                 }
             }
             DTypes::F32(out_data)
-        },
+        }
         DTypes::F64(arr) => {
             let mut out_idx = 0;
             let mut out_data = vec![0.; output.get_length()];
             for n in 0..in_shape[0] {
                 for c in 0..in_shape[1] {
                     for y in (-(pad_top as isize)..=(max_y - pad_top) as isize).step_by(stride_y) {
-                        for x in (-(pad_left as isize)..=(max_x - pad_left) as isize).step_by(stride_x) {
+                        for x in
+                            (-(pad_left as isize)..=(max_x - pad_left) as isize).step_by(stride_x)
+                        {
                             let mut sum = 0.;
                             for ky in 0..kernel_height {
                                 for kx in 0..kernel_width {
                                     let cy = y + ky as isize;
                                     let cx = x + kx as isize;
-                                    let val = if cy >= 0 && cy < in_shape[2] as isize && cx >= 0 && cx < in_shape[3] as isize {
-                                        let cur_idx = n * in_size + c * in_channel_size + cy as usize * in_shape[3] + cx as usize;
+                                    let val = if cy >= 0
+                                        && cy < in_shape[2] as isize
+                                        && cx >= 0
+                                        && cx < in_shape[3] as isize
+                                    {
+                                        let cur_idx = n * in_size
+                                            + c * in_channel_size
+                                            + cy as usize * in_shape[3]
+                                            + cx as usize;
                                         arr[cur_idx]
-                                    } else { 0. };
-        
+                                    } else {
+                                        0.
+                                    };
+
                                     sum += val;
                                 }
                             }
@@ -171,11 +229,11 @@ pub fn handle_avgpool_2d(
                 }
             }
             DTypes::F64(out_data)
-        },
-        _ => panic!("Max pooling does not support these data types.")
+        }
+        _ => panic!("Max pooling does not support these data types."),
     };
     output.set_data(out_data);
-    
+
     output
 }
 
@@ -193,32 +251,37 @@ mod tests {
     fn test_max_pooling() {
         let input = Tensor::new(
             DTypes::F32(vec![
-                1., 2., 3., 4., 5., 6., 7., 8., 9.,
-                10., 11., 12., 13., 14., 15., 16., 17., 18., 19.
+                1., 2., 3., 4., 5., 6., 7., 8., 9., 10., 11., 12., 13., 14., 15., 16., 17., 18.,
+                19.,
             ]),
-            vec![1, 2, 3, 3]
+            vec![1, 2, 3, 3],
         );
-    
+
         let output = handle_maxpool_2d(&input, 2, 2, 0, 0, 0, 0, 1, 1);
-    
+
         assert_eq!(output.get_shape(), vec![1, 2, 2, 2]);
-        assert_eq!(*output.get_data(), DTypes::F32(vec![5., 6., 8., 9., 14., 15., 17., 18.]));
+        assert_eq!(
+            *output.get_data(),
+            DTypes::F32(vec![5., 6., 8., 9., 14., 15., 17., 18.])
+        );
     }
 
     #[test]
     fn test_avg_pooling() {
         let input = Tensor::new(
             DTypes::F64(vec![
-                1., 2., 3., 4., 5., 6., 7., 8., 9.,
-                10., 11., 12., 13., 14., 15., 16., 17., 18., 19.
+                1., 2., 3., 4., 5., 6., 7., 8., 9., 10., 11., 12., 13., 14., 15., 16., 17., 18.,
+                19.,
             ]),
-            vec![1, 2, 3, 3]
+            vec![1, 2, 3, 3],
         );
-    
+
         let output = handle_avgpool_2d(&input, 2, 2, 0, 0, 0, 0, 1, 1);
-    
+
         assert_eq!(output.get_shape(), vec![1, 2, 2, 2]);
-        assert_eq!(*output.get_data(), DTypes::F64(vec![3., 4., 6., 7., 12., 13., 15., 16.]));
+        assert_eq!(
+            *output.get_data(),
+            DTypes::F64(vec![3., 4., 6., 7., 12., 13., 15., 16.])
+        );
     }
 }
-

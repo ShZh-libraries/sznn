@@ -33,7 +33,7 @@ pub struct Tensor {
 
 #[wasm_bindgen]
 pub struct TensorList {
-    tensors: Vec<Tensor>
+    tensors: Vec<Tensor>,
 }
 
 #[wasm_bindgen]
@@ -50,7 +50,9 @@ impl Tensor {
     #[wasm_bindgen(js_name = setShape)]
     pub fn set_shape_wiht_array(&mut self, shape: &js_sys::Array) {
         let mut tensor_shape = Vec::with_capacity(shape.length() as usize);
-        shape.iter().for_each(|num| tensor_shape.push(num.as_f64().unwrap() as usize));
+        shape
+            .iter()
+            .for_each(|num| tensor_shape.push(num.as_f64().unwrap() as usize));
 
         self.shape = tensor_shape;
     }
@@ -163,29 +165,45 @@ impl Tensor {
 
         match &self.data {
             DTypes::I8(arr) => {
-                arr.iter().for_each(|v| {result.push(&JsValue::from(*v));});
-            },
+                arr.iter().for_each(|v| {
+                    result.push(&JsValue::from(*v));
+                });
+            }
             DTypes::I16(arr) => {
-                arr.iter().for_each(|v| {result.push(&JsValue::from(*v));});
-            },
+                arr.iter().for_each(|v| {
+                    result.push(&JsValue::from(*v));
+                });
+            }
             DTypes::I32(arr) => {
-                arr.iter().for_each(|v| {result.push(&JsValue::from(*v));});
-            },
+                arr.iter().for_each(|v| {
+                    result.push(&JsValue::from(*v));
+                });
+            }
             DTypes::U8(arr) => {
-                arr.iter().for_each(|v| {result.push(&JsValue::from(*v));});
-            },
+                arr.iter().for_each(|v| {
+                    result.push(&JsValue::from(*v));
+                });
+            }
             DTypes::U16(arr) => {
-                arr.iter().for_each(|v| {result.push(&JsValue::from(*v));});
-            },
+                arr.iter().for_each(|v| {
+                    result.push(&JsValue::from(*v));
+                });
+            }
             DTypes::U32(arr) => {
-                arr.iter().for_each(|v| {result.push(&JsValue::from(*v));});
-            },
+                arr.iter().for_each(|v| {
+                    result.push(&JsValue::from(*v));
+                });
+            }
             DTypes::F32(arr) => {
-                arr.iter().for_each(|v| {result.push(&JsValue::from_f64(*v as f64));});
-            },
+                arr.iter().for_each(|v| {
+                    result.push(&JsValue::from_f64(*v as f64));
+                });
+            }
             DTypes::F64(arr) => {
-                arr.iter().for_each(|v| {result.push(&JsValue::from(*v));});
-            },
+                arr.iter().for_each(|v| {
+                    result.push(&JsValue::from(*v));
+                });
+            }
         }
 
         result
@@ -194,7 +212,9 @@ impl Tensor {
     #[wasm_bindgen(js_name=shapeToArray)]
     pub fn shape_to_array(&self) -> js_sys::Array {
         let result = js_sys::Array::new();
-        self.shape.iter().for_each(|v| {result.push(&JsValue::from(*v));});
+        self.shape.iter().for_each(|v| {
+            result.push(&JsValue::from(*v));
+        });
 
         result
     }
@@ -245,7 +265,9 @@ impl Tensor {
 impl TensorList {
     #[wasm_bindgen(constructor)]
     pub fn new_empty() -> Self {
-        Self { tensors: Vec::new() }
+        Self {
+            tensors: Vec::new(),
+        }
     }
 
     pub fn append(&mut self, tensor: &Tensor) {

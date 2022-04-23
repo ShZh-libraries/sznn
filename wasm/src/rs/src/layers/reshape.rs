@@ -4,7 +4,11 @@ use crate::{tensor::Tensor, DTypes};
 
 #[wasm_bindgen(js_name = handleReshape)]
 pub fn handle_reshape(input: &Tensor, shape: Tensor) -> Tensor {
-    let mut shape = if let DTypes::I32(arr) = shape.get_data() { arr.clone() } else { panic!("The shape's dtype is not i32!!") };
+    let mut shape = if let DTypes::I32(arr) = shape.get_data() {
+        arr.clone()
+    } else {
+        panic!("The shape's dtype is not i32!!")
+    };
 
     // Deal with zero
     let input_shape = input.get_shape();
