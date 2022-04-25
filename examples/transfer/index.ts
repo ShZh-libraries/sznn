@@ -1,77 +1,66 @@
-import { loadModel } from "sznn-js";
-import { imageToTensor, loadImage } from "../../utils/cv";
+import { loadModel, TensorBuilder, Tensor } from "sznn-js";
+import { imageToArray, loadImage } from "../common/cv";
+import { displayImage, displayImageWithChannels } from "../common/utils";
 
 const WIDTH = 224;
 const HEIGHT = 224;
 const CHANNEL = WIDTH * HEIGHT;
 
+function extractChannels(image: Tensor) {
+  let red = [], blue = [], green = [];
+  const bitmap = image.toArray();
+  for (let i = 0; i < bitmap.length; i++) {
+    if (i >= 2 * CHANNEL) {
+      blue.push(bitmap[i]);
+    } else if (i >= CHANNEL) {
+      green.push(bitmap[i]);
+    } else {
+      red.push(bitmap[i]);
+    }
+  }
+
+  return { red, green, blue };
+}
+
 let tensor;
 let image;
 
-const uploadBtn = document.querySelector("#upload-img");
+const uploadBtn = document.querySelector("#upload-img") as HTMLButtonElement;
 uploadBtn!.addEventListener("click", async () => {
   // Get file content by filesystem API
   let [fileHandle] = await (window as any).showOpenFilePicker();
   const file = await fileHandle.getFile();
   const content = await file.arrayBuffer();
 
-  // Cast file content to tensor
+  // Extract tensor from file content
   const buffer = Buffer.from(content);
-  image = (await loadImage(buffer)).resize(HEIGHT, WIDTH);
-  tensor = imageToTensor(image);
+  image = (await loadImage(buffer)).resize(HEIGHT, WIDTH);  // Resize only
+  const imageData = imageToArray(image);
+  tensor = TensorBuilder.withAllArgs(imageData, [1, 3, HEIGHT, WIDTH]);
 
   // Display image
-  const canvasInput = document.querySelector(
+  const inputCanvas = document.querySelector(
     "#input-img"
   )! as HTMLCanvasElement;
-  const contextInput = canvasInput.getContext("2d")!;
-  const inputImageData = contextInput.createImageData(HEIGHT, WIDTH);
-  for (let i = 0; i < inputImageData.data.length; i += 4) {
-    inputImageData.data[i + 0] = image.bitmap.data[i + 0]; // R value
-    inputImageData.data[i + 1] = image.bitmap.data[i + 1]; // G value
-    inputImageData.data[i + 2] = image.bitmap.data[i + 2]; // B value
-    inputImageData.data[i + 3] = image.bitmap.data[i + 3]; // A value
-  }
-  (uploadBtn! as HTMLButtonElement).style.display = "none";
-  contextInput.putImageData(inputImageData, 0, 0);
+  displayImage(inputCanvas, image);
+  uploadBtn.style.display = "none";
 });
 
 const startBtn = document.querySelector("#start");
 startBtn!.addEventListener("click", async () => {
   // Show spin loading
-  const loading = document.querySelector("#loading");
-  (loading! as HTMLDivElement).style.display = "flex";
+  const loading = document.querySelector("#loading") as HTMLDivElement;
+  loading.style.display = "flex";
 
   // Load model and do inference
   const model = await loadModel("./model/mosaic.onnx");
   const result = model.forward(tensor)[0];
-
-  // [3, 224, 224] -> [224, 224, 3]
-  let redChannel = [];
-  let greenChannel = [];
-  let blueChannel = [];
-  for (let i = 0; i < result.data.length; i++) {
-    if (i >= 2 * CHANNEL) {
-      blueChannel.push(result.data[i]);
-    } else if (i >= CHANNEL) {
-      greenChannel.push(result.data[i]);
-    } else {
-      redChannel.push(result.data[i]);
-    }
-  }
+  const channels = extractChannels(result);
 
   // Display image
-  const canvasOutput = document.querySelector(
+  const outputCanvas = document.querySelector(
     "#output-img"
   )! as HTMLCanvasElement;
-  const contextOutput = canvasOutput.getContext("2d")!;
-  let outputImageData = contextOutput.createImageData(WIDTH, HEIGHT);
-  for (let i = 0; i < CHANNEL; i++) {
-    outputImageData.data[4 * i + 0] = redChannel[i];
-    outputImageData.data[4 * i + 1] = greenChannel[i];
-    outputImageData.data[4 * i + 2] = blueChannel[i];
-    outputImageData.data[4 * i + 3] = 255;
-  }
-  (loading! as HTMLDivElement).style.display = "none";
-  contextOutput.putImageData(outputImageData, 0, 0);
+  displayImageWithChannels(outputCanvas, channels, WIDTH, HEIGHT);
+  loading.style.display = "none";
 });

@@ -1,2 +1,2 @@
 export { loadModel, Model } from "./model";
-export { TensorBuilder } from "./tensor";
+export { Tensor, TensorBuilder } from "./tensor";

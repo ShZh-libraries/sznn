@@ -1,5 +1,4 @@
 import * as Jimp from "jimp";
-import { DType, Tensor, TensorBuilder } from "../js/src/tensor";
 
 export type Image = Jimp;
 
@@ -11,7 +10,11 @@ export async function loadImage(buffer: Buffer): Promise<Image> {
   return Jimp.default.read(buffer);
 }
 
-export function imageToTensor(image: Jimp): Tensor {
+export function normalize(arr: Float32Array, factor: number) {
+  return arr.map(x => x / factor);
+}
+
+export function imageToArray(image: Jimp): Float32Array {
   const imageBufferData = image.bitmap.data;
   const dims = [1, 3, image.getWidth(), image.getHeight()];
   const [redChannel, greenChannel, blueAChannel] = new Array(
@@ -34,11 +37,10 @@ export function imageToTensor(image: Jimp): Tensor {
     float32Data[index] = transposedData[index];
   }
 
-  const resultTensor = TensorBuilder.withAllArgs(
-    float32Data,
-    dims,
-    DType.float32
-  );
+  return float32Data;
+}
 
-  return resultTensor;
+// [C, H, W] -> [W, H, C]
+export function switchChannels(bitmap: Float32Array) {
+
 }

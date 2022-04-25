@@ -1,7 +1,7 @@
 /// <reference types="@webgpu/types" />
 
 export { loadModel, Model } from "./model";
-export { TensorBuilder } from "./tensor";
+export { Tensor, TensorBuilder } from "./tensor";
 
 // import { ConvAttr } from "../../core/attr/conv";
 // import { getGPUDevice } from "./gpu";

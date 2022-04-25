@@ -1,10 +1,29 @@
-import { loadModel } from "sznn-js";
-import { imageToTensor, loadImage } from "../../utils/cv";
+import Jimp from "jimp/*";
+import { loadModel, TensorBuilder, Tensor } from "sznn-js";
+import { imageToArray, loadImage, normalize } from "../common/cv";
+import { displayImage } from "../common/utils";
 import { imagenetClasses } from "./image_net";
 
 const HEIGHT = 224;
 const WIDTH = 224;
 
+function preprocessing(image: Jimp): Tensor {
+  const imageData = imageToArray(image);
+  const normalized = normalize(imageData, 255);
+  const tensor = TensorBuilder.withAllArgs(normalized, [1, 3, HEIGHT, WIDTH]);
+
+  return tensor;
+}
+
+function postprocessing(output: Tensor): number {
+  const outputArr = output.toArray();
+  const maxProb = Math.max(...outputArr);
+  const index = outputArr.indexOf(maxProb);
+
+  return index;
+}
+
+// Main
 const btn = document.querySelector("#btn");
 btn!.addEventListener("click", async () => {
   // Get file content by filesystem API
@@ -12,37 +31,22 @@ btn!.addEventListener("click", async () => {
   const file = await fileHandle.getFile();
   const content = await file.arrayBuffer();
 
-  // Transform file content to tensor
+  // Transform file content to tensor and do preprocessing
   const buffer = Buffer.from(content);
+  // Do resize here so we can display resized image later
   const image = (await loadImage(buffer)).resize(HEIGHT, WIDTH);
-  const tensor = imageToTensor(image).normalize(255);
+  const input = preprocessing(image);
 
-  // Display image
   const canvas = document.querySelector("canvas")!;
-  const context = canvas.getContext("2d")!;
-  const imageData = context.createImageData(HEIGHT, WIDTH);
-  for (let i = 0; i < imageData.data.length; i += 4) {
-    imageData.data[i + 0] = image.bitmap.data[i + 0]; // R value
-    imageData.data[i + 1] = image.bitmap.data[i + 1]; // G value
-    imageData.data[i + 2] = image.bitmap.data[i + 2]; // B value
-    imageData.data[i + 3] = image.bitmap.data[i + 3]; // A value
-  }
-  context.putImageData(imageData, 0, 0);
+  displayImage(canvas, image);
 
   // Load model and inference
   const model = await loadModel("./model/squeezenet.onnx");
-  const result = model.forward(tensor)[0].toArray();
-  let maxIndex = 0;
-  let max = result[0];
-  for (let index = 0; index < result.length; index++) {
-    if (max < result[index]) {
-      max = result[index];
-      maxIndex = index;
-    }
-  }
+  const output = model.forward(input)[0];
+  const index = postprocessing(output);
 
   // Get and display result
-  const clazz = imagenetClasses[maxIndex][1];
+  const clazz = imagenetClasses[index][1];
   const targetH = document.querySelector("h2")!;
   targetH.innerText = `"${clazz}"`;
 });
