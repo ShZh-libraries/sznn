@@ -19,6 +19,10 @@ export class Tensor {
     ndim!: number;
     dtype!: DType;
 
+    toArray() {
+        return this.data;
+    }
+
     reshape(shape: number[]) {
         this.shape = shape.slice();
         this.ndim = this.shape.length;

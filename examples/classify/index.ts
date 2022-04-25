@@ -31,12 +31,12 @@ btn!.addEventListener("click", async () => {
 
   // Load model and inference
   const model = await loadModel("./model/squeezenet.onnx");
-  const result = model.forward(tensor)[0];
+  const result = model.forward(tensor)[0].toArray();
   let maxIndex = 0;
-  let max = result.data[0];
-  for (let index = 0; index < result.data.length; index++) {
-    if (max < result.data[index]) {
-      max = result.data[index];
+  let max = result[0];
+  for (let index = 0; index < result.length; index++) {
+    if (max < result[index]) {
+      max = result[index];
       maxIndex = index;
     }
   }

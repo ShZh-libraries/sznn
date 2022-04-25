@@ -61,6 +61,10 @@ export class Tensor {
     }
   }
 
+  toArray() {
+    return this.data;
+  }
+
   locToIndex(location: number[]): number {
     if (!this.stride) {
       this.calcStride();
