@@ -9,7 +9,7 @@
   "license": "Apache-2.0",
   "private": false,
   "scripts": {
-    "build": "webpack --config webpack.config.js"
+    "build": "webpack"
   },
   "devDependencies": {
     "@types/node": "^17.0.23",
