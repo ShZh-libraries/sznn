@@ -16,16 +16,14 @@ js-sys = "0.3.56"
 console_error_panic_hook = "0.1.6"
 web-sys = { version="0.3.56", features= ["console"] }
 
-# [package.metadata.wasm-pack.profile.dev]
-# wasm-opt = ["-Os"]
-
 [package.metadata.wasm-pack.profile.dev.wasm-bindgen]
 debug-js-glue = true
 demangle-name-section = true
 dwarf-debug-info = true
 
+# wasm-opt is disabled when use wasm-bindgen, it is a feature not a bug;
+# See for https://bytecodealliance.github.io/cargo-wasi/wasm-opt.html#disabled-when-wasm-bindgen-is-used more details.
 [package.metadata.wasm-pack.profile.release]
-# TODO: bug?
 wasm-opt = false
 
 [package.metadata.wasm-pack.profile.release.wasm-bindgen]
