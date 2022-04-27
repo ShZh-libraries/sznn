@@ -12,6 +12,7 @@ import { handleAvgPool2D, handleGlobalAvgPool, handleMaxPool2D } from "./layers/
 import { handleLeakyRelu, handleRelu } from "./layers/relu";
 import { handleReshape } from "./layers/reshape";
 import { handleShape } from "./layers/shape";
+import { handleUnaryOp } from "./layers/unaryop";
 import { Tensor } from "./tensor";
 
 export async function handle(
@@ -37,6 +38,94 @@ export async function handle(
                 inputs[4],
                 device!
             );
+            break;
+        }
+        case "Abs": {
+            output = await handleUnaryOp(inputs[0], "output[i] = abs(input[i])", device!);
+            break;
+        }
+        case "Acos": {
+            output = await handleUnaryOp(inputs[0], "output[i] = acos(input[i])", device!);
+            break;
+        }
+        case "Acosh": {
+            output = await handleUnaryOp(inputs[0], "output[i] = acosh(input[i])", device!);
+            break;
+        }
+        case "Asin": {
+            output = await handleUnaryOp(inputs[0], "output[i] = asin(input[i])", device!);
+            break;
+        }
+        case "Asinh": {
+            output = await handleUnaryOp(inputs[0], "output[i] = asinh(input[i])", device!);
+            break;
+        }
+        case "Atan": {
+            output = await handleUnaryOp(inputs[0], "output[i] = atan(input[i])", device!);
+            break;
+        }
+        case "Atanh": {
+            output = await handleUnaryOp(inputs[0], "output[i] = atanh(input[i])", device!);
+            break;
+        }
+        case "Ceil": {
+            output = await handleUnaryOp(inputs[0], "output[i] = ceil(input[i])", device!);
+            break;
+        }
+        case "Floor": {
+            output = await handleUnaryOp(inputs[0], "output[i] = floor(input[i])", device!);
+            break;
+        }
+        case "Round": {
+            output = await handleUnaryOp(inputs[0], "output[i] = round(input[i])", device!);
+            break;
+        }
+        case "Cos": {
+            output = await handleUnaryOp(inputs[0], "output[i] = cos(input[i])", device!);
+            break;
+        }
+        case "Cosh": {
+            output = await handleUnaryOp(inputs[0], "output[i] = cosh(input[i])", device!);
+            break;
+        }
+        case "Identity": {
+            output = await handleUnaryOp(inputs[0], "output[i] = input[i]", device!);
+            break;
+        }
+        case "Log": {
+            output = await handleUnaryOp(inputs[0], "output[i] = log(input[i])", device!);
+            break;
+        }
+        case "Neg": {
+            output = await handleUnaryOp(inputs[0], "output[i] = -input[i]", device!);
+            break;
+        }
+        case "Sign": {
+            output = await handleUnaryOp(inputs[0], "output[i] = sign(input[i])", device!);
+            break;
+        }
+        case "Sin": {
+            output = await handleUnaryOp(inputs[0], "output[i] = sin(input[i])", device!);
+            break;
+        }
+        case "Sinh": {
+            output = await handleUnaryOp(inputs[0], "output[i] = sinh(input[i])", device!);
+            break;
+        }
+        case "Sqrt": {
+            output = await handleUnaryOp(inputs[0], "output[i] = sqrt(input[i])", device!);
+            break;
+        }
+        case "Sigmoid": {
+            output = await handleUnaryOp(inputs[0], "output[i] = 1. / (1. + exp(input[i]))", device!);
+            break;
+        }
+        case "Tan": {
+            output = await handleUnaryOp(inputs[0], "output[i] = tan(input[i])", device!);
+            break;
+        }
+        case "Tanh": {
+            output = await handleUnaryOp(inputs[0], "output[i] = tanh(input[i])", device!);
             break;
         }
         case "Concat": {
