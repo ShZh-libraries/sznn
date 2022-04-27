@@ -1,14 +1,25 @@
-const path = require('path');
+const fs = require("fs");
+const path = require("path");
+const  HtmlWebpackPlugin = require("html-webpack-plugin");
 const NodePolyfillPlugin = require("node-polyfill-webpack-plugin");
 
 module.exports = {
-    mode: "development",
-    entry: {
-        "test/abs": path.resolve(__dirname, "test", "abs.spec.ts"),
-        "test/pad": path.resolve(__dirname, "test", "pad.spec.ts"),
-        "test/conv": path.resolve(__dirname, "test", "conv.spec.ts"),
-        "test/pool": path.resolve(__dirname, "test", "pooling.spec.ts"),
-        "test/relu": path.resolve(__dirname, "test", "relu.spec.ts"),
+    mode: "production",
+    entry: () => {
+        return new Promise(resolve => {
+            let enties = {};
+            const files = fs.readdirSync(path.resolve(__dirname, "test"));
+            for (const filename of files) {
+                if (filename.endsWith(".spec.ts")) {
+                    const basename = path.basename(filename, ".ts");
+                    const outname = "test/" + basename;
+    
+                    enties[outname] = path.resolve(__dirname, "test", filename);
+                }
+            }
+
+            resolve(enties);
+        });
     },
     output: {
         filename: '[name].js',
@@ -28,7 +39,13 @@ module.exports = {
         ]
     },
     plugins: [
-        new NodePolyfillPlugin()
+        new NodePolyfillPlugin(),
+        new HtmlWebpackPlugin({
+            title: "WebGPU backend test",
+            template: "./test/public/index.html",
+            filename: "./test/index.html",
+            inject: "head"
+        })
     ],
     resolve: {
         extensions: [".js", '.ts'],
