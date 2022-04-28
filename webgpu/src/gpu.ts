@@ -72,7 +72,7 @@ export function createBindGroup(pipeline: GPUComputePipeline, buffers: GPUBuffer
 
     const bindGroup = device.createBindGroup({
         layout: pipeline.getBindGroupLayout(0),
-        entries: entries
+        entries
     });
 
     return bindGroup;

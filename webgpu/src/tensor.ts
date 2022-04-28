@@ -19,6 +19,8 @@ export class Tensor {
     ndim!: number;
     dtype!: DType;
 
+    stride?: number[];
+
     toArray() {
         return this.data;
     }
@@ -42,6 +44,21 @@ export class Tensor {
 
     getLength() {
         return this.shape.reduceRight((x, y) => x * y);
+    }
+
+    calcStride() {
+        this.stride = [1];
+        for (let i = 1; i < this.ndim; i++) {
+            this.stride.unshift(this.stride[0] * this.shape[this.ndim - i]);
+        }
+    }
+
+    getStride() {
+        if (!this.stride) {
+            this.calcStride();
+        }
+
+        return this.stride;
     }
 
     allocateWithShape() {

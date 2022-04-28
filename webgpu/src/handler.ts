@@ -4,6 +4,7 @@ import { getPaddingAttr } from "../../core/attr/padding";
 import { getPoolingAttr } from "../../core/attr/pooling";
 import { getGPUDevice } from "./gpu";
 import { handleBatchNorm } from "./layers/batchnorm";
+import { handleBinaryOp } from "./layers/binaryop";
 import { handleConcat } from "./layers/concat";
 import { handleConv } from "./layers/conv";
 import { handleDropout } from "./layers/dropout";
@@ -126,6 +127,22 @@ export async function handle(
         }
         case "Tanh": {
             output = await handleUnaryOp(inputs[0], "output[i] = tanh(input[i])", device!);
+            break;
+        }
+        case "Add": {
+            output = await handleBinaryOp(inputs[0], inputs[1], "+", device!);
+            break;
+        }
+        case "Sub": {
+            output = await handleBinaryOp(inputs[0], inputs[1], "-", device!);
+            break;
+        }
+        case "Mul": {
+            output = await handleBinaryOp(inputs[0], inputs[1], "*", device!);
+            break;
+        }
+        case "Div": {
+            output = await handleBinaryOp(inputs[0], inputs[1], "/", device!);
             break;
         }
         case "Concat": {
