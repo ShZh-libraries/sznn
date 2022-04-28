@@ -2,7 +2,6 @@
     "exclude": [
         "dist",
         "node_modules",
-        "test/**/*.spec.ts"
     ],
     "compilerOptions": {
         "target": "es2016",

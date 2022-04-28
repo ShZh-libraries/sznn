@@ -4,7 +4,7 @@ const  HtmlWebpackPlugin = require("html-webpack-plugin");
 const NodePolyfillPlugin = require("node-polyfill-webpack-plugin");
 
 module.exports = {
-    mode: "production",
+    mode: "development",
     entry: () => {
         return new Promise(resolve => {
             let enties = {};
