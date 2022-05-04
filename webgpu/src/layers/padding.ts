@@ -1,6 +1,6 @@
 import padding from "./wgsl/padding.wgsl";
-import { createBindGroup, getCommandEncoder, getResult, loadWGSL, setGPUReadBuffer } from "../gpu";
-import { DType, Tensor, TensorBuilder } from "../tensor";
+import { computePass, GPUDataEnum, Program, Resource, ResourceType as RType } from "../gpu";
+import { Tensor, TensorBuilder } from "../tensor";
 import { PaddingAttr } from "../../../core/attr/padding";
 
 export async function handlePadding(input: Tensor, attr: PaddingAttr, device: GPUDevice): Promise<Tensor> {
@@ -11,31 +11,31 @@ export async function handlePadding(input: Tensor, attr: PaddingAttr, device: GP
     ];
     let output = TensorBuilder.withShape(out_shape);
 
-    const gpuInputBuffer = input.setInputGPUBuffer(device);
-    const gpuInShapeBuffer = setGPUReadBuffer(new Uint32Array(input.shape), DType.uint32, device);
-    const gpuOutputBuffer = output.setOutputGPUBuffer(device);
-    const gpuOutShapeBuffer = setGPUReadBuffer(new Uint32Array(output.shape), DType.uint32, device);
-    const gpuAttrBuffer = setGPUReadBuffer(new Uint32Array([attr.pads[0], attr.pads[1], attr.pads[2], attr.pads[3]]), DType.uint32, device);
+    let resources: Resource[] = [
+        {
+            rtype: RType.InputTensor,
+            data: input,
+        }, {
+            rtype: RType.MetaUInt32Array,
+            data: input.shape,
+        }, {
+            rtype: RType.OutputTensor,
+            data: output,
+        }, {
+            rtype: RType.MetaUInt32Array,
+            data: output.shape,
+        }, {
+            rtype: RType.MetaUInt32Array,
+            data: [attr.pads[0], attr.pads[1], attr.pads[2], attr.pads[3]],
+        }
+    ];
+    const program: Program = {
+        code: padding,
+        entry: "main"
+    };
+    const result = await computePass(resources, [Math.ceil(output.shape[3] / 16), Math.ceil(output.shape[2] / 16), output.shape[1]], program, device, GPUDataEnum.Float32Array);
 
-    const computePipeline = loadWGSL(padding, device);
-
-    const bindGroup = createBindGroup(computePipeline, [
-        gpuInputBuffer, gpuInShapeBuffer,
-        gpuOutputBuffer, gpuOutShapeBuffer,
-        gpuAttrBuffer
-    ], device);
-
-    const commandEncoder = getCommandEncoder(
-        computePipeline, 
-        bindGroup, 
-        [Math.ceil(output.shape[3] / 16), Math.ceil(output.shape[2] / 16), output.shape[1]], 
-        device
-    );
-
-    const resultBuffer = await getResult(commandEncoder, gpuOutputBuffer, output.data.byteLength, device);
-    const resultArray = new Float32Array(resultBuffer);
-
-    output.data = resultArray;
+    output.data = result;
 
     return output;
 }

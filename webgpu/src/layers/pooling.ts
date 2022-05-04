@@ -1,7 +1,7 @@
 import pooling from "./wgsl/pooling.wgsl";
-import { DType, Tensor, TensorBuilder } from "../tensor";
+import { Tensor, TensorBuilder } from "../tensor";
 import { PoolingAttr } from "../../../core/attr/pooling";
-import { createBindGroup, getCommandEncoder, getResult, loadWGSL, setGPUReadBuffer } from "../gpu";
+import { computePass, GPUDataEnum, Program, Resource, ResourceType as RType } from "../gpu";
 import { handlePadding } from "./padding";
 
 export async function handleMaxPool2D(input: Tensor, attr: PoolingAttr, device: GPUDevice): Promise<Tensor> {
@@ -25,32 +25,34 @@ export async function handleMaxPool2D(input: Tensor, attr: PoolingAttr, device: 
     outputWidth,
   ]);
 
-  const gpuInputBuffer = paddingTensor.setInputGPUBuffer(device);
-  const gpuInShapeBuffer = setGPUReadBuffer(new Uint32Array(paddingTensor.shape), DType.uint32, device);
-  const gpuOutputBuffer = output.setOutputGPUBuffer(device);
-  const gpuOutShapeBuffer = setGPUReadBuffer(new Uint32Array(output.shape), DType.uint32, device);
-  const gpuAttrBuffer = setGPUReadBuffer(new Uint32Array([
-      attr.kernelShape[0], attr.kernelShape[1],
-      attr.strides[0], attr.strides[1]
-  ]), DType.uint32, device);
+  let resources: Resource[] = [
+    {
+      rtype: RType.InputTensor,
+      data: paddingTensor,
+    }, {
+      rtype: RType.MetaUInt32Array,
+      data: paddingTensor.shape,
+    }, {
+      rtype: RType.OutputTensor,
+      data: output,
+    }, {
+      rtype: RType.MetaUInt32Array,
+      data: output.shape,
+    }, {
+      rtype: RType.MetaUInt32Array,
+      data: [
+        attr.kernelShape[0], attr.kernelShape[1],
+        attr.strides[0], attr.strides[1]
+      ]
+    }
+  ];
+  const program: Program = {
+    code: pooling,
+    entry: "max_pool"
+  }
+  const result = await computePass(resources, [Math.ceil(output.shape[3] / 8), Math.ceil(output.shape[2] / 8), Math.ceil(output.shape[1] / 4)], program, device, GPUDataEnum.Float32Array);
 
-  const computePipeline = loadWGSL(pooling, device, "max_pool");
-  const bindGroup = createBindGroup(computePipeline, [
-      gpuInputBuffer, gpuInShapeBuffer, 
-      gpuOutputBuffer, gpuOutShapeBuffer,
-      gpuAttrBuffer
-  ], device);
-  // TODO
-  const commandEncoder = getCommandEncoder(
-    computePipeline, 
-    bindGroup, 
-    [Math.ceil(output.shape[3] / 8), Math.ceil(output.shape[2] / 8), Math.ceil(output.shape[1] / 4)], 
-    device
-  );
-
-  const resultBuffer = await getResult(commandEncoder, gpuOutputBuffer, output.data.byteLength, device);
-  const resultArray = new Float32Array(resultBuffer);
-  output.data = resultArray;
+  output.data = result;
 
   return output;
 }
@@ -76,32 +78,34 @@ export async function handleAvgPool2D(input: Tensor, attr: PoolingAttr, device: 
     outputWidth,
   ]);
 
-  const gpuInputBuffer = paddingTensor.setInputGPUBuffer(device);
-  const gpuInShapeBuffer = setGPUReadBuffer(new Uint32Array(paddingTensor.shape), DType.uint32, device);
-  const gpuOutputBuffer = output.setOutputGPUBuffer(device);
-  const gpuOutShapeBuffer = setGPUReadBuffer(new Uint32Array(output.shape), DType.uint32, device);
-  const gpuAttrBuffer = setGPUReadBuffer(new Uint32Array([
-      attr.kernelShape[0], attr.kernelShape[1],
-      attr.strides[0], attr.strides[1]
-  ]), DType.uint32, device);
+  let resources: Resource[] = [
+    {
+      rtype: RType.InputTensor,
+      data: paddingTensor,
+    }, {
+      rtype: RType.MetaUInt32Array,
+      data: paddingTensor.shape,
+    }, {
+      rtype: RType.OutputTensor,
+      data: output,
+    }, {
+      rtype: RType.MetaUInt32Array,
+      data: output.shape,
+    }, {
+      rtype: RType.MetaUInt32Array,
+      data: [
+        attr.kernelShape[0], attr.kernelShape[1],
+        attr.strides[0], attr.strides[1]
+      ]
+    }
+  ];
+  const program: Program = {
+    code: pooling,
+    entry: "avg_pool"
+  }
+  const result = await computePass(resources, [Math.ceil(output.shape[3] / 8), Math.ceil(output.shape[2] / 8), Math.ceil(output.shape[1] / 4)], program, device, GPUDataEnum.Float32Array);
 
-  const computePipeline = loadWGSL(pooling, device, "avg_pool");
-  const bindGroup = createBindGroup(computePipeline, [
-      gpuInputBuffer, gpuInShapeBuffer, 
-      gpuOutputBuffer, gpuOutShapeBuffer,
-      gpuAttrBuffer
-  ], device);
-  // TODO
-  const commandEncoder = getCommandEncoder(
-    computePipeline, 
-    bindGroup, 
-    [Math.ceil(output.shape[3] / 8), Math.ceil(output.shape[2] / 8), Math.ceil(output.shape[1] / 4)], 
-    device
-  );
-
-  const resultBuffer = await getResult(commandEncoder, gpuOutputBuffer, output.data.byteLength, device);
-  const resultArray = new Float32Array(resultBuffer);
-  output.data = resultArray;
+  output.data = result;
 
   return output;
 }

@@ -1,33 +1,46 @@
-import relu from "./wgsl/relu.wgsl";
-import { createBindGroup, getCommandEncoder, getResult, loadWGSL, setGPUReadBuffer } from "../gpu";
-import { DType, Tensor, TensorBuilder } from "../tensor";
+import { computePass, GPUDataEnum, Program, Resource, ResourceType as RType } from "../gpu";
+import { Tensor, TensorBuilder } from "../tensor";
 
 const workgroup_size = 256;
 
 export async function handleRelu(input: Tensor, device: GPUDevice): Promise<Tensor> {
     let output = TensorBuilder.withShape(input.shape);
 
-    const gpuInputBuffer = input.setInputGPUBuffer(device);
-    const gpuOutputBuffer = output.setOutputGPUBuffer(device);
     const len = output.getLength();
-    const gpuMetaBuffer = setGPUReadBuffer(new Uint32Array([len]), DType.uint32, device);
-    const gpuAlphaBuffer = setGPUReadBuffer(new Float32Array([1]), DType.float32, device);
+    let resources: Resource[] = [
+        {
+            rtype: RType.InputTensor,
+            data: input
+        }, {
+            rtype: RType.OutputTensor,
+            data: output
+        }, {
+            rtype: RType.MetaUInt32Array,
+            data: [len]
+        }
+    ];
+    const program: Program = {
+        code: `
+            @group(0) @binding(0) var<storage, read> input: array<f32>;
+            @group(0) @binding(1) var<storage, write> output: array<f32>;
+            @group(0) @binding(2) var<storage, read> len: u32;
+            
+            let workgroup_size_x = 256;
+            
+            @stage(compute) 
+            @workgroup_size(workgroup_size_x)
+            fn main(@builtin(global_invocation_id) global_id : vec3<u32>) {
+                if (global_id.x >= len) {
+                    return;
+                }
+                output[global_id.x] = max(input[global_id.x], 0.);
+            }
+        `,
+        entry: "main"
+    }
+    const result = await computePass(resources, [Math.ceil(len / workgroup_size)], program, device, GPUDataEnum.Float32Array);
 
-    const computePipeline = loadWGSL(relu, device, "relu");
-
-    const bindGroup = createBindGroup(computePipeline, [
-        gpuInputBuffer, 
-        gpuOutputBuffer, 
-        gpuMetaBuffer,
-        gpuAlphaBuffer,
-    ], device);
-
-    const commandEncoder = getCommandEncoder(computePipeline, bindGroup, [Math.ceil(len / workgroup_size)], device);
-
-    const resultBuffer = await getResult(commandEncoder, gpuOutputBuffer, output.data.byteLength, device);
-    const resultArray = new Float32Array(resultBuffer);
-
-    output.data = resultArray;
+    output.data = result;
 
     return output;
 }
@@ -35,27 +48,45 @@ export async function handleRelu(input: Tensor, device: GPUDevice): Promise<Tens
 export async function handleLeakyRelu(input: Tensor, alpha: number, device: GPUDevice): Promise<Tensor> {
     let output = TensorBuilder.withShape(input.shape);
 
-    const gpuInputBuffer = input.setInputGPUBuffer(device);
-    const gpuOutputBuffer = output.setOutputGPUBuffer(device);
     const len = output.getLength();
-    const gpuMetaBuffer = setGPUReadBuffer(new Uint32Array([len]), DType.uint32, device);
-    const gpuAlphaBuffer = setGPUReadBuffer(new Float32Array([alpha]), DType.float32, device);
-    
-    const computePipeline = loadWGSL(relu, device, "relu");
+    let resources: Resource[] = [
+        {
+            rtype: RType.InputTensor,
+            data: input
+        }, {
+            rtype: RType.OutputTensor,
+            data: output
+        }, {
+            rtype: RType.MetaUInt32Array,
+            data: [len]
+        }, {
+            rtype: RType.MetaFloat32Array,
+            data: [alpha]
+        }
+    ];
+    const program: Program = {
+        code: `
+            @group(0) @binding(0) var<storage, read> input: array<f32>;
+            @group(0) @binding(1) var<storage, write> output: array<f32>;
+            @group(0) @binding(2) var<storage, read> len: u32;
+            @group(0) @binding(3) var<storage, read> alpha: f32;
+            
+            let workgroup_size_x = 256;
+            
+            @stage(compute) 
+            @workgroup_size(workgroup_size_x)
+            fn main(@builtin(global_invocation_id) global_id : vec3<u32>) {
+                if (global_id.x >= len) {
+                    return;
+                }
+                output[global_id.x] = max(input[global_id.x], 0.) * alpha;
+            }
+        `,
+        entry: "main"
+    }
+    const result = await computePass(resources, [Math.ceil(len / workgroup_size)], program, device, GPUDataEnum.Float32Array);
 
-    const bindGroup = createBindGroup(computePipeline, [
-        gpuInputBuffer, 
-        gpuOutputBuffer, 
-        gpuMetaBuffer,
-        gpuAlphaBuffer,
-    ], device);
-
-    const commandEncoder = getCommandEncoder(computePipeline, bindGroup, [Math.ceil(len / workgroup_size)], device);
-
-    const resultBuffer = await getResult(commandEncoder, gpuOutputBuffer, output.data.byteLength, device);
-    const resultArray = new Float32Array(resultBuffer);
-
-    output.data = resultArray;
+    output.data = result;
 
     return output;
 }

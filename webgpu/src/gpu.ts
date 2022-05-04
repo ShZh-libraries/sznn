@@ -1,9 +1,33 @@
-import { DType } from "./tensor";
+import { DType, Tensor } from "./tensor";
 
-type GPUDataType =
+export type GPUDataType =
     | Int32Array
     | Uint32Array
     | Float32Array;
+
+export enum GPUDataEnum {
+    Int32Array,
+    Uint32Array,
+    Float32Array,
+}
+
+export enum ResourceType {
+    InputTensor,
+    OutputTensor,
+    MetaInt32Array,
+    MetaUInt32Array,
+    MetaFloat32Array,
+}
+
+export interface Resource {
+    rtype: ResourceType;
+    data: Tensor | number[];
+}
+
+export interface Program {
+    code: string;
+    entry: string;
+}
 
 export async function getGPUDevice() {
     if (!("gpu" in navigator)) {
@@ -107,4 +131,60 @@ export async function getResult(encoder: GPUCommandEncoder, outputBuffer: GPUBuf
     const resultBuffer = gpuReadBuffer.getMappedRange();
     
     return resultBuffer;
+}
+
+export async function computePass(resources: Resource[], dispatch: number[], program: Program, device: GPUDevice, target: GPUDataEnum) {
+    const buffers = [];
+    let outBuffer: GPUBuffer;
+    let outTensor: Tensor;
+    for (const resource of resources) {
+        let buffer;
+        switch (resource.rtype) {
+            case ResourceType.InputTensor:
+                buffer = (resource.data as Tensor).setInputGPUBuffer(device);
+                break;
+            case ResourceType.OutputTensor:
+                outTensor = (resource.data as Tensor);
+                buffer = outTensor.setOutputGPUBuffer(device);
+                outBuffer = buffer;
+                break;
+            case ResourceType.MetaInt32Array:
+                buffer = setGPUReadBuffer(new Int32Array(resource.data as number[]), DType.int32, device);
+                break;
+            case ResourceType.MetaUInt32Array:
+                buffer = setGPUReadBuffer(new Uint32Array(resource.data as number[]), DType.uint32, device);
+                break;
+            case ResourceType.MetaFloat32Array:
+                buffer = setGPUReadBuffer(new Float32Array(resource.data as number[]), DType.float32, device);
+                break;
+        }
+        buffers.push(buffer);
+    }
+
+    const shaderModule = device.createShaderModule({code: program.code});
+    const computePipeline = device.createComputePipeline({
+        compute: {
+            module: shaderModule,
+            entryPoint: program.entry
+        }
+    });
+
+    const bindGroup = createBindGroup(computePipeline, buffers, device);
+    const commandEncoder = getCommandEncoder(computePipeline, bindGroup, dispatch, device);
+    const resultBuffer = await getResult(commandEncoder, outBuffer!, outTensor!.data.byteLength, device);
+
+    let resultArray: GPUDataType;
+    switch (target) {
+        case GPUDataEnum.Int32Array: 
+            resultArray = new Int32Array(resultBuffer);
+            break;
+        case GPUDataEnum.Uint32Array:
+            resultArray = new Uint32Array(resultBuffer);
+            break;
+        case GPUDataEnum.Float32Array:
+            resultArray = new Float32Array(resultBuffer);
+            break;
+    }
+
+    return resultArray;
 }

@@ -1,46 +1,51 @@
 import batchnorm from "./wgsl/batchnorm.wgsl";
-import { createBindGroup, getCommandEncoder, getResult, loadWGSL, setGPUReadBuffer } from "../gpu";
-import { DType, Tensor, TensorBuilder } from "../tensor";
+import { computePass, GPUDataEnum, Program, Resource, ResourceType as RType } from "../gpu";
+import { Tensor, TensorBuilder } from "../tensor";
 
 const workgroup_size = 256;
 
 export async function handleBatchNorm(
-    data: Tensor,
+    input: Tensor,
     scale: Tensor,
     bias: Tensor,
     mean: Tensor,
     variance: Tensor,
     device: GPUDevice,
 ): Promise<Tensor> {
-    let output = TensorBuilder.withShape(data.shape);
+    let output = TensorBuilder.withShape(input.shape);
 
     const len = output.getLength();
-    const gpuMetaBuffer = setGPUReadBuffer(new Uint32Array([len]), DType.uint32, device);
-    const gpuDataBuffer = data.setInputGPUBuffer(device);
-    const gpuScaleBuffer = scale.setInputGPUBuffer(device);
-    const gpuBiasBuffer = bias.setInputGPUBuffer(device);
-    const gpuMeanBuffer = mean.setInputGPUBuffer(device);
-    const gpuVarianceBuffer = variance.setInputGPUBuffer(device);
-    const gpuOutputBuffer = output.setOutputGPUBuffer(device);
+    let resources: Resource[] = [
+        {
+            rtype: RType.InputTensor,
+            data: input,
+        }, {
+            rtype: RType.InputTensor,
+            data: scale,
+        }, {
+            rtype: RType.InputTensor,
+            data: bias,
+        }, {
+            rtype: RType.InputTensor,
+            data: mean,
+        }, {
+            rtype: RType.InputTensor,
+            data: variance,
+        }, {
+            rtype: RType.OutputTensor,
+            data: output
+        }, {
+            rtype: RType.MetaUInt32Array,
+            data: [len]
+        }
+    ];
+    const program: Program = {
+        code: batchnorm,
+        entry: "main"
+    };
 
-    const computePipeline = loadWGSL(batchnorm, device);
-
-    const bindGroup = createBindGroup(computePipeline, [
-        gpuDataBuffer,
-        gpuScaleBuffer,
-        gpuBiasBuffer,
-        gpuMeanBuffer,
-        gpuVarianceBuffer,
-        gpuOutputBuffer, 
-        gpuMetaBuffer
-    ], device);
-
-    const commandEncoder = getCommandEncoder(computePipeline, bindGroup, [Math.ceil(len / workgroup_size)], device);
-
-    const resultBuffer = await getResult(commandEncoder, gpuOutputBuffer, output.data.byteLength, device);
-    const resultArray = new Float32Array(resultBuffer);
-
-    output.data = resultArray;
+    const result = await computePass(resources, [Math.ceil(len / workgroup_size)], program, device, GPUDataEnum.Float32Array);
+    output.data = result;
 
     return output;
 }

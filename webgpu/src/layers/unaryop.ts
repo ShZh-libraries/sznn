@@ -1,17 +1,25 @@
-import { createBindGroup, getCommandEncoder, getResult, setGPUReadBuffer } from "../gpu";
-import { DType, Tensor, TensorBuilder } from "../tensor";
+import { computePass, GPUDataEnum, Program, Resource, ResourceType as RType } from "../gpu";
+import { Tensor, TensorBuilder } from "../tensor";
 
 const workgroup_size = 256;
 
 export async function handleUnaryOp(input: Tensor, unaryop: string, device: GPUDevice): Promise<Tensor> {
     let output = TensorBuilder.withShape(input.shape);
 
-    const gpuInputBuffer = input.setInputGPUBuffer(device);
-    const gpuOutputBuffer = output.setOutputGPUBuffer(device);
     const len = output.getLength();
-    const gpuLenBuffer = setGPUReadBuffer(new Uint32Array([len]), DType.uint32, device);
-
-    const shaderModule = device.createShaderModule({
+    let resources: Resource[] = [
+        {
+            rtype: RType.InputTensor,
+            data: input,
+        }, {
+            rtype: RType.OutputTensor,
+            data: output,
+        }, {
+            rtype: RType.MetaUInt32Array,
+            data: [len],
+        }
+    ];
+    const program: Program = {
         code: `
             @group(0) @binding(0) var<storage, read> input: array<f32>;
             @group(0) @binding(1) var<storage, write> output: array<f32>;
@@ -27,23 +35,11 @@ export async function handleUnaryOp(input: Tensor, unaryop: string, device: GPUD
                 } 
                 ${unaryop};
             }
-        `
-    });
-    const computePipeline = device.createComputePipeline({
-        compute: {
-            module: shaderModule,
-            entryPoint: "main"
-        }
-    });
-
-    const bindGroup = createBindGroup(computePipeline, [gpuInputBuffer, gpuOutputBuffer, gpuLenBuffer], device);
-
-    const commandEncoder = getCommandEncoder(computePipeline, bindGroup, [Math.ceil(len / workgroup_size)], device);
-
-    const resultBuffer = await getResult(commandEncoder, gpuOutputBuffer, output.data.byteLength, device);
-    const resultArray = new Float32Array(resultBuffer);
-
-    output.data = resultArray;
+        `,
+        entry: "main"
+    };
+    const result = await computePass(resources, [Math.ceil(len / workgroup_size)], program, device, GPUDataEnum.Float32Array);
+    output.data = result;
 
     return output;
 }
