@@ -83,7 +83,7 @@ export function getCommandEncoder(pipeline: GPUComputePipeline, group: GPUBindGr
     const passEncoder = commandEncoder.beginComputePass();
     passEncoder.setPipeline(pipeline);
     passEncoder.setBindGroup(0, group);
-    passEncoder.dispatch(dispatch[0], dispatch[1], dispatch[2]);
+    passEncoder.dispatchWorkgroups(dispatch[0], dispatch[1], dispatch[2]);
     passEncoder.end();
 
     return commandEncoder;
