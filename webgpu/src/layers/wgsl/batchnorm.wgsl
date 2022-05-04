@@ -11,7 +11,11 @@ let workgroup_size_x = 256;
 @stage(compute) 
 @workgroup_size(workgroup_size_x)
 fn main(@builtin(global_invocation_id) global_id : vec3<u32>) {
-    for (var i: u32 = global_id.x; i < len; i += u32(workgroup_size_x)) {
-        output[i] = (data[i] - mean[i]) / sqrt(variance[i]) * scale[i] + bias[i];
+    if (global_id.x >= len) {
+        return;
     }
+
+    output[global_id.x] = 
+        (data[global_id.x] - mean[global_id.x]) / sqrt(variance[global_id.x]) * scale[global_id.x] 
+        + bias[global_id.x];
 }

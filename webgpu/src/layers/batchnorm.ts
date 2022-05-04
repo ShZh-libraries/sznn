@@ -2,6 +2,8 @@ import batchnorm from "./wgsl/batchnorm.wgsl";
 import { createBindGroup, getCommandEncoder, getResult, loadWGSL, setGPUReadBuffer } from "../gpu";
 import { DType, Tensor, TensorBuilder } from "../tensor";
 
+const workgroup_size = 256;
+
 export async function handleBatchNorm(
     data: Tensor,
     scale: Tensor,
@@ -33,7 +35,7 @@ export async function handleBatchNorm(
         gpuMetaBuffer
     ], device);
 
-    const commandEncoder = getCommandEncoder(computePipeline, bindGroup, [1], device);
+    const commandEncoder = getCommandEncoder(computePipeline, bindGroup, [Math.ceil(len / workgroup_size)], device);
 
     const resultBuffer = await getResult(commandEncoder, gpuOutputBuffer, output.data.byteLength, device);
     const resultArray = new Float32Array(resultBuffer);

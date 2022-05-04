@@ -2,6 +2,8 @@ import relu from "./wgsl/relu.wgsl";
 import { createBindGroup, getCommandEncoder, getResult, loadWGSL, setGPUReadBuffer } from "../gpu";
 import { DType, Tensor, TensorBuilder } from "../tensor";
 
+const workgroup_size = 256;
+
 export async function handleRelu(input: Tensor, device: GPUDevice): Promise<Tensor> {
     let output = TensorBuilder.withShape(input.shape);
 
@@ -20,7 +22,7 @@ export async function handleRelu(input: Tensor, device: GPUDevice): Promise<Tens
         gpuAlphaBuffer,
     ], device);
 
-    const commandEncoder = getCommandEncoder(computePipeline, bindGroup, [1], device);
+    const commandEncoder = getCommandEncoder(computePipeline, bindGroup, [Math.ceil(len / workgroup_size)], device);
 
     const resultBuffer = await getResult(commandEncoder, gpuOutputBuffer, output.data.byteLength, device);
     const resultArray = new Float32Array(resultBuffer);
@@ -48,7 +50,7 @@ export async function handleLeakyRelu(input: Tensor, alpha: number, device: GPUD
         gpuAlphaBuffer,
     ], device);
 
-    const commandEncoder = getCommandEncoder(computePipeline, bindGroup, [1], device);
+    const commandEncoder = getCommandEncoder(computePipeline, bindGroup, [Math.ceil(len / workgroup_size)], device);
 
     const resultBuffer = await getResult(commandEncoder, gpuOutputBuffer, output.data.byteLength, device);
     const resultArray = new Float32Array(resultBuffer);

@@ -8,7 +8,8 @@ let workgroup_size_x = 256;
 @stage(compute) 
 @workgroup_size(workgroup_size_x)
 fn relu(@builtin(global_invocation_id) global_id : vec3<u32>) {
-    for (var i: u32 = global_id.x; i < len; i += u32(workgroup_size_x)) {
-        output[i] = max(input[i], 0.) * alpha;
+    if (global_id.x >= len) {
+        return;
     }
+    output[global_id.x] = max(input[global_id.x], 0.) * alpha;
 }
