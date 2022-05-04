@@ -1,6 +1,9 @@
 struct PoolingAttr {
-    kernel_channel: u32, kernel_height: u32, kernel_width: u32,
-    stride_y: u32, stride_x: u32,
+    kernel_channel: u32,
+    kernel_height: u32,
+    kernel_width: u32,
+    stride_y: u32,
+    stride_x: u32,
 }
 
 @group(0) @binding(0) var<storage, read> input: array<f32>;
@@ -26,26 +29,28 @@ fn conv(@builtin(global_invocation_id) global_id: vec3<u32>) {
         return;
     }
 
-    let in_start_x = out_x * attr.stride_x;
-    let in_start_y = out_y * attr.stride_y;
+    let in_x = out_x * attr.stride_x;
+    let in_y = out_y * attr.stride_y;
     let in_c = out_c;
 
-    let kernel_channel_size = attr.kernel_height * attr.kernel_width;
-    let kernel_size = attr.kernel_channel * kernel_channel_size;
-
     var sum = 0.;
-    for (var ky = 0u; ky < attr.kernel_height; ky++) {
-        for (var kx = 0u; kx < attr.kernel_width; kx++) {
-            let in_x = in_start_x + kx;
-            let in_y = in_start_y + ky;
+    let in_row_stride = in_shape[3] - attr.kernel_width;
+    let in_channel_stride = in_shape[2] * in_shape[3] - attr.kernel_height * in_shape[3];
+    var in_offset = in_y * in_shape[3] + in_x;
 
-            for (var kc = 0u; kc < attr.kernel_channel; kc++) {
-                let kernel_idx = out_c * kernel_size + kc * kernel_channel_size + ky * attr.kernel_width + kx;
-                let in_idx = kc * in_shape[2] * in_shape[3] + in_y * in_shape[3] + in_x;
+    let kernel_size = attr.kernel_channel * attr.kernel_height * attr.kernel_width;
+    var weight_offset = out_c * kernel_size;
 
-                sum += weight[kernel_idx] * input[in_idx];
+    for (var kc = 0u; kc < attr.kernel_channel; kc++) {
+        for (var ky = 0u; ky < attr.kernel_height; ky++) {
+            for (var kx = 0u; kx < attr.kernel_width; kx++) {
+                sum += weight[weight_offset] * input[in_offset];
+                in_offset++;
+                weight_offset++;
             }
+            in_offset += in_row_stride;
         }
+        in_offset += in_channel_stride;
     }
 
     let out_idx = out_c * out_shape[2] * out_shape[3] + out_y * out_shape[3] + out_x;
