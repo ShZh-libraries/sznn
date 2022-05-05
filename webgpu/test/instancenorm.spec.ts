@@ -12,16 +12,14 @@ describe("Test instancenorm layer of WebGPU backend", () => {
         const bias = TensorBuilder.withData([0, 1]);
         const output = await handleInstanceNorm(input, weight, bias, 0, device!);
 
-        console.log(output.data);
-
         expect(output.shape).deep.equal([1, 2, 1, 3]);
         expect(output.data).deep.equal(new Float32Array([
             -1.2247449159622192,
             0, 
             1.2247449159622192, 
-            -0.8371176719665527, 
-            0.9999998211860657,
-            2.8371171951293945,
+            -0.8371173739433289, 
+            1,
+            2.8371174335479736,
         ]));
     });
 });
