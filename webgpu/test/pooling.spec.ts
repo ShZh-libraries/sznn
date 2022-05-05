@@ -42,7 +42,7 @@ describe("Test pooling layer of WebGPU backend", () => {
         expect(output.data).deep.equal(new Float32Array([5, 6, 8, 9, 14, 15, 17, 18]));
     });
 
-    it("Test global average layer", async () => {
+    it("Test global average  pooling layer", async () => {
         const device = await getGPUDevice();
         const output = await handleGlobalAvgPool(data, device!);
         expect(output.shape).deep.equal([1, 2, 1, 1]);

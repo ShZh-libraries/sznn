@@ -5,7 +5,7 @@ import { getGPUDevice } from "../src/gpu";
 import { handleInstanceNorm } from "../src/layers/instancenorm";
 
 describe("Test instancenorm layer of WebGPU backend", () => {
-    it("Test normal relu layer", async () => {
+    it("Test normal instancenorm layer", async () => {
         const device = await getGPUDevice();
         const input = TensorBuilder.withData([[[[-1, 0, 1]], [[2, 3, 4]]]]);
         const weight = TensorBuilder.withData([1, 1.5]);
