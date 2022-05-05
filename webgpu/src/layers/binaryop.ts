@@ -1,5 +1,6 @@
 import { computePass, GPUDataEnum, GPUDataType, Program, Resource, ResourceType as RType } from "../gpu";
 import { Tensor, TensorBuilder } from "../tensor";
+import { arrayToVec4 } from "../utils";
 
 const workgroup_size = 256;
 
@@ -66,8 +67,8 @@ export async function handleBinaryOp(a: Tensor, b: Tensor, binaryop: string, dev
                 rtype: RType.MetaUInt32Array,
                 data: [
                     a.ndim, 0, 0, 0,
-                    aStrideVec4[0], aStrideVec4[1], aStrideVec4[2], aStrideVec4[3],
-                    aBroadcastDimVec4[0], aBroadcastDimVec4[1], aBroadcastDimVec4[2], aBroadcastDimVec4[3]
+                    ...aStrideVec4,
+                    ...aBroadcastDimVec4
                 ]
             }, {
                 rtype: RType.InputTensor,
@@ -76,8 +77,8 @@ export async function handleBinaryOp(a: Tensor, b: Tensor, binaryop: string, dev
                 rtype: RType.MetaUInt32Array,
                 data: [
                     b.ndim, 0, 0, 0,
-                    bStrideVec4[0], bStrideVec4[1], bStrideVec4[2], bStrideVec4[3],
-                    bBroadcastDimVec4[0], bBroadcastDimVec4[1], bBroadcastDimVec4[2], bBroadcastDimVec4[3]
+                    ...bStrideVec4,
+                    ...bBroadcastDimVec4
                 ]
             }, {
                 rtype: RType.OutputTensor,
@@ -86,7 +87,7 @@ export async function handleBinaryOp(a: Tensor, b: Tensor, binaryop: string, dev
                 rtype: RType.MetaUInt32Array,
                 data: [
                     len, 0, 0, 0,
-                    outStrideVec4[0], outStrideVec4[1], outStrideVec4[2], outStrideVec4[3]
+                    ...outStrideVec4
                 ]
             }
         ];
@@ -112,7 +113,7 @@ export async function handleBinaryOp(a: Tensor, b: Tensor, binaryop: string, dev
                 
                 let workgroup_size_x = 256;
                 
-                fn idxToLoc(index: u32, stride: vec4<u32>) -> vec4<u32> {
+                fn idx_to_loc(index: u32, stride: vec4<u32>) -> vec4<u32> {
                     var loc = vec4<u32>();
                     var idx = index;
                 
@@ -126,7 +127,7 @@ export async function handleBinaryOp(a: Tensor, b: Tensor, binaryop: string, dev
                     return loc;
                 }
                 
-                fn locToIdx(loc: vec4<u32>, stride: vec4<u32>) -> u32 {
+                fn loc_to_idx(loc: vec4<u32>, stride: vec4<u32>) -> u32 {
                     var index: u32 = 0u;
                 
                     for (var i: u32 = 0u; i < 4u; i++) {
@@ -136,7 +137,7 @@ export async function handleBinaryOp(a: Tensor, b: Tensor, binaryop: string, dev
                     return index;
                 }
                 
-                fn getLoc(out_loc: vec4<u32>, dim: u32, broadcast_dim: vec4<u32>) -> vec4<u32> {
+                fn get_loc(out_loc: vec4<u32>, dim: u32, broadcast_dim: vec4<u32>) -> vec4<u32> {
                     var loc = vec4<u32>();
                 
                     for (var i: u32 = 4u - dim; i < 4u; i++) {
@@ -156,13 +157,13 @@ export async function handleBinaryOp(a: Tensor, b: Tensor, binaryop: string, dev
                         return;
                     }
 
-                    let out_loc = idxToLoc(global_id.x, out_meta.stride);
+                    let out_loc = idx_to_loc(global_id.x, out_meta.stride);
                 
-                    let a_loc = getLoc(out_loc, a_meta.dim, a_meta.broadcast_dim);
-                    let a_idx = locToIdx(a_loc, a_meta.stride);
+                    let a_loc = get_loc(out_loc, a_meta.dim, a_meta.broadcast_dim);
+                    let a_idx = loc_to_idx(a_loc, a_meta.stride);
             
-                    let b_loc = getLoc(out_loc, b_meta.dim, b_meta.broadcast_dim);
-                    let b_idx = locToIdx(b_loc, b_meta.stride);
+                    let b_loc = get_loc(out_loc, b_meta.dim, b_meta.broadcast_dim);
+                    let b_idx = loc_to_idx(b_loc, b_meta.stride);
             
                     out[global_id.x] = a[a_idx] ${binaryop} b[b_idx]; 
                 }
@@ -215,13 +216,4 @@ function getBroadcastDims(shape: number[], resultShape: number[]): number[] {
         }
     }
     return result;
-}
-
-function arrayToVec4(arr: number[]) {
-    let vec4 = [0, 0, 0, 0];
-    for (let i = 0; i < arr.length; i++) {
-        vec4[3 - i] = arr[arr.length - 1 - i];
-    }
-
-    return vec4;
 }
