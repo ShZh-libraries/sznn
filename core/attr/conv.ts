@@ -11,7 +11,7 @@ export class ConvAttr {
 
   getPaddingAttr(): PaddingAttr {
     let paddingAttr = new PaddingAttr();
-    paddingAttr.pads = this.pads;
+    paddingAttr.pads = [0, 0, this.pads[0], this.pads[1], 0, 0, this.pads[2], this.pads[3]];
     return paddingAttr;
   }
 }
