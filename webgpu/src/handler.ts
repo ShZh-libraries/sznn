@@ -2,18 +2,26 @@ import { onnx } from "onnx-proto";
 import { getConvAttr } from "../../core/attr/conv";
 import { getPaddingAttr } from "../../core/attr/padding";
 import { getPoolingAttr } from "../../core/attr/pooling";
+import { getSliceAttr } from "../../core/attr/slice";
 import { getGPUDevice } from "./gpu";
 import { handleBatchNorm } from "./layers/batchnorm";
 import { handleBinaryOp } from "./layers/binaryop";
+import { handleCast } from "./layers/cast";
 import { handleConcat } from "./layers/concat";
+import { handleConstant } from "./layers/constant";
 import { handleConv } from "./layers/conv";
 import { handleDropout } from "./layers/dropout";
+import { handleGather } from "./layers/gather";
+import { handleInstanceNorm } from "./layers/instancenorm";
 import { handlePadding } from "./layers/padding";
 import { handleAvgPool2D, handleGlobalAvgPool, handleMaxPool2D } from "./layers/pooling";
 import { handleLeakyRelu, handleRelu } from "./layers/relu";
 import { handleReshape } from "./layers/reshape";
 import { handleShape } from "./layers/shape";
+import { handleSlice } from "./layers/slice";
 import { handleUnaryOp } from "./layers/unaryop";
+import { handleUnsqueeze } from "./layers/unsqueeze";
+import { handleUpSample } from "./layers/upsample";
 import { Tensor } from "./tensor";
 
 export async function handle(
@@ -22,7 +30,7 @@ export async function handle(
     attrs: onnx.AttributeProto[]
 ): Promise<Tensor | Tensor[]> {
     let output: Tensor | Tensor[];
-    
+
     const device = await getGPUDevice()
     switch (opType) {
         case "Conv": {
@@ -191,11 +199,43 @@ export async function handle(
             output = handleReshape(inputs[0], shape);
             break;
         }
+        case "Cast": {
+            const to = attrs[0].i as number;
+            output = handleCast(inputs[0], to);
+            break;
+        }
+        case "Constant": {
+            output = handleConstant(attrs);
+            break;
+        }
+        case "Gather": {
+            output = handleGather(inputs[0], inputs[1]);
+            break;
+        }
+        case "InstanceNormalization": {
+            const epsilon = attrs[0].f;
+            output = await handleInstanceNorm(inputs[0], inputs[1], inputs[2], epsilon, device!);
+            break;
+        }
+        case "Slice": {
+            const attr = getSliceAttr(attrs);
+            output = handleSlice(inputs[0], attr);
+            break;
+        }
+        case "Unsqueeze": {
+            const dims = attrs[0].ints as number[];
+            output = handleUnsqueeze(inputs[0], dims);
+            break;
+        }
+        case "Upsample": {
+            output = await handleUpSample(inputs[0], inputs[1], device!);
+            break;
+        }
         default:
             throw new Error(`Unknown op type ${opType}!`);
     }
 
-    // console.log(opType, output);
+    console.log(opType, output);
 
     return output;
 }

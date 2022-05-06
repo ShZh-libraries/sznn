@@ -37,5 +37,8 @@ export function handleConstant(attributes: onnx.AttributeProto[]): Tensor {
       throw Error("Data type not support in ONNX!!");
   }
 
+  output.dtype = DType.float32;
+  output.data = new Float32Array([...output.data]);
+
   return output;
 }
