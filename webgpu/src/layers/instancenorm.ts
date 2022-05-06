@@ -11,9 +11,6 @@ async function caclMean(input: Tensor, temp: Tensor, device: GPUDevice) {
         {
             rtype: RType.InputTensor,
             data: input,
-        },  {
-            rtype: RType.OutputTensor,
-            data: temp,
         }, {
             rtype: RType.OutputTensor,
             data: means,
@@ -44,9 +41,6 @@ async function calcVariance(input: Tensor, means: Tensor, temp: Tensor, device: 
         }, {
             rtype: RType.InputTensor,
             data: means,
-        }, {
-            rtype: RType.OutputTensor,
-            data: temp,
         }, {
             rtype: RType.OutputTensor,
             data: variances,

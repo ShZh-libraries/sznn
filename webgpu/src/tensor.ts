@@ -86,10 +86,10 @@ export class Tensor {
         const arrayBuffer = gpuBuffer.getMappedRange();
         switch (this.dtype) {
             // case DType.int32:
-            //     new Int32Array(arrayBuffer).set(input.data);
+            //     new Int32Array(arrayBuffer).set(this.data);
             //     break;
             // case DType.uint32:
-            //     new Uint32Array(arrayBuffer).set(input.data);
+            //     new Uint32Array(arrayBuffer).set(this.data);
             //     break;
             case DType.float32:
                 new Float32Array(arrayBuffer).set(this.data);

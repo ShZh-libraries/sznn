@@ -4,12 +4,13 @@ import { Tensor, TensorBuilder } from "../tensor";
 import { PaddingAttr } from "../../../core/attr/padding";
 
 export async function handlePadding(input: Tensor, attr: PaddingAttr, device: GPUDevice): Promise<Tensor> {
-    let out_shape = [
-        input.shape[0], input.shape[1], 
-        input.shape[2] + attr.pads[0] + attr.pads[2],
-        input.shape[3] + attr.pads[1] + attr.pads[3]
-    ];
-    let output = TensorBuilder.withShape(out_shape);
+    let outputShape = [];
+    for (let index = 0; index < input.ndim; index++) {
+      outputShape.push(
+        attr.pads[index] + input.shape[index] + attr.pads[index + input.ndim]
+      );
+    }
+    let output = TensorBuilder.withShape(outputShape);
 
     let resources: Resource[] = [
         {
@@ -26,7 +27,7 @@ export async function handlePadding(input: Tensor, attr: PaddingAttr, device: GP
             data: output.shape,
         }, {
             rtype: RType.MetaUInt32Array,
-            data: [attr.pads[0], attr.pads[1], attr.pads[2], attr.pads[3]],
+            data: [attr.pads[2], attr.pads[3], attr.pads[6], attr.pads[7]],
         }
     ];
     const program: Program = {
