@@ -1,20 +1,24 @@
 cargo-features = ["edition2021"]
 
 [package]
-name = "wasm"
+name = "sznn_wasm"
 version = "0.1.0"
 edition = "2021"
 
 [lib]
-crate-type = ["cdylib"]
+name = "sznn_wasm"
+crate-type = ["cdylib", "rlib"]
 
 [dependencies]
-wasm-bindgen = "0.2.74"
-rayon = "1.5"
-wasm-bindgen-rayon = "1.0"
-js-sys = "0.3.56"
-console_error_panic_hook = "0.1.6"
-web-sys = { version="0.3.56", features= ["console"] }
+wasm-bindgen = "= 0.2.78"
+rayon = "= 1.5.1"
+wasm-bindgen-rayon = "= 1.0.3"
+js-sys = "= 0.3.55"
+console_error_panic_hook = "= 0.1.7"
+web-sys = { version="= 0.3.55", features= ["console"] }
+
+[dev-dependencies]
+wasm-bindgen-test = "= 0.3.28"
 
 [package.metadata.wasm-pack.profile.dev.wasm-bindgen]
 debug-js-glue = true
