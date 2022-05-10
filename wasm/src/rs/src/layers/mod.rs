@@ -1,4 +1,4 @@
-pub mod abs;
+pub mod unaryop;
 pub mod batchnorm;
 pub mod concat;
 pub mod conv;
