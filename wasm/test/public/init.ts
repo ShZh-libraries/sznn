@@ -4,10 +4,17 @@ import { TensorDataType } from "../../src/tensor";
 
 // Import functionality from Web workers
 // And re-export at the end
-const { handleAbs, withAllArgs } = Comlink.wrap(
+const { 
+    handleAbs, 
+    handleNeg,
+    handleSigmoid,
+    withAllArgs 
+} = Comlink.wrap(
     new Worker(new URL("./worker.ts", import.meta.url))
 ) as {
     handleAbs: (input: Tensor) => Promise<Tensor>;
+    handleNeg: (input: Tensor) => Promise<Tensor>;
+    handleSigmoid: (input: Tensor) => Promise<Tensor>;
     withAllArgs: (data: TensorDataType, shape: number[], dtype?: DType | undefined) => Promise<Tensor>;
 }
 
@@ -22,5 +29,7 @@ class TensorBuilderWrapper {
 export {
     Tensor,
     handleAbs,
+    handleNeg,
+    handleSigmoid,
     TensorBuilderWrapper as TensorBuilder
 };

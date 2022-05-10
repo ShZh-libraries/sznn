@@ -1,4 +1,9 @@
-import init, { initThreadPool, handleAbs as handleAbsWasm, Tensor } from "../../src/rs/pkg";
+import init, { initThreadPool, 
+    handleAbs as handleAbsWasm, 
+    handleNeg as handleNegWasm,
+    handleSigmoid as handleSigmoidWasm,
+    Tensor 
+} from "../../src/rs/pkg";
 import { TensorBuilder as WasmBuilder } from "../../src/tensor";
 
 import * as Comlink from "comlink";
@@ -28,9 +33,25 @@ function handleAbs(ptr: Tensor) {
     return Comlink.proxy(output);
 }
 
+function handleNeg(ptr: Tensor) {
+    const input = wrap(ptr);
+    const output = handleNegWasm(input);
+    
+    return Comlink.proxy(output);
+}
+
+function handleSigmoid(ptr: Tensor) {
+    const input = wrap(ptr);
+    const output = handleSigmoidWasm(input);
+
+    return Comlink.proxy(output);
+}
+
 // Use Comlink to expose the functionality of Web workers
 Comlink.expose({
     handleAbs,
+    handleNeg,
+    handleSigmoid,
     withAllArgs: WasmBuilder.withAllArgs,
 })
 
