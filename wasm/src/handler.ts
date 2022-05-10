@@ -15,6 +15,28 @@ import {
   handleRelu,
   handleReshape,
   handleShape,
+  handleAbs,
+  handleACos,
+  handleACosh,
+  handleASin,
+  handleASinh,
+  handleATan,
+  handleATanh,
+  handleCeil,
+  handleFloor,
+  handleRound,
+  handleCos,
+  handleCosh,
+  handleIdentity,
+  handleLog,
+  handleNeg,
+  handleSign,
+  handleSin,
+  handleSinh,
+  handleSqrt,
+  handleSigmoid,
+  handleTan,
+  handleTanh,
 } from "./rs/pkg";
 
 function Inputs2TensorList(inputs: Tensor[]): TensorList {
@@ -59,6 +81,94 @@ export function handle(
         inputs[3],
         inputs[4]
       );
+      break;
+    }
+    case "Abs": {
+      output = handleAbs(inputs[0]);
+      break;
+    }
+    case "Acos": {
+      output = handleACos(inputs[0]);
+      break;
+    }
+    case "Acosh": {
+      output = handleACosh(inputs[0]);
+      break;
+    }
+    case "Asin": {
+      output = handleASin(inputs[0]);
+      break;
+    }
+    case "Asinh": {
+      output = handleASinh(inputs[0]);
+      break;
+    }
+    case "Atan": {
+      output = handleATan(inputs[0]);
+      break;
+    }
+    case "Atanh": {
+      output = handleATanh(inputs[0]);
+      break;
+    }
+    case "Ceil": {
+      output = handleCeil(inputs[0]);
+      break;
+    }
+    case "Floor": {
+      output = handleFloor(inputs[0]);
+      break;
+    }
+    case "Round": {
+      output = handleRound(inputs[0]);
+      break;
+    }
+    case "Cos": {
+      output = handleCos(inputs[0]);
+      break;
+    }
+    case "Cosh": {
+      output = handleCosh(inputs[0]);
+      break;
+    }
+    case "Identity": {
+      output = handleIdentity(inputs[0]);
+      break;
+    }
+    case "Log": {
+      output = handleLog(inputs[0]);
+      break;
+    }
+    case "Neg": {
+      output = handleNeg(inputs[0]);
+      break;
+    }
+    case "Sign": {
+      output = handleSign(inputs[0]);
+      break;
+    }
+    case "Sin": {
+      output = handleSin(inputs[0]);
+      break;
+    }
+    case "Sinh": {
+      output = handleSinh(inputs[0]);
+      break;
+    }
+    case "Sqrt": {
+      output = handleSqrt(inputs[0]);
+      break;
+    }
+    case "Sigmoid": {
+      output = handleSigmoid(inputs[0]);
+      break;
+    }
+    case "Tan": {
+      output = handleTan(inputs[0]);
+      break;
+    }
+    case "Tanh": {
+      output = handleTanh(inputs[0]);
       break;
     }
     case "Concat": {
