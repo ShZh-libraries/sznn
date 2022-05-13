@@ -8,4 +8,5 @@ before((done) => {
 import "./binaryop.spec";
 import "./concat.spec";
 import "./conv.spec";
+import "./pooling.spec";
 import "./unaryop.spec";

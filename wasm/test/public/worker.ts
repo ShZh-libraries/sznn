@@ -7,6 +7,9 @@ import init, {
     handleMul,
     handleConcat,
     handleConv,
+    handleMaxPool2D,
+    handleAvgPool2D,
+    handleGlobalAvgPool,
 } from "../../src/rs/pkg";
 import { TensorBuilder as WasmBuilder } from "../../src/tensor";
 
@@ -62,6 +65,18 @@ function handleConvWrapper(kH: number, kW: number, pT: number, pL: number, pB: n
     return Comlink.proxy(output);
 }
 
+function handleMaxPoolWrapper(inputPtr: Tensor, kH: number, kW: number, pT: number, pL: number, pB: number, pR: number, sY: number, sX: number) {
+    const input = wrap(inputPtr);
+    const output = handleMaxPool2D(input, kH, kW, pT, pL, pB, pR, sY, sX);
+    return Comlink.proxy(output);
+}
+
+function handleAvgPoolWrapper(inputPtr: Tensor, kH: number, kW: number, pT: number, pL: number, pB: number, pR: number, sY: number, sX: number) {
+    const input = wrap(inputPtr);
+    const output = handleAvgPool2D(input, kH, kW, pT, pL, pB, pR, sY, sX);
+    return Comlink.proxy(output);
+}
+
 
 // Use Comlink to expose the functionality of Web workers
 Comlink.expose({
@@ -72,6 +87,9 @@ Comlink.expose({
     handleMul: wrapFn(handleMul),
     handleConcat: handleConcatWrapper,
     handleConv: handleConvWrapper,
+    handleMaxPool2D: handleMaxPoolWrapper,
+    handleAvgPool2D: handleAvgPoolWrapper,
+    handleGlobalAvgPool: wrapFn(handleGlobalAvgPool),
     withAllArgs: WasmBuilder.withAllArgs,
 })
 

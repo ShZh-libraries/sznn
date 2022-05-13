@@ -12,6 +12,9 @@ const {
     handleMul,
     handleConcat,
     handleConv,
+    handleMaxPool2D,
+    handleAvgPool2D,
+    handleGlobalAvgPool,
     withAllArgs 
 } = Comlink.wrap(
     new Worker(new URL("./worker.ts", import.meta.url))
@@ -23,6 +26,9 @@ const {
     handleMul: (a: Tensor, b: Tensor) => Promise<Tensor>;
     handleConcat: (inputs: Tensor[], axis: number) => Promise<Tensor>;
     handleConv: (kH: number, kW: number, pT: number, pL: number, pB: number, pR: number, sY: number, sX: number, input: Tensor, weight: Tensor, bias?: Tensor) => Promise<Tensor>;
+    handleMaxPool2D: (input: Tensor, kH: number, kW: number, pT: number, pL: number, pB: number, pR: number, sY: number, sX: number) => Promise<Tensor>;
+    handleAvgPool2D: (input: Tensor, kH: number, kW: number, pT: number, pL: number, pB: number, pR: number, sY: number, sX: number) => Promise<Tensor>;
+    handleGlobalAvgPool: (input: Tensor) => Promise<Tensor>;
     withAllArgs: (data: TensorDataType, shape: number[], dtype?: DType | undefined) => Promise<Tensor>;
 }
 
@@ -43,5 +49,8 @@ export {
     handleAdd,
     handleConcat,
     handleConv,
+    handleMaxPool2D,
+    handleAvgPool2D,
+    handleGlobalAvgPool,
     TensorBuilderWrapper as TensorBuilder
 };
