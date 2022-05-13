@@ -245,6 +245,15 @@ impl Tensor {
         self.shape.iter().fold(1, |res, val| res * val)
     }
 
+    pub fn get_stride(&self) -> Vec<usize> {
+        let mut stride: Vec<usize> = vec![1];
+        for index in 1..self.shape.len() {
+            stride.insert(0, stride[0] * self.shape[self.shape.len() - index]);
+        }
+
+        stride
+    }
+
     #[inline]
     pub fn set_data(&mut self, data: DTypes) {
         self.data = data;

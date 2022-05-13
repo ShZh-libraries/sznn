@@ -1,3 +1,4 @@
+pub mod binaryop;
 pub mod unaryop;
 pub mod batchnorm;
 pub mod concat;
