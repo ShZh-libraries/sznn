@@ -37,6 +37,10 @@ import {
   handleSigmoid,
   handleTan,
   handleTanh,
+  handleAdd,
+  handleSub,
+  handleMul,
+  handleDiv,
 } from "./rs/pkg";
 
 function Inputs2TensorList(inputs: Tensor[]): TensorList {
@@ -169,6 +173,22 @@ export function handle(
     }
     case "Tanh": {
       output = handleTanh(inputs[0]);
+      break;
+    }
+    case "Add": {
+      output = handleAdd(inputs[0], inputs[1]);
+      break;
+    }
+    case "Sub": {
+      output = handleSub(inputs[0], inputs[1]);
+      break;
+    }
+    case "Mul": {
+      output = handleMul(inputs[0], inputs[1]);
+      break;
+    }
+    case "Div": {
+      output = handleDiv(inputs[0], inputs[1]);
       break;
     }
     case "Concat": {
