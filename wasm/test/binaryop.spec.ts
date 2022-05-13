@@ -1,11 +1,6 @@
 import { expect } from "chai";
 import { TensorBuilder, handleAdd, handleMul } from "./public/init";
 
-// Wait for initializaiton done
-before((done) => {
-    setTimeout(done, 500);
-})
-
 describe("Test binary op of WASM backends", () => {
     it("Test add operation", async () => {
         const a = await TensorBuilder.withAllArgs(

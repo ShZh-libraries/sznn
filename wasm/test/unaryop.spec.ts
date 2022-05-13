@@ -2,11 +2,6 @@ import { expect } from "chai";
 
 import { handleAbs, handleNeg, handleSigmoid, TensorBuilder } from "./public/init";
 
-// Wait for initializaiton done
-before((done) => {
-    setTimeout(done, 500);
-})
-
 describe("Test unary op of WASM backend", () => {
     it("Test normal abs layer", async () => {
         const inputPtr = await TensorBuilder.withAllArgs(
