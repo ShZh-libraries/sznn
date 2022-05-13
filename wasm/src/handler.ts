@@ -3,7 +3,6 @@ import { getConvAttr } from "../../core/attr/conv";
 import { getPoolingAttr } from "../../core/attr/pooling";
 import {
   Tensor,
-  TensorList,
   handleAvgPool2D,
   handleBatchNorm,
   handleConcat,
@@ -42,15 +41,7 @@ import {
   handleMul,
   handleDiv,
 } from "./rs/pkg";
-
-function Inputs2TensorList(inputs: Tensor[]): TensorList {
-  let list = new TensorList();
-  for (let input of inputs) {
-    list.append(input);
-  }
-
-  return list;
-}
+import { tensorList } from "./utils";
 
 export function handle(
   opType: string,
@@ -193,7 +184,7 @@ export function handle(
     }
     case "Concat": {
       const axis = attrs[0].i as number;
-      const list = Inputs2TensorList(inputs);
+      const list = tensorList(inputs);
       output = handleConcat(list, axis);
       break;
     }
