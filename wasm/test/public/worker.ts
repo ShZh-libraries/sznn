@@ -6,6 +6,7 @@ import init, {
     handleAdd,
     handleMul,
     handleConcat,
+    handleConv,
 } from "../../src/rs/pkg";
 import { TensorBuilder as WasmBuilder } from "../../src/tensor";
 
@@ -51,6 +52,17 @@ function handleConcatWrapper(ptrs: Tensor[], axis: number) {
     return Comlink.proxy(output);
 }
 
+function handleConvWrapper(kH: number, kW: number, pT: number, pL: number, pB: number, pR: number, sY: number, sX: number, inputPtr: Tensor, weightPtr: Tensor, biasPtr?: Tensor) {
+    const input = wrap(inputPtr);
+    const weight = wrap(weightPtr);
+    const bias = biasPtr? wrap(biasPtr) : biasPtr;
+
+    const output = handleConv(kH, kW, pT, pL, pB, pR, sY, sX, input, weight, bias);
+
+    return Comlink.proxy(output);
+}
+
+
 // Use Comlink to expose the functionality of Web workers
 Comlink.expose({
     handleAbs: wrapFn(handleAbs),
@@ -59,6 +71,7 @@ Comlink.expose({
     handleAdd: wrapFn(handleAdd),
     handleMul: wrapFn(handleMul),
     handleConcat: handleConcatWrapper,
+    handleConv: handleConvWrapper,
     withAllArgs: WasmBuilder.withAllArgs,
 })
 

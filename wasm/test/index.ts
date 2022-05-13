@@ -7,4 +7,5 @@ before((done) => {
 
 import "./binaryop.spec";
 import "./concat.spec";
+import "./conv.spec";
 import "./unaryop.spec";
