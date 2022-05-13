@@ -1,10 +1,10 @@
-import init, { initThreadPool, 
-    handleAbs as handleAbsWasm, 
-    handleNeg as handleNegWasm,
-    handleSigmoid as handleSigmoidWasm,
-    handleAdd as handleAddWasm,
-    handleMul as handleMulWasm,
-    Tensor 
+import init, { 
+    Tensor, initThreadPool, 
+    handleAbs, 
+    handleNeg,
+    handleSigmoid,
+    handleAdd,
+    handleMul,
 } from "../../src/rs/pkg";
 import { TensorBuilder as WasmBuilder } from "../../src/tensor";
 
@@ -27,51 +27,27 @@ function wrap(ptr: Tensor) {
 
 // In order not to lose type information of our tensors
 // Use `Comlink.proxy` to wrap the return value
-
-function handleAbs(ptr: Tensor) {
-    const input = wrap(ptr);
-    const output = handleAbsWasm(input);
-
-    return Comlink.proxy(output);
-}
-
-function handleNeg(ptr: Tensor) {
-    const input = wrap(ptr);
-    const output = handleNegWasm(input);
-    
-    return Comlink.proxy(output);
-}
-
-function handleSigmoid(ptr: Tensor) {
-    const input = wrap(ptr);
-    const output = handleSigmoidWasm(input);
-
-    return Comlink.proxy(output);
-}
-
-function handleAdd(ptr1: Tensor, ptr2: Tensor) {
-    const a = wrap(ptr1);
-    const b = wrap(ptr2);
-    const output = handleAddWasm(a, b);
-
-    return Comlink.proxy(output);
-}
-
-function handleMul(ptr1: Tensor, ptr2: Tensor) {
-    const a = wrap(ptr1);
-    const b = wrap(ptr2);
-    const output = handleMulWasm(a, b);
-
-    return Comlink.proxy(output);
+function wrapFn(fn: Function) {
+    return function() {
+        // Parameters
+        var args = [];
+        for (let i = 0; i < arguments.length; i++) {
+            args.push(wrap(arguments[i]));
+        }
+        // Function call
+        const output = fn(...args);
+        // Return value
+        return Comlink.proxy(output);
+    }
 }
 
 // Use Comlink to expose the functionality of Web workers
 Comlink.expose({
-    handleAbs,
-    handleNeg,
-    handleSigmoid,
-    handleAdd,
-    handleMul,
+    handleAbs: wrapFn(handleAbs),
+    handleNeg: wrapFn(handleNeg),
+    handleSigmoid: wrapFn(handleSigmoid),
+    handleAdd: wrapFn(handleAdd),
+    handleMul: wrapFn(handleMul),
     withAllArgs: WasmBuilder.withAllArgs,
 })
 
