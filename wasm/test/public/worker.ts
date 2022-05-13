@@ -5,10 +5,12 @@ import init, {
     handleSigmoid,
     handleAdd,
     handleMul,
+    handleConcat,
 } from "../../src/rs/pkg";
 import { TensorBuilder as WasmBuilder } from "../../src/tensor";
 
 import * as Comlink from "comlink";
+import { tensorList } from "../../src/utils";
 
 // Initialization WebAssembly in dedicated worker
 (async () => {
@@ -41,6 +43,14 @@ function wrapFn(fn: Function) {
     }
 }
 
+// Specialization
+function handleConcatWrapper(ptrs: Tensor[], axis: number) {
+    const tensors = ptrs.map(ptr => wrap(ptr));
+    const list = tensorList(tensors);
+    const output = handleConcat(list, axis);
+    return Comlink.proxy(output);
+}
+
 // Use Comlink to expose the functionality of Web workers
 Comlink.expose({
     handleAbs: wrapFn(handleAbs),
@@ -48,6 +58,7 @@ Comlink.expose({
     handleSigmoid: wrapFn(handleSigmoid),
     handleAdd: wrapFn(handleAdd),
     handleMul: wrapFn(handleMul),
+    handleConcat: handleConcatWrapper,
     withAllArgs: WasmBuilder.withAllArgs,
 })
 

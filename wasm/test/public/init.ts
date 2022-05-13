@@ -10,6 +10,7 @@ const {
     handleSigmoid,
     handleAdd,
     handleMul,
+    handleConcat,
     withAllArgs 
 } = Comlink.wrap(
     new Worker(new URL("./worker.ts", import.meta.url))
@@ -19,6 +20,7 @@ const {
     handleSigmoid: (input: Tensor) => Promise<Tensor>;
     handleAdd: (a: Tensor, b: Tensor) => Promise<Tensor>;
     handleMul: (a: Tensor, b: Tensor) => Promise<Tensor>;
+    handleConcat: (inputs: Tensor[], axis: number) => Promise<Tensor>;
     withAllArgs: (data: TensorDataType, shape: number[], dtype?: DType | undefined) => Promise<Tensor>;
 }
 
@@ -37,5 +39,6 @@ export {
     handleNeg,
     handleSigmoid,
     handleAdd,
+    handleConcat,
     TensorBuilderWrapper as TensorBuilder
 };
