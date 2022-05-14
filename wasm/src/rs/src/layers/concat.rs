@@ -71,7 +71,7 @@ pub fn handle_concat(inputs: TensorList, axis: usize) -> Tensor {
     }
 
     let out_shape = get_concat_shape(&inputs, axis);
-    let transformed_tensors = inputs
+    let transformed = inputs
         .iter()
         .map(|input| {
             let shape = input.get_shape();
@@ -85,8 +85,8 @@ pub fn handle_concat(inputs: TensorList, axis: usize) -> Tensor {
         })
         .collect();
 
-    let mut transformed_result = concat_2D_axis_1(transformed_tensors);
-    transformed_result.reshape(out_shape)
+    let mut result = concat_2D_axis_1(transformed);
+    result.reshape(out_shape)
 }
 
 fn get_concat_shape(inputs: &Vec<Tensor>, axis: usize) -> Vec<usize> {
