@@ -1,6 +1,7 @@
 pub mod binaryop;
 pub mod unaryop;
 pub mod batchnorm;
+pub mod cast;
 pub mod concat;
 pub mod conv;
 pub mod dropout;
