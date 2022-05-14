@@ -242,7 +242,7 @@ impl Tensor {
 
     #[inline]
     pub fn get_length(&self) -> usize {
-        self.shape.iter().fold(1, |res, val| res * val)
+        self.shape.iter().product()
     }
 
     pub fn get_stride(&self) -> Vec<usize> {

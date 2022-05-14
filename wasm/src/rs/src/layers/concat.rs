@@ -74,16 +74,12 @@ pub fn handle_concat(inputs: TensorList, axis: usize) -> Tensor {
     let transformed_tensors = inputs
         .iter()
         .map(|input| {
-            let height;
-            let width;
             let shape = input.get_shape();
-            if axis != 0 {
-                height = shape[..axis].iter().fold(1, |sum, val| sum * *val);
-                width = shape[axis..].iter().fold(1, |sum, val| sum * *val);
+            let (height, width) = if axis != 0 {
+                (shape[..axis].iter().product(), shape[axis..].iter().product())
             } else {
-                height = 1;
-                width = shape.iter().fold(1, |sum, val| sum * *val);
-            }
+                (1, shape.iter().product())
+            };
 
             input.clone().reshape(vec![height, width])
         })
