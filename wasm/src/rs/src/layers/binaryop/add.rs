@@ -2,7 +2,7 @@ use paste::paste;
 use rayon::prelude::*;
 use wasm_bindgen::{prelude::*};
 
-use crate::{DTypes, Tensor};
+use crate::{DTypes, Tensor, layers::extract_data};
 use std::{arch::wasm32::*, sync::Mutex, mem};
 
 use super::*;

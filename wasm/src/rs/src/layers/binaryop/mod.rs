@@ -3,16 +3,6 @@ mod sub;
 mod mul;
 mod div;
 
-macro_rules! extract_data {
-    ($tensor: expr, $vari: path) => {
-        if let $vari(data) = $tensor.get_data() {
-            data
-        } else {
-            panic!("The data types of tensors do not match!")
-        }
-    };
-}
-
 macro_rules! par {
     ($a: expr, $b: expr, $typ: ty) => {
         {
@@ -62,10 +52,10 @@ macro_rules! broadcast_inner {
             (0..$out_len).into_par_iter().for_each(|i| {
                 let out_loc = idx_to_loc(i, &$out_stride);
     
-                let a_loc = get_broadcast_loc(&out_loc, $a_dim, &*$a_broadcast_dim);
+                let a_loc = get_broadcast_loc(&out_loc, $a_dim, $a_broadcast_dim);
                 let a_idx = loc_to_idx(&a_loc, &$a_stride);
     
-                let b_loc = get_broadcast_loc(&out_loc, $b_dim, &*$b_broadcast_dim);
+                let b_loc = get_broadcast_loc(&out_loc, $b_dim, $b_broadcast_dim);
                 let b_idx = loc_to_idx(&b_loc, &$b_stride);
     
                 let value = $a[a_idx] $op $b[b_idx];
@@ -273,7 +263,6 @@ fn get_broadcast_loc(out_loc: &Vec<usize>, dim: usize, broadcast_dim: &Vec<usize
     loc
 }
 
-pub(crate) use extract_data;
 pub(crate) use par;
 pub(crate) use simd_par;
 pub(crate) use broadcast_inner;
