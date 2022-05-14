@@ -1,8 +1,54 @@
 #![allow(non_snake_case)]
 
+use rayon::prelude::*;
 use wasm_bindgen::prelude::wasm_bindgen;
 
 use crate::{DTypes, Tensor, TensorList};
+
+use super::extract_data;
+
+macro_rules! concat_1d {
+    ($inputs: expr, $typ: path) => {
+        {
+            let mut inputs_data = Vec::new();
+            for input in $inputs.iter() {
+                let data = extract_data!(input, $typ);
+                inputs_data.push(data);
+            }
+
+            inputs_data.into_par_iter().flatten().cloned().collect::<Vec<_>>()
+        }
+    };
+}
+
+macro_rules! concat_2d_axis_0 {
+    ($inputs: expr, $typ: path) => {
+        {
+            concat_1d!($inputs, $typ)
+        }
+    };
+}
+
+macro_rules! concat_2d_axis_1 {
+    ($inputs: expr, $typ: path, $height: expr, $width: expr) => {
+        {
+            let mut inputs_data = Vec::new();
+            let mut offset = 0;
+
+            (0..$height).into_iter().for_each(|_| {
+                for input in $inputs.iter() {
+                    let data = extract_data!(input, $typ);
+
+                    inputs_data.push(&data[offset..(offset + $width)]);
+                }
+
+                offset += $width;
+            });
+
+            inputs_data.into_par_iter().flatten().cloned().collect::<Vec<_>>()
+        }
+    };
+}
 
 #[wasm_bindgen(js_name = handleConcat)]
 pub fn handle_concat(inputs: TensorList, axis: usize) -> Tensor {
@@ -67,142 +113,14 @@ fn concat_1D(inputs: Vec<Tensor>) -> Tensor {
         .unwrap();
 
     let out_data = match *inputs[0].get_data() {
-        DTypes::I8(_) => {
-            let mut out_data = Vec::new();
-            for input in inputs.iter() {
-                let data = if let DTypes::I8(data) = &*(*input).get_data() {
-                    data
-                } else {
-                    panic!("The input data's type does not match")
-                };
-                let shape = input.get_shape();
-
-                for idx in 0..shape[0] {
-                    out_data.push(data[idx]);
-                }
-            }
-
-            DTypes::I8(out_data)
-        }
-        DTypes::I16(_) => {
-            let mut out_data = Vec::new();
-            for input in inputs.iter() {
-                let data = if let DTypes::I16(data) = &*(*input).get_data() {
-                    data
-                } else {
-                    panic!("The input data's type does not match")
-                };
-                let shape = input.get_shape();
-
-                for idx in 0..shape[0] {
-                    out_data.push(data[idx]);
-                }
-            }
-
-            DTypes::I16(out_data)
-        }
-        DTypes::I32(_) => {
-            let mut out_data = Vec::new();
-            for input in inputs.iter() {
-                let data = if let DTypes::I32(data) = &*(*input).get_data() {
-                    data
-                } else {
-                    panic!("The input data's type does not match")
-                };
-                let shape = input.get_shape();
-
-                for idx in 0..shape[0] {
-                    out_data.push(data[idx]);
-                }
-            }
-
-            DTypes::I32(out_data)
-        }
-        DTypes::U8(_) => {
-            let mut out_data = Vec::new();
-            for input in inputs.iter() {
-                let data = if let DTypes::U8(data) = &*(*input).get_data() {
-                    data
-                } else {
-                    panic!("The input data's type does not match")
-                };
-                let shape = input.get_shape();
-
-                for idx in 0..shape[0] {
-                    out_data.push(data[idx]);
-                }
-            }
-
-            DTypes::U8(out_data)
-        }
-        DTypes::U16(_) => {
-            let mut out_data = Vec::new();
-            for input in inputs.iter() {
-                let data = if let DTypes::U16(data) = &*(*input).get_data() {
-                    data
-                } else {
-                    panic!("The input data's type does not match")
-                };
-                let shape = input.get_shape();
-
-                for idx in 0..shape[0] {
-                    out_data.push(data[idx]);
-                }
-            }
-
-            DTypes::U16(out_data)
-        }
-        DTypes::U32(_) => {
-            let mut out_data = Vec::new();
-            for input in inputs.iter() {
-                let data = if let DTypes::U32(data) = &*(*input).get_data() {
-                    data
-                } else {
-                    panic!("The input data's type does not match")
-                };
-                let shape = input.get_shape();
-
-                for idx in 0..shape[0] {
-                    out_data.push(data[idx]);
-                }
-            }
-
-            DTypes::U32(out_data)
-        }
-        DTypes::F32(_) => {
-            let mut out_data = Vec::new();
-            for input in inputs.iter() {
-                let data = if let DTypes::F32(data) = &*(*input).get_data() {
-                    data
-                } else {
-                    panic!("The input data's type does not match")
-                };
-                let shape = input.get_shape();
-
-                for idx in 0..shape[0] {
-                    out_data.push(data[idx]);
-                }
-            }
-
-            DTypes::F32(out_data)
-        }
-        DTypes::F64(_) => {
-            let mut out_data = Vec::new();
-            for input in inputs.iter() {
-                let data = if let DTypes::F64(data) = &*(*input).get_data() {
-                    data
-                } else {
-                    panic!("The input data's type does not match")
-                };
-                let shape = input.get_shape();
-
-                for idx in 0..shape[0] {
-                    out_data.push(data[idx]);
-                }
-            }
-
-            DTypes::F64(out_data)
-        }
+        DTypes::I8(_) => DTypes::I8(concat_1d!(inputs, DTypes::I8)),
+        DTypes::I16(_) => DTypes::I16(concat_1d!(inputs, DTypes::I16)),
+        DTypes::I32(_) => DTypes::I32(concat_1d!(inputs, DTypes::I32)),
+        DTypes::U8(_) => DTypes::U8(concat_1d!(inputs, DTypes::U8)),
+        DTypes::U16(_) => DTypes::U16(concat_1d!(inputs, DTypes::U16)), 
+        DTypes::U32(_) => DTypes::U32(concat_1d!(inputs, DTypes::U32)),
+        DTypes::F32(_) => DTypes::F32(concat_1d!(inputs, DTypes::F32)),
+        DTypes::F64(_) => DTypes::F64(concat_1d!(inputs, DTypes::F64)),
     };
 
     Tensor::new(out_data, vec![out_shape])
@@ -211,154 +129,15 @@ fn concat_1D(inputs: Vec<Tensor>) -> Tensor {
 fn concat_2D_axis_0(inputs: Vec<Tensor>) -> Tensor {
     let out_shape = get_concat_shape(&inputs, 0);
 
-    let shape = inputs[0].get_shape();
-    let (height, width) = (shape[0], shape[1]);
-
     let out_data = match *inputs[0].get_data() {
-        DTypes::I8(_) => {
-            let mut out = Vec::new();
-            for input in inputs.iter() {
-                let data = if let DTypes::I8(arr) = input.get_data() {
-                    &*arr
-                } else {
-                    panic!("The input data's type does not match")
-                };
-
-                for y in 0..height {
-                    for x in 0..width {
-                        out.push(data[y * width + x]);
-                    }
-                }
-            }
-
-            DTypes::I8(out)
-        }
-        DTypes::I16(_) => {
-            let mut out = Vec::new();
-            for input in inputs.iter() {
-                let data = if let DTypes::I16(arr) = input.get_data() {
-                    &*arr
-                } else {
-                    panic!("The input data's type does not match")
-                };
-
-                for y in 0..height {
-                    for x in 0..width {
-                        out.push(data[y * width + x]);
-                    }
-                }
-            }
-
-            DTypes::I16(out)
-        }
-        DTypes::I32(_) => {
-            let mut out = Vec::new();
-            for input in inputs.iter() {
-                let data = if let DTypes::I32(arr) = input.get_data() {
-                    &*arr
-                } else {
-                    panic!("The input data's type does not match")
-                };
-
-                for y in 0..height {
-                    for x in 0..width {
-                        out.push(data[y * width + x]);
-                    }
-                }
-            }
-
-            DTypes::I32(out)
-        }
-        DTypes::U8(_) => {
-            let mut out = Vec::new();
-            for input in inputs.iter() {
-                let data = if let DTypes::U8(arr) = input.get_data() {
-                    &*arr
-                } else {
-                    panic!("The input data's type does not match")
-                };
-
-                for y in 0..height {
-                    for x in 0..width {
-                        out.push(data[y * width + x]);
-                    }
-                }
-            }
-
-            DTypes::U8(out)
-        }
-        DTypes::U16(_) => {
-            let mut out = Vec::new();
-            for input in inputs.iter() {
-                let data = if let DTypes::U16(arr) = input.get_data() {
-                    &*arr
-                } else {
-                    panic!("The input data's type does not match")
-                };
-
-                for y in 0..height {
-                    for x in 0..width {
-                        out.push(data[y * width + x]);
-                    }
-                }
-            }
-
-            DTypes::U16(out)
-        }
-        DTypes::U32(_) => {
-            let mut out = Vec::new();
-            for input in inputs.iter() {
-                let data = if let DTypes::U32(arr) = input.get_data() {
-                    &*arr
-                } else {
-                    panic!("The input data's type does not match")
-                };
-
-                for y in 0..height {
-                    for x in 0..width {
-                        out.push(data[y * width + x]);
-                    }
-                }
-            }
-
-            DTypes::U32(out)
-        }
-        DTypes::F32(_) => {
-            let mut out = Vec::new();
-            for input in inputs.iter() {
-                let data = if let DTypes::F32(arr) = input.get_data() {
-                    &*arr
-                } else {
-                    panic!("The input data's type does not match")
-                };
-
-                for y in 0..height {
-                    for x in 0..width {
-                        out.push(data[y * width + x]);
-                    }
-                }
-            }
-
-            DTypes::F32(out)
-        }
-        DTypes::F64(_) => {
-            let mut out = Vec::new();
-            for input in inputs.iter() {
-                let data = if let DTypes::F64(arr) = input.get_data() {
-                    &*arr
-                } else {
-                    panic!("The input data's type does not match")
-                };
-
-                for y in 0..height {
-                    for x in 0..width {
-                        out.push(data[y * width + x]);
-                    }
-                }
-            }
-
-            DTypes::F64(out)
-        }
+        DTypes::I8(_) => DTypes::I8(concat_2d_axis_0!(inputs, DTypes::I8)),
+        DTypes::I16(_) => DTypes::I16(concat_2d_axis_0!(inputs, DTypes::I16)),
+        DTypes::I32(_) => DTypes::I32(concat_2d_axis_0!(inputs, DTypes::I32)),
+        DTypes::U8(_) => DTypes::U8(concat_2d_axis_0!(inputs, DTypes::U8)),
+        DTypes::U16(_) => DTypes::U16(concat_2d_axis_0!(inputs, DTypes::U16)),
+        DTypes::U32(_) => DTypes::U32(concat_2d_axis_0!(inputs, DTypes::U32)),
+        DTypes::F32(_) => DTypes::F32(concat_2d_axis_0!(inputs, DTypes::F32)),
+        DTypes::F64(_) => DTypes::F64(concat_2d_axis_0!(inputs, DTypes::F64)),
     };
 
     Tensor::new(out_data, out_shape)
@@ -371,158 +150,14 @@ fn concat_2D_axis_1(inputs: Vec<Tensor>) -> Tensor {
     let (height, width) = (shape[0], shape[1]);
 
     let out_data = match *inputs[0].get_data() {
-        DTypes::I8(_) => {
-            let mut out = Vec::new();
-
-            for y in 0..height {
-                for input in inputs.iter() {
-                    let data = if let DTypes::I8(arr) = input.get_data() {
-                        &*arr
-                    } else {
-                        panic!("The input data's type does not match")
-                    };
-
-                    for x in 0..width {
-                        out.push(data[y * width + x]);
-                    }
-                }
-            }
-
-            DTypes::I8(out)
-        }
-        DTypes::I16(_) => {
-            let mut out = Vec::new();
-
-            for y in 0..height {
-                for input in inputs.iter() {
-                    let data = if let DTypes::I16(arr) = input.get_data() {
-                        &*arr
-                    } else {
-                        panic!("The input data's type does not match")
-                    };
-
-                    for x in 0..width {
-                        out.push(data[y * width + x]);
-                    }
-                }
-            }
-
-            DTypes::I16(out)
-        }
-        DTypes::I32(_) => {
-            let mut out = Vec::new();
-
-            for y in 0..height {
-                for input in inputs.iter() {
-                    let data = if let DTypes::I32(arr) = input.get_data() {
-                        &*arr
-                    } else {
-                        panic!("The input data's type does not match")
-                    };
-
-                    for x in 0..width {
-                        out.push(data[y * width + x]);
-                    }
-                }
-            }
-
-            DTypes::I32(out)
-        }
-        DTypes::U8(_) => {
-            let mut out = Vec::new();
-
-            for y in 0..height {
-                for input in inputs.iter() {
-                    let data = if let DTypes::U8(arr) = input.get_data() {
-                        &*arr
-                    } else {
-                        panic!("The input data's type does not match")
-                    };
-
-                    for x in 0..width {
-                        out.push(data[y * width + x]);
-                    }
-                }
-            }
-
-            DTypes::U8(out)
-        }
-        DTypes::U16(_) => {
-            let mut out = Vec::new();
-
-            for y in 0..height {
-                for input in inputs.iter() {
-                    let data = if let DTypes::U16(arr) = input.get_data() {
-                        &*arr
-                    } else {
-                        panic!("The input data's type does not match")
-                    };
-
-                    for x in 0..width {
-                        out.push(data[y * width + x]);
-                    }
-                }
-            }
-
-            DTypes::U16(out)
-        }
-        DTypes::U32(_) => {
-            let mut out = Vec::new();
-
-            for y in 0..height {
-                for input in inputs.iter() {
-                    let data = if let DTypes::U32(arr) = input.get_data() {
-                        &*arr
-                    } else {
-                        panic!("The input data's type does not match")
-                    };
-
-                    for x in 0..width {
-                        out.push(data[y * width + x]);
-                    }
-                }
-            }
-
-            DTypes::U32(out)
-        }
-        DTypes::F32(_) => {
-            let mut out = Vec::new();
-
-            for y in 0..height {
-                for input in inputs.iter() {
-                    let data = if let DTypes::F32(arr) = input.get_data() {
-                        &*arr
-                    } else {
-                        panic!("The input data's type does not match")
-                    };
-
-                    for x in 0..width {
-                        out.push(data[y * width + x]);
-                    }
-                }
-            }
-
-            DTypes::F32(out)
-        }
-        DTypes::F64(_) => {
-            let mut out = Vec::new();
-
-            for y in 0..height {
-                for input in inputs.iter() {
-                    let data = if let DTypes::F64(arr) = input.get_data() {
-                        &*arr
-                    } else {
-                        panic!("The input data's type does not match")
-                    };
-
-                    for x in 0..width {
-                        out.push(data[y * width + x]);
-                    }
-                }
-            }
-
-            DTypes::F64(out)
-        }
+        DTypes::I8(_) => DTypes::I8(concat_2d_axis_1!(inputs, DTypes::I8, height, width)),
+        DTypes::I16(_) => DTypes::I16(concat_2d_axis_1!(inputs, DTypes::I16, height, width)),
+        DTypes::I32(_) => DTypes::I32(concat_2d_axis_1!(inputs, DTypes::I32, height, width)),
+        DTypes::U8(_) => DTypes::U8(concat_2d_axis_1!(inputs, DTypes::U8, height, width)),
+        DTypes::U16(_) => DTypes::U16(concat_2d_axis_1!(inputs, DTypes::U16, height, width)),
+        DTypes::U32(_) => DTypes::U32(concat_2d_axis_1!(inputs, DTypes::U32, height, width)),
+        DTypes::F32(_) => DTypes::F32(concat_2d_axis_1!(inputs, DTypes::F32, height, width)),
+        DTypes::F64(_) => DTypes::F64(concat_2d_axis_1!(inputs, DTypes::F64, height, width))
     };
 
     Tensor::new(out_data, out_shape)
