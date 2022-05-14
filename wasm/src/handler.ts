@@ -15,12 +15,12 @@ import {
   handleReshape,
   handleShape,
   handleAbs,
-  handleACos,
-  handleACosh,
-  handleASin,
-  handleASinh,
-  handleATan,
-  handleATanh,
+  handleAcos,
+  handleAcosh,
+  handleAsin,
+  handleAsinh,
+  handleAtan,
+  handleAtanh,
   handleCeil,
   handleFloor,
   handleRound,
@@ -83,27 +83,27 @@ export function handle(
       break;
     }
     case "Acos": {
-      output = handleACos(inputs[0]);
+      output = handleAcos(inputs[0]);
       break;
     }
     case "Acosh": {
-      output = handleACosh(inputs[0]);
+      output = handleAcosh(inputs[0]);
       break;
     }
     case "Asin": {
-      output = handleASin(inputs[0]);
+      output = handleAsin(inputs[0]);
       break;
     }
     case "Asinh": {
-      output = handleASinh(inputs[0]);
+      output = handleAsinh(inputs[0]);
       break;
     }
     case "Atan": {
-      output = handleATan(inputs[0]);
+      output = handleAtan(inputs[0]);
       break;
     }
     case "Atanh": {
-      output = handleATanh(inputs[0]);
+      output = handleAtanh(inputs[0]);
       break;
     }
     case "Ceil": {
