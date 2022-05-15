@@ -4,6 +4,9 @@ const WasmPackPlugin = require("@wasm-tool/wasm-pack-plugin");
 module.exports = {
     mode: "development",
     devtool: "source-map",
+    ignoreWarnings: [{
+        message: /Circular dependency/
+    }],
     entry: path.resolve(__dirname, "src", "bootstrap.ts"),
     module: {
         rules: [
