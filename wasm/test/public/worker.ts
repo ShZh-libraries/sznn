@@ -7,6 +7,7 @@ import init, {
     handleMul,
     handleConcat,
     handleConv,
+    handlePadding,
     handleMaxPool2D,
     handleAvgPool2D,
     handleGlobalAvgPool,
@@ -57,6 +58,12 @@ function handleConcatWrapper(ptrs: Tensor[], axis: number) {
     return Comlink.proxy(output);
 }
 
+function handlePaddingWrapper(ptr: Tensor, pT: number, pL: number, pB: number, pR: number) {
+    const input = wrap(ptr);
+    const output = handlePadding(input, pT, pL, pB, pR);
+    return Comlink.proxy(output);
+}
+
 function handleConvWrapper(kH: number, kW: number, pT: number, pL: number, pB: number, pR: number, sY: number, sX: number, inputPtr: Tensor, weightPtr: Tensor, biasPtr?: Tensor) {
     const input = wrap(inputPtr);
     const weight = wrap(weightPtr);
@@ -93,6 +100,7 @@ Comlink.expose({
     handleSigmoid: wrapFn(handleSigmoid),
     handleAdd: wrapFn(handleAdd),
     handleMul: wrapFn(handleMul),
+    handlePadding: handlePaddingWrapper,
     handleConcat: handleConcatWrapper,
     handleConv: handleConvWrapper,
     handleMaxPool2D: handleMaxPoolWrapper,
