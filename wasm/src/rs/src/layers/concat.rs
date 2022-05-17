@@ -1,6 +1,5 @@
 #![allow(non_snake_case)]
 
-use rayon::prelude::*;
 use wasm_bindgen::prelude::wasm_bindgen;
 
 use crate::{DTypes, Tensor, TensorList};
@@ -16,7 +15,7 @@ macro_rules! concat_1d {
                 inputs_data.push(data);
             }
 
-            inputs_data.into_par_iter().flatten().cloned().collect::<Vec<_>>()
+            inputs_data.into_iter().flatten().cloned().collect::<Vec<_>>()
         }
     };
 }
@@ -45,7 +44,7 @@ macro_rules! concat_2d_axis_1 {
                 offset += $width;
             });
 
-            inputs_data.into_par_iter().flatten().cloned().collect::<Vec<_>>()
+            inputs_data.into_iter().flatten().cloned().collect::<Vec<_>>()
         }
     };
 }
