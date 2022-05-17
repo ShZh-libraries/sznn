@@ -5,6 +5,7 @@ pub mod cast;
 pub mod concat;
 pub mod conv;
 pub mod dropout;
+pub mod padding;
 pub mod pooling;
 pub mod relu;
 pub mod reshape;
