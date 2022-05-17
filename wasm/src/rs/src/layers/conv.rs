@@ -1,6 +1,58 @@
 use wasm_bindgen::prelude::wasm_bindgen;
 
-use crate::{DTypes, Tensor};
+use crate::{DTypes, Tensor, layers::padding::handle_padding};
+
+use super::extract_data;
+
+macro_rules! conv {
+    (
+        $arr: expr, $weight: expr, $bias: expr, $len: expr,
+        $in_shape: expr, $weight_shape: expr,  $out_shape: expr,
+        $stride_y: expr, $stride_x: expr
+    ) => {
+        {
+            let kernel_channel_size = $weight_shape[2] * $weight_shape[3];
+            let kernel_size = $weight_shape[1] * kernel_channel_size;
+            let in_row_stride = $in_shape[3] - $weight_shape[3];
+            let in_channel_stride = $in_shape[2] * $in_shape[3] - $weight_shape[2] * $in_shape[3];
+
+            let mut out_idx = 0;
+            let mut out_data = vec![0.; $len];
+            for _n in 0..$out_shape[0] {
+                for c in 0..$out_shape[1] {
+                    for y in 0..$out_shape[2] {
+                        for x in 0..$out_shape[3] {
+                            let start_y = y * $stride_y;
+                            let start_x = x * $stride_x;
+
+                            let mut sum = 0.;
+                            let mut weight_offset = c * kernel_size;
+                            let mut in_offset = start_y * $in_shape[3] + start_x;
+
+                            for _kc in 0..$weight_shape[1] {
+                                for _ky in 0..$weight_shape[2] {
+                                    for _kx in 0..$weight_shape[3] {
+                                        sum += $weight[weight_offset] * $arr[in_offset];
+
+                                        in_offset += 1;
+                                        weight_offset += 1;
+                                    }
+                                    in_offset += in_row_stride;
+                                }
+                                in_offset += in_channel_stride;
+                            }
+
+                            out_data[out_idx] = sum + $bias[c];
+                            out_idx += 1;
+                        }
+                    }
+                }
+            }
+
+            out_data
+        }
+    };
+}
 
 #[wasm_bindgen(js_name = handleConv)]
 pub fn handle_conv(
@@ -16,143 +68,42 @@ pub fn handle_conv(
     weight: &Tensor,
     bias: Option<Tensor>,
 ) -> Tensor {
+    let padding = if pad_top != 0 || pad_left != 0 || pad_bottom != 0 || pad_right != 0 {
+        handle_padding(input, pad_top, pad_left, pad_bottom, pad_right)
+    } else {
+        input.clone()
+    };
+
     let mut output = Tensor::new_empty();
 
-    let in_shape = input.get_shape();
+    let in_shape = padding.get_shape();
     let weight_shape = weight.get_shape();
-    let max_y = in_shape[2] + pad_top + pad_bottom - kernel_height;
-    let max_x = in_shape[3] + pad_left + pad_right - kernel_width;
-    let out_height = max_y / stride_y + 1;
-    let out_width = max_x / stride_x + 1;
-    let out_shape = vec![in_shape[0], weight_shape[0], out_height, out_width];
-    output.set_shape(out_shape);
+    let out_shape = vec![
+        in_shape[0], 
+        weight_shape[0], 
+        (in_shape[2] - kernel_height) / stride_y + 1, 
+        (in_shape[3] - kernel_width) / stride_x + 1,
+    ];
+    output.set_shape(out_shape.clone());
 
-    let kernel_channel_size = weight_shape[2] * weight_shape[3];
-    let kernel_size = weight_shape[1] * kernel_channel_size;
-    let in_channel_size = in_shape[2] * in_shape[3];
-    let in_size = in_shape[1] * in_channel_size;
-
-    let out_data = match &input.get_data() {
+    let out_data = match &padding.get_data() {
         DTypes::F32(arr) => {
-            let weight_data = if let DTypes::F32(data) = weight.get_data() {
-                data
-            } else {
-                panic!("Weight data type does not match input data type!")
-            };
-            let bias_data = bias.map_or(vec![0.; output.get_length()], |tensor| {
-                if let DTypes::F32(data) = tensor.get_data() {
-                    data.to_vec()
-                } else {
-                    panic!("Bias data type does not match input data type!!")
-                }
+            let len = output.get_length();
+            let weight = extract_data!(weight, DTypes::F32);
+            let bias = bias.map_or(vec![0.; len], |tensor| {
+                extract_data!(tensor, DTypes::F32).to_vec()
             });
 
-            let mut out_idx = 0;
-            let mut out_data = vec![0.; output.get_length()];
-            for n in 0..in_shape[0] {
-                for c in 0..weight_shape[0] {
-                    for y in 0..out_height {
-                        for x in 0..out_width {
-                            let start_y = (y * stride_y) as isize - pad_top as isize;
-                            let start_x = (x * stride_x) as isize - pad_left as isize;
-
-                            let mut sum = 0.;
-                            for ky in 0..kernel_height {
-                                for kx in 0..kernel_width {
-                                    let cy = start_y + ky as isize;
-                                    let cx = start_x + kx as isize;
-
-                                    if cy >= 0
-                                        && cy < in_shape[2] as isize
-                                        && cx >= 0
-                                        && cx < in_shape[3] as isize
-                                    {
-                                        for kc in 0..weight_shape[1] {
-                                            let ker_idx = c * kernel_size
-                                                + kc * kernel_channel_size
-                                                + ky * weight_shape[3]
-                                                + kx;
-                                            let cur_idx = n * in_size
-                                                + kc * in_channel_size
-                                                + cy as usize * in_shape[3]
-                                                + cx as usize;
-
-                                            let ker_val = weight_data[ker_idx];
-                                            let cur_val = arr[cur_idx];
-
-                                            sum += ker_val * cur_val;
-                                        }
-                                    }
-                                }
-                            }
-                            out_data[out_idx] = sum + bias_data[c];
-                            out_idx += 1;
-                        }
-                    }
-                }
-            }
-
-            DTypes::F32(out_data)
+            DTypes::F32(conv!(arr, weight, bias, len, in_shape, weight_shape, out_shape, stride_y, stride_x))
         }
         DTypes::F64(arr) => {
-            let weight_data = if let DTypes::F64(data) = weight.get_data() {
-                data
-            } else {
-                panic!("Weight data type does not match input data type!")
-            };
-            let bias_data = bias.map_or(None, |tensor| {
-                if let DTypes::F64(data) = tensor.get_data() {
-                    Some(data.clone())
-                } else {
-                    panic!("Bias data type does not match input data type!!")
-                }
+            let len = output.get_length();
+            let weight = extract_data!(weight, DTypes::F64);
+            let bias = bias.map_or(vec![0.; len], |tensor| {
+                extract_data!(tensor, DTypes::F64).to_vec()
             });
 
-            let mut out_idx = 0;
-            let mut out_data = vec![0.; output.get_length()];
-            for n in 0..in_shape[0] {
-                for c in 0..weight_shape[0] {
-                    for y in (-(pad_top as isize)..=(max_y - pad_top) as isize).step_by(stride_y) {
-                        for x in
-                            (-(pad_left as isize)..=(max_x - pad_left) as isize).step_by(stride_x)
-                        {
-                            let mut sum = 0.;
-                            for ky in 0..kernel_height {
-                                for kx in 0..kernel_width {
-                                    let cy = y + ky as isize;
-                                    let cx = x + kx as isize;
-
-                                    if cy >= 0
-                                        && cy < in_shape[2] as isize
-                                        && cx >= 0
-                                        && cx < in_shape[3] as isize
-                                    {
-                                        for kc in 0..weight_shape[1] {
-                                            let ker_idx = c * kernel_size
-                                                + kc * kernel_channel_size
-                                                + ky * weight_shape[3]
-                                                + kx;
-                                            let cur_idx = n * in_size
-                                                + kc * in_channel_size
-                                                + cy as usize * in_shape[3]
-                                                + cx as usize;
-
-                                            let ker_val = weight_data[ker_idx];
-                                            let cur_val = arr[cur_idx];
-
-                                            sum += ker_val * cur_val;
-                                        }
-                                    }
-                                }
-                            }
-                            out_data[out_idx] = sum + bias_data.as_ref().map_or(0., |bias| bias[c]);
-                            out_idx += 1;
-                        }
-                    }
-                }
-            }
-
-            DTypes::F64(out_data)
+            DTypes::F64(conv!(arr, weight, bias, len, in_shape, weight_shape, out_shape, stride_y, stride_x))
         }
         _ => {
             panic!("Convolutional does not support these data type!!")
