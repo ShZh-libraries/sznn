@@ -795,6 +795,11 @@ caniuse-lite@^1.0.30001317:
   resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001324.tgz#e17c3a8b34822b02d5d15639d570057550074884"
   integrity sha512-/eYp1J6zYh1alySQB4uzYFkLmxxI8tk0kxldbNHXp8+v+rdMKdUBNjRLz7T7fz6Iox+1lIdYpc7rq6ZcXfTukg==
 
+chai-deep-closeto@^0.1.1:
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/chai-deep-closeto/-/chai-deep-closeto-0.1.1.tgz#e04fa54d8171eb6062ca7e165f34162e59bbfd1f"
+  integrity sha512-vj6uyA5LdWo1ltefwTbzrhYK44ow4dSZBtIdAWHWJZ+KAWE5cQSyMgX/FjHXwvVbxUwc+vfajIx8/6/72BOkOg==
+
 chai@^4.3.6:
   version "4.3.6"
   resolved "https://registry.yarnpkg.com/chai/-/chai-4.3.6.tgz#ffe4ba2d9fa9d6680cc0b370adae709ec9011e9c"
