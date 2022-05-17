@@ -15,6 +15,8 @@ const {
     handleMaxPool2D,
     handleAvgPool2D,
     handleGlobalAvgPool,
+    handleRelu,
+    handleLeakyRelu,
     withAllArgs 
 } = Comlink.wrap(
     new Worker(new URL("./worker.ts", import.meta.url))
@@ -29,6 +31,8 @@ const {
     handleMaxPool2D: (input: Tensor, kH: number, kW: number, pT: number, pL: number, pB: number, pR: number, sY: number, sX: number) => Promise<Tensor>;
     handleAvgPool2D: (input: Tensor, kH: number, kW: number, pT: number, pL: number, pB: number, pR: number, sY: number, sX: number) => Promise<Tensor>;
     handleGlobalAvgPool: (input: Tensor) => Promise<Tensor>;
+    handleRelu: (input: Tensor) => Promise<Tensor>;
+    handleLeakyRelu: (input: Tensor, alpha: number) => Promise<Tensor>;
     withAllArgs: (data: TensorDataType, shape: number[], dtype?: DType | undefined) => Promise<Tensor>;
 }
 
@@ -52,5 +56,7 @@ export {
     handleMaxPool2D,
     handleAvgPool2D,
     handleGlobalAvgPool,
+    handleRelu,
+    handleLeakyRelu,
     TensorBuilderWrapper as TensorBuilder
 };

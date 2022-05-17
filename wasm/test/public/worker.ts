@@ -10,6 +10,8 @@ import init, {
     handleMaxPool2D,
     handleAvgPool2D,
     handleGlobalAvgPool,
+    handleRelu,
+    handleLeakyRelu,
 } from "../../src/rs/pkg";
 import { TensorBuilder as WasmBuilder } from "../../src/tensor";
 
@@ -77,6 +79,12 @@ function handleAvgPoolWrapper(inputPtr: Tensor, kH: number, kW: number, pT: numb
     return Comlink.proxy(output);
 }
 
+function handleLeakyReluWrapper(inputPtr: Tensor, alpha: number) {
+    const input = wrap(inputPtr);
+    const output = handleLeakyRelu(input, alpha);
+    return Comlink.proxy(output);
+}
+
 
 // Use Comlink to expose the functionality of Web workers
 Comlink.expose({
@@ -90,6 +98,8 @@ Comlink.expose({
     handleMaxPool2D: handleMaxPoolWrapper,
     handleAvgPool2D: handleAvgPoolWrapper,
     handleGlobalAvgPool: wrapFn(handleGlobalAvgPool),
+    handleRelu: wrapFn(handleRelu),
+    handleLeakyRelu: handleLeakyReluWrapper,
     withAllArgs: WasmBuilder.withAllArgs,
 })
 
