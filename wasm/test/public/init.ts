@@ -18,6 +18,7 @@ const {
     handleGlobalAvgPool,
     handleRelu,
     handleLeakyRelu,
+    handleInstanceNorm,
     withAllArgs 
 } = Comlink.wrap(
     new Worker(new URL("./worker.ts", import.meta.url))
@@ -35,6 +36,7 @@ const {
     handleGlobalAvgPool: (input: Tensor) => Promise<Tensor>;
     handleRelu: (input: Tensor) => Promise<Tensor>;
     handleLeakyRelu: (input: Tensor, alpha: number) => Promise<Tensor>;
+    handleInstanceNorm: (input: Tensor, weight: Tensor, bias: Tensor, epsilon: number) => Promise<Tensor>;
     withAllArgs: (data: TensorDataType, shape: number[], dtype?: DType | undefined) => Promise<Tensor>;
 }
 
@@ -61,5 +63,6 @@ export {
     handleGlobalAvgPool,
     handleRelu,
     handleLeakyRelu,
+    handleInstanceNorm,
     TensorBuilderWrapper as TensorBuilder
 };

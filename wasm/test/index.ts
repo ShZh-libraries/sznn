@@ -16,6 +16,7 @@ export { expect };
 import "./binaryop.spec";
 import "./concat.spec";
 import "./conv.spec";
+import "./instancenorm.spec";
 import "./padding.spec";
 import "./pooling.spec";
 import "./relu.spec";

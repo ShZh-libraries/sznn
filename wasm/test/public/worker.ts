@@ -13,6 +13,7 @@ import init, {
     handleGlobalAvgPool,
     handleRelu,
     handleLeakyRelu,
+    handleInstanceNorm,
 } from "../../src/rs/pkg";
 import { TensorBuilder as WasmBuilder } from "../../src/tensor";
 
@@ -92,6 +93,16 @@ function handleLeakyReluWrapper(inputPtr: Tensor, alpha: number) {
     return Comlink.proxy(output);
 }
 
+function handleInstanceNormWrapper(inputPtr: Tensor, weightPtr: Tensor, biasPtr: Tensor, epsilon: number) {
+    const input = wrap(inputPtr);
+    const weight = wrap(weightPtr);
+    const bias = wrap(biasPtr);
+    
+    const output = handleInstanceNorm(input, weight, bias, epsilon);
+
+    return Comlink.proxy(output);
+}
+
 
 // Use Comlink to expose the functionality of Web workers
 Comlink.expose({
@@ -108,6 +119,7 @@ Comlink.expose({
     handleGlobalAvgPool: wrapFn(handleGlobalAvgPool),
     handleRelu: wrapFn(handleRelu),
     handleLeakyRelu: handleLeakyReluWrapper,
+    handleInstanceNorm: handleInstanceNormWrapper,
     withAllArgs: WasmBuilder.withAllArgs,
 })
 
