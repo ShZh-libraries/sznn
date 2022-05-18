@@ -18,33 +18,31 @@ macro_rules! conv {
 
             let mut out_idx = 0;
             let mut out_data = vec![0.; $len];
-            for _n in 0..$out_shape[0] {
-                for c in 0..$out_shape[1] {
-                    for y in 0..$out_shape[2] {
-                        for x in 0..$out_shape[3] {
-                            let start_y = y * $stride_y;
-                            let start_x = x * $stride_x;
+            for c in 0..$out_shape[1] {
+                for y in 0..$out_shape[2] {
+                    for x in 0..$out_shape[3] {
+                        let start_y = y * $stride_y;
+                        let start_x = x * $stride_x;
 
-                            let mut sum = 0.;
-                            let mut weight_offset = c * kernel_size;
-                            let mut in_offset = start_y * $in_shape[3] + start_x;
+                        let mut sum = 0.;
+                        let mut weight_offset = c * kernel_size;
+                        let mut in_offset = start_y * $in_shape[3] + start_x;
 
-                            for _kc in 0..$weight_shape[1] {
-                                for _ky in 0..$weight_shape[2] {
-                                    for _kx in 0..$weight_shape[3] {
-                                        sum += $weight[weight_offset] * $arr[in_offset];
+                        for _kc in 0..$weight_shape[1] {
+                            for _ky in 0..$weight_shape[2] {
+                                for _kx in 0..$weight_shape[3] {
+                                    sum += $weight[weight_offset] * $arr[in_offset];
 
-                                        in_offset += 1;
-                                        weight_offset += 1;
-                                    }
-                                    in_offset += in_row_stride;
+                                    in_offset += 1;
+                                    weight_offset += 1;
                                 }
-                                in_offset += in_channel_stride;
+                                in_offset += in_row_stride;
                             }
-
-                            out_data[out_idx] = sum + $bias[c];
-                            out_idx += 1;
+                            in_offset += in_channel_stride;
                         }
+
+                        out_data[out_idx] = sum + $bias[c];
+                        out_idx += 1;
                     }
                 }
             }

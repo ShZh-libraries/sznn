@@ -14,27 +14,25 @@ macro_rules! maxpool {
 
             let mut out_idx = 0;
             let mut out_data = vec![0.; $len];
-            for _n in 0..$out_shape[0] {
-                for c in 0..$out_shape[1] {
-                    for y in 0..$out_shape[2] {
-                        for x in 0..$out_shape[3] {
-                            let in_start_y = y * $stride_y;
-                            let in_start_x = x * $stride_x;
+            for c in 0..$out_shape[1] {
+                for y in 0..$out_shape[2] {
+                    for x in 0..$out_shape[3] {
+                        let in_start_y = y * $stride_y;
+                        let in_start_x = x * $stride_x;
 
-                            let mut offset = c * in_channel_size + in_start_y * $in_shape[3] + in_start_x;
-                            let mut max = $arr[offset];
-                            for _ky in 0..$kernel_height {
-                                for _kx in 0..$kernel_width {
-                                    let val = $arr[offset];
-                                    max = max.max(val);
+                        let mut offset = c * in_channel_size + in_start_y * $in_shape[3] + in_start_x;
+                        let mut max = $arr[offset];
+                        for _ky in 0..$kernel_height {
+                            for _kx in 0..$kernel_width {
+                                let val = $arr[offset];
+                                max = max.max(val);
 
-                                    offset += 1;
-                                }
-                                offset += row_stride;
+                                offset += 1;
                             }
-                            out_data[out_idx] = max as $typ;
-                            out_idx += 1;
+                            offset += row_stride;
                         }
+                        out_data[out_idx] = max as $typ;
+                        out_idx += 1;
                     }
                 }
             }
