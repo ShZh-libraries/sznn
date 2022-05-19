@@ -47,9 +47,11 @@ import {
   handleInstanceNorm,
   handleGather,
   handleCast,
+  handlePadding,
 } from "./rs/pkg";
 import { tensorList } from "./utils";
 import { TensorBuilder } from "./tensor";
+import { getPaddingAttr } from "../../common/attr/padding";
 
 export function handle(
   opType: string,
@@ -200,6 +202,11 @@ export function handle(
       output = handleDropout(inputs[0]);
       break;
     }
+    case "Pad": {
+      const attr = getPaddingAttr(attrs);
+      output = handlePadding(inputs[0], attr.pads[2], attr.pads[3], attr.pads[6], attr.pads[7]);
+      break;
+    }
     case "MaxPool": {
       const attr = getPoolingAttr(attrs);
       output = handleMaxPool2D(
@@ -287,13 +294,14 @@ export function handle(
       throw new Error(`Unknown op type ${opType}!`);
   }
 
-  // console.log(opType, output.toArray(), output.shapeToArray());
+  console.log(opType, output.toArray(), output.shapeToArray());
 
   return output;
 }
 
 function handleConstant(attributes: onnx.AttributeProto[]): Tensor {
-  const outShape = attributes[0].t!.dims! as number[];
+  const dims = attributes[0].t!.dims! as number[];
+  const outShape = dims.length == 0? [1] : dims;
   let buffer = attributes[0].t!.rawData!.buffer.slice(
     attributes[0].t!.rawData!.byteOffset,
     attributes[0].t!.rawData!.byteOffset + attributes[0].t!.rawData!.byteLength
