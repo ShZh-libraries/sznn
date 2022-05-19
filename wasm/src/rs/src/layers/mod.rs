@@ -13,6 +13,7 @@ pub mod relu;
 pub mod reshape;
 pub mod shape;
 pub mod slice;
+pub mod unsqueeze;
 
 macro_rules! extract_data {
     ($tensor: expr, $dtype: path) => {
