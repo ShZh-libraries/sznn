@@ -1,12 +1,33 @@
 import { PaddingAttr } from "../../../core/attr/padding";
 import { Tensor, TensorBuilder } from "../tensor";
 
+function isInPadding(outputLoc: number[], inputShape: number[], shapeOffset: number, attr: PaddingAttr) {
+  for (let index = 0; index < attr.pads.length / 2; index++) {
+    const curIdx = shapeOffset + index;
+    if (outputLoc[curIdx] < attr.pads[index] || outputLoc[curIdx] >= inputShape[curIdx] + attr.pads[index]) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+function toInputIdx(outputLoc: number[], shapeOffset: number, attr: PaddingAttr) {
+  let inputLoc = outputLoc.slice();
+  for (let index = 0; index < attr.pads.length / 2; index++) {
+    const curIdx = shapeOffset + index;
+    inputLoc[curIdx] = outputLoc[curIdx] - attr.pads[index];
+  }  
+
+  return inputLoc;
+}
+
 export function handlePadding(input: Tensor, attr: PaddingAttr): Tensor {
-  let outputShape = [];
-  for (let index = 0; index < input.ndim; index++) {
-    outputShape.push(
-      attr.pads[index] + input.shape[index] + attr.pads[index + input.ndim]
-    );
+  let outputShape = input.shape.slice();
+  const shapeOffset = input.shape.length - attr.pads.length / 2;
+  for (let index = 0; index < attr.pads.length / 2; index++) {
+    outputShape[shapeOffset + index] = 
+      attr.pads[index] + input.shape[shapeOffset + index] + attr.pads[index + attr.pads.length / 2];
   }
   let output = TensorBuilder.withShape(outputShape);
 
@@ -14,12 +35,7 @@ export function handlePadding(input: Tensor, attr: PaddingAttr): Tensor {
   for (let index = 0; index < output.data.length; index++) {
     const outputLoc = output.indexToLoc(index);
 
-    if (
-      outputLoc.some(
-        (loc, dim) =>
-          loc < attr.pads[dim] || loc >= attr.pads[dim] + input.shape[dim]
-      )
-    ) {
+    if (isInPadding(outputLoc, input.shape, shapeOffset, attr)) {
       switch (attr.mode) {
         case "constant":
           output.data[index] = 0;
@@ -67,7 +83,7 @@ export function handlePadding(input: Tensor, attr: PaddingAttr): Tensor {
           throw new Error(`Padding mode ${attr.mode} not recognized!`);
       }
     } else {
-      const inputLoc = outputLoc.map((loc, dim) => loc - attr.pads[dim]);
+      const inputLoc = toInputIdx(outputLoc, shapeOffset, attr);
       const inputIdx = input.locToIndex(inputLoc);
 
       output.data[index] = input.data[inputIdx];

@@ -9,7 +9,7 @@ import { handleConv } from "./layers/conv";
 import { handleDropout } from "./layers/dropout";
 import { handleGather } from "./layers/gather";
 import { handleInstanceNorm } from "./layers/instancenorm";
-import { handlePadding } from "./layers/pad";
+import { handlePadding } from "./layers/padding";
 import {
   handleAvgPool2D,
   handleGlobalAvgPool,
