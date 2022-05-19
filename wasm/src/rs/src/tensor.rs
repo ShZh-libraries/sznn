@@ -36,6 +36,27 @@ pub struct TensorList {
     tensors: Vec<Tensor>,
 }
 
+macro_rules! set_data {
+    ($data: expr, $typ: ty) => {
+        {
+            let mut tensor_data = vec![0. as $typ; $data.length() as usize];
+            $data.for_each(&mut |value: JsValue, index: u32, _| {
+                tensor_data[index as usize] = value.as_f64().unwrap() as $typ;
+            });
+
+            tensor_data
+        }
+    };
+}
+
+macro_rules! to_array {
+    ($arr: expr, $result: expr) => {
+        $arr.iter().for_each(|v| {
+            $result.push(&JsValue::from(*v));
+        })
+    };
+}
+
 #[wasm_bindgen]
 impl Tensor {
     #[wasm_bindgen(constructor)]
@@ -60,62 +81,14 @@ impl Tensor {
     #[wasm_bindgen(js_name = setDataWithArray)]
     pub fn set_data_with_array(&mut self, data: &js_sys::Array, dtype: DType) {
         match dtype {
-            DType::Int8 => {
-                let mut tensor_data = vec![0; data.length() as usize];
-                data.for_each(&mut |value: JsValue, index: u32, _| {
-                    tensor_data[index as usize] = value.as_f64().unwrap() as i8;
-                });
-                self.data = DTypes::I8(tensor_data);
-            }
-            DType::Int16 => {
-                let mut tensor_data = vec![0; data.length() as usize];
-                data.for_each(&mut |value: JsValue, index: u32, _| {
-                    tensor_data[index as usize] = value.as_f64().unwrap() as i16;
-                });
-                self.data = DTypes::I16(tensor_data);
-            }
-            DType::Int32 => {
-                let mut tensor_data = vec![0; data.length() as usize];
-                data.for_each(&mut |value: JsValue, index: u32, _| {
-                    tensor_data[index as usize] = value.as_f64().unwrap() as i32;
-                });
-                self.data = DTypes::I32(tensor_data);
-            }
-            DType::UInt8 => {
-                let mut tensor_data = vec![0; data.length() as usize];
-                data.for_each(&mut |value: JsValue, index: u32, _| {
-                    tensor_data[index as usize] = value.as_f64().unwrap() as u8;
-                });
-                self.data = DTypes::U8(tensor_data);
-            }
-            DType::UInt16 => {
-                let mut tensor_data = vec![0; data.length() as usize];
-                data.for_each(&mut |value: JsValue, index: u32, _| {
-                    tensor_data[index as usize] = value.as_f64().unwrap() as u16;
-                });
-                self.data = DTypes::U16(tensor_data);
-            }
-            DType::UInt32 => {
-                let mut tensor_data = vec![0; data.length() as usize];
-                data.for_each(&mut |value: JsValue, index: u32, _| {
-                    tensor_data[index as usize] = value.as_f64().unwrap() as u32;
-                });
-                self.data = DTypes::U32(tensor_data);
-            }
-            DType::Float32 => {
-                let mut tensor_data = vec![0.; data.length() as usize];
-                data.for_each(&mut |value: JsValue, index: u32, _| {
-                    tensor_data[index as usize] = value.as_f64().unwrap() as f32;
-                });
-                self.data = DTypes::F32(tensor_data);
-            }
-            DType::Float64 => {
-                let mut tensor_data = vec![0.; data.length() as usize];
-                data.for_each(&mut |value: JsValue, index: u32, _| {
-                    tensor_data[index as usize] = value.as_f64().unwrap();
-                });
-                self.data = DTypes::F64(tensor_data);
-            }
+            DType::Int8 => self.data = DTypes::I8(set_data!(data, i8)),
+            DType::Int16 => self.data = DTypes::I16(set_data!(data, i16)),
+            DType::Int32 => self.data = DTypes::I32(set_data!(data, i32)),
+            DType::UInt8 => self.data = DTypes::U8(set_data!(data, u8)),
+            DType::UInt16 => self.data = DTypes::U16(set_data!(data, u16)),
+            DType::UInt32 => self.data = DTypes::U32(set_data!(data, u32)),
+            DType::Float32 => self.data = DTypes::F32(set_data!(data, f32)),
+            DType::Float64 => self.data = DTypes::F64(set_data!(data, f64)),
         }
     }
 
@@ -164,46 +137,14 @@ impl Tensor {
         let result = js_sys::Array::new();
 
         match &self.data {
-            DTypes::I8(arr) => {
-                arr.iter().for_each(|v| {
-                    result.push(&JsValue::from(*v));
-                });
-            }
-            DTypes::I16(arr) => {
-                arr.iter().for_each(|v| {
-                    result.push(&JsValue::from(*v));
-                });
-            }
-            DTypes::I32(arr) => {
-                arr.iter().for_each(|v| {
-                    result.push(&JsValue::from(*v));
-                });
-            }
-            DTypes::U8(arr) => {
-                arr.iter().for_each(|v| {
-                    result.push(&JsValue::from(*v));
-                });
-            }
-            DTypes::U16(arr) => {
-                arr.iter().for_each(|v| {
-                    result.push(&JsValue::from(*v));
-                });
-            }
-            DTypes::U32(arr) => {
-                arr.iter().for_each(|v| {
-                    result.push(&JsValue::from(*v));
-                });
-            }
-            DTypes::F32(arr) => {
-                arr.iter().for_each(|v| {
-                    result.push(&JsValue::from_f64(*v as f64));
-                });
-            }
-            DTypes::F64(arr) => {
-                arr.iter().for_each(|v| {
-                    result.push(&JsValue::from(*v));
-                });
-            }
+            DTypes::I8(arr) => to_array!(arr, result),
+            DTypes::I16(arr) => to_array!(arr, result),
+            DTypes::I32(arr) => to_array!(arr, result),
+            DTypes::U8(arr) => to_array!(arr, result),
+            DTypes::U16(arr) => to_array!(arr, result),
+            DTypes::U32(arr) => to_array!(arr, result),
+            DTypes::F32(arr) => to_array!(arr, result),
+            DTypes::F64(arr) => to_array!(arr, result),
         }
 
         result
