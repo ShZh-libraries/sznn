@@ -14,6 +14,7 @@ pub mod reshape;
 pub mod shape;
 pub mod slice;
 pub mod unsqueeze;
+pub mod upsample;
 
 macro_rules! extract_data {
     ($tensor: expr, $dtype: path) => {
