@@ -1,4 +1,6 @@
+use rayon::prelude::*;
 use wasm_bindgen::prelude::wasm_bindgen;
+use std::sync::Mutex;
 
 use crate::{DTypes, Tensor, layers::padding::handle_padding};
 
@@ -16,11 +18,12 @@ macro_rules! conv {
             let in_row_stride = $in_shape[3] - $weight_shape[3];
             let in_channel_stride = $in_shape[2] * $in_shape[3] - $weight_shape[2] * $in_shape[3];
 
-            let mut out_idx = 0;
             let mut out_data = vec![0.; $len];
-            for c in 0..$out_shape[1] {
-                for y in 0..$out_shape[2] {
-                    for x in 0..$out_shape[3] {
+            let out_data_mutex = Mutex::new(&mut out_data);
+
+            (0..$out_shape[1]).into_par_iter().for_each(|c| {
+                (0..$out_shape[2]).into_par_iter().for_each(|y| {
+                    (0..$out_shape[3]).into_par_iter().for_each(|x| {
                         let start_y = y * $stride_y;
                         let start_x = x * $stride_x;
 
@@ -41,11 +44,12 @@ macro_rules! conv {
                             in_offset += in_channel_stride;
                         }
 
+                        let out_idx = c * $out_shape[2] * $out_shape[3] + y * $out_shape[3] + x;
+                        let mut out_data = out_data_mutex.lock().unwrap();
                         out_data[out_idx] = sum + $bias[c];
-                        out_idx += 1;
-                    }
-                }
-            }
+                    })
+                })
+            });
 
             out_data
         }
