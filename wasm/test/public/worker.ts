@@ -41,8 +41,14 @@ function wrapFn(fn: Function) {
     return function() {
         // Parameters
         var args = [];
-        for (let i = 0; i < arguments.length; i++) {
-            args.push(wrap(arguments[i]));
+        for (const arg of arguments) {
+            if (arg instanceof Object && "ptr" in arg) {
+                // Tensor obj passed from main thread
+                args.push(wrap(arg));   
+            } else {
+                // Other parameter(numbers are most likely)
+                args.push(arg);
+            }
         }
         // Function call
         const output = fn(...args);
@@ -59,51 +65,6 @@ function handleConcatWrapper(ptrs: Tensor[], axis: number) {
     return Comlink.proxy(output);
 }
 
-function handlePaddingWrapper(ptr: Tensor, pT: number, pL: number, pB: number, pR: number) {
-    const input = wrap(ptr);
-    const output = handlePadding(input, pT, pL, pB, pR);
-    return Comlink.proxy(output);
-}
-
-function handleConvWrapper(kH: number, kW: number, pT: number, pL: number, pB: number, pR: number, sY: number, sX: number, inputPtr: Tensor, weightPtr: Tensor, biasPtr?: Tensor) {
-    const input = wrap(inputPtr);
-    const weight = wrap(weightPtr);
-    const bias = biasPtr? wrap(biasPtr) : biasPtr;
-
-    const output = handleConv(kH, kW, pT, pL, pB, pR, sY, sX, input, weight, bias);
-
-    return Comlink.proxy(output);
-}
-
-function handleMaxPoolWrapper(inputPtr: Tensor, kH: number, kW: number, pT: number, pL: number, pB: number, pR: number, sY: number, sX: number) {
-    const input = wrap(inputPtr);
-    const output = handleMaxPool2D(input, kH, kW, pT, pL, pB, pR, sY, sX);
-    return Comlink.proxy(output);
-}
-
-function handleAvgPoolWrapper(inputPtr: Tensor, kH: number, kW: number, pT: number, pL: number, pB: number, pR: number, sY: number, sX: number) {
-    const input = wrap(inputPtr);
-    const output = handleAvgPool2D(input, kH, kW, pT, pL, pB, pR, sY, sX);
-    return Comlink.proxy(output);
-}
-
-function handleLeakyReluWrapper(inputPtr: Tensor, alpha: number) {
-    const input = wrap(inputPtr);
-    const output = handleLeakyRelu(input, alpha);
-    return Comlink.proxy(output);
-}
-
-function handleInstanceNormWrapper(inputPtr: Tensor, weightPtr: Tensor, biasPtr: Tensor, epsilon: number) {
-    const input = wrap(inputPtr);
-    const weight = wrap(weightPtr);
-    const bias = wrap(biasPtr);
-    
-    const output = handleInstanceNorm(input, weight, bias, epsilon);
-
-    return Comlink.proxy(output);
-}
-
-
 // Use Comlink to expose the functionality of Web workers
 Comlink.expose({
     handleAbs: wrapFn(handleAbs),
@@ -111,15 +72,15 @@ Comlink.expose({
     handleSigmoid: wrapFn(handleSigmoid),
     handleAdd: wrapFn(handleAdd),
     handleMul: wrapFn(handleMul),
-    handlePadding: handlePaddingWrapper,
+    handlePadding: wrapFn(handlePadding),
     handleConcat: handleConcatWrapper,
-    handleConv: handleConvWrapper,
-    handleMaxPool2D: handleMaxPoolWrapper,
-    handleAvgPool2D: handleAvgPoolWrapper,
+    handleConv: wrapFn(handleConv),
+    handleMaxPool2D: wrapFn(handleMaxPool2D),
+    handleAvgPool2D: wrapFn(handleAvgPool2D),
     handleGlobalAvgPool: wrapFn(handleGlobalAvgPool),
     handleRelu: wrapFn(handleRelu),
-    handleLeakyRelu: handleLeakyReluWrapper,
-    handleInstanceNorm: handleInstanceNormWrapper,
+    handleLeakyRelu: wrapFn(handleLeakyRelu),
+    handleInstanceNorm: wrapFn(handleInstanceNorm),
     withAllArgs: WasmBuilder.withAllArgs,
 })
 
