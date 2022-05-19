@@ -1,5 +1,6 @@
 import { onnx } from "onnx-proto";
 import { getConvAttr } from "../../core/attr/conv";
+import { getSliceAttr } from "../../core/attr/slice";
 import { getPoolingAttr } from "../../core/attr/pooling";
 import {
   Tensor,
@@ -40,8 +41,15 @@ import {
   handleSub,
   handleMul,
   handleDiv,
+  handleUpSample,
+  handleUnsqueeze,
+  handleSlice,
+  handleInstanceNorm,
+  handleGather,
+  handleCast,
 } from "./rs/pkg";
 import { tensorList } from "./utils";
+import { TensorBuilder } from "./tensor";
 
 export function handle(
   opType: string,
@@ -243,6 +251,38 @@ export function handle(
       output = handleReshape(inputs[0], inputs[1]);
       break;
     }
+    case "Cast": {
+      const to = attrs[0].i as number;
+      output = handleCast(inputs[0], to);
+      break;
+    }
+    case "Constant": {
+      output = handleConstant(attrs);
+      break;
+    }
+    case "Gather": {
+      output = handleGather(inputs[0], inputs[1]);
+      break;
+    }
+    case "InstanceNormalization": {
+      const epsilon = attrs[0].f;
+      output = handleInstanceNorm(inputs[0], inputs[1], inputs[2], epsilon);
+      break;
+    }
+    case "Slice": {
+      const attr = getSliceAttr(attrs);
+      output = handleSlice(inputs[0], attr.axes, attr.starts, attr.ends);
+      break;
+    }
+    case "Unsqueeze": {
+      const dims = attrs[0].ints as number[];
+      output = handleUnsqueeze(inputs[0], dims);
+      break;
+    }
+    case "Upsample": {
+      output = handleUpSample(inputs[0], inputs[1]);
+      break;
+    }
     default:
       throw new Error(`Unknown op type ${opType}!`);
   }
@@ -250,4 +290,54 @@ export function handle(
   // console.log(opType, output.toArray(), output.shapeToArray());
 
   return output;
+}
+
+function handleConstant(attributes: onnx.AttributeProto[]): Tensor {
+  const outShape = attributes[0].t!.dims! as number[];
+  let buffer = attributes[0].t!.rawData!.buffer.slice(
+    attributes[0].t!.rawData!.byteOffset,
+    attributes[0].t!.rawData!.byteOffset + attributes[0].t!.rawData!.byteLength
+  );
+
+  let outData;
+  switch(attributes[0].t!.dataType) {
+    case 1:
+      outData = new Float32Array(buffer);
+      break;
+    case 2:
+      outData = new Uint8Array(buffer);
+      break;
+    case 3:
+      outData = new Int8Array(buffer);
+      break;
+    case 4:
+      outData = new Uint16Array(buffer);
+      break;
+    case 5:
+      outData = new Int16Array(buffer);
+      break;
+    case 6:
+      outData = new Int32Array(buffer);
+      break;
+    case 7: {
+      const temp = new BigInt64Array(buffer);
+      outData = new Int32Array([Number(temp[0])]);
+      break;
+    }
+    case 11:
+      outData = new Float64Array(buffer);
+      break;
+    case 12:
+      outData = new Uint32Array(buffer);
+      break;
+    case 13: {
+      const temp = new BigUint64Array(buffer);
+      outData = new Uint32Array([Number(temp[0])]);
+      break;
+    }
+    default:
+      throw Error("Data type not support in ONNX!!");
+  }
+
+  return TensorBuilder.withAllArgs(outData, outShape);
 }
