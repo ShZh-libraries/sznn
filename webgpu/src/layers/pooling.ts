@@ -1,6 +1,6 @@
 import pooling from "./shaders/pooling.wgsl";
 import { Tensor, TensorBuilder } from "../tensor";
-import { PoolingAttr } from "../../../core/attr/pooling";
+import { PoolingAttr } from "../../../common/attr/pooling";
 import { computePass, GPUDataEnum, Program, Resource, ResourceType as RType } from "../gpu";
 import { handlePadding } from "./padding";
 

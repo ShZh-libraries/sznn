@@ -1,4 +1,4 @@
-import { ConvAttr } from "../../../core/attr/conv";
+import { ConvAttr } from "../../../common/attr/conv";
 import { Tensor, TensorBuilder } from "../tensor";
 
 export function handleConv(

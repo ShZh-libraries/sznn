@@ -1,4 +1,4 @@
-import { PoolingAttr } from "../../../core/attr/pooling";
+import { PoolingAttr } from "../../../common/attr/pooling";
 import { Tensor, TensorBuilder } from "../tensor";
 
 export function handleMaxPool2D(input: Tensor, attr: PoolingAttr): Tensor {

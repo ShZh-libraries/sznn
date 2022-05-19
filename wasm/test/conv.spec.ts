@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { ConvAttr } from "../../core/attr/conv";
+import { ConvAttr } from "../../common/attr/conv";
 import { handleConv, TensorBuilder } from "./public/init";
 
 describe("Test convolutional layer of WASM backend", () => {

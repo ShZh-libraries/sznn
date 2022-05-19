@@ -1,4 +1,4 @@
-import { SliceAttr } from "../../core/attr/slice";
+import { SliceAttr } from "../../common/attr/slice";
 import { handleSlice } from "../src/layers/slice";
 import { TensorBuilder } from "../src/tensor";
 

@@ -1,8 +1,8 @@
 import { onnx } from "onnx-proto";
-import { loadONNXModel } from "../../core/model";
+import { loadONNXModel } from "../../common/model";
 import { handle } from "./handler";
 import { Tensor, TensorDict } from "./tensor";
-import { ModelStat, caclAllTime } from "../../core/perf";
+import { ModelStat, caclAllTime } from "../../common/perf";
 
 let startTime: number;
 let endTime: number;

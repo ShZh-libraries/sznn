@@ -1,5 +1,5 @@
 import { Tensor, TensorBuilder } from "../tensor";
-import { SliceAttr } from "../../../core/attr/slice";
+import { SliceAttr } from "../../../common/attr/slice";
 
 export function handleSlice(input: Tensor, attr: SliceAttr): Tensor {
     if (attr.axes.length == 1 && attr.axes[0] == 0) {

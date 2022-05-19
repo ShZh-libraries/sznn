@@ -1,7 +1,7 @@
 import { TensorBuilder } from "../src/tensor";
 import { getGPUDevice } from "../src/gpu";
 import { handlePadding } from "../src/layers/padding";
-import { PaddingAttr } from "../../core/attr/padding";
+import { PaddingAttr } from "../../common/attr/padding";
 
 import { expect } from "chai";
 

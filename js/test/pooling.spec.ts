@@ -1,4 +1,4 @@
-import { PoolingAttr } from "../../core/attr/pooling";
+import { PoolingAttr } from "../../common/attr/pooling";
 import {
   handleAvgPool2D,
   handleMaxPool2D,

@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { PoolingAttr } from "../../core/attr/pooling";
+import { PoolingAttr } from "../../common/attr/pooling";
 import { handleMaxPool2D, handleAvgPool2D, TensorBuilder, handleGlobalAvgPool } from "./public/init";
 
 describe("Test pooling layer of WASM backend", () => {

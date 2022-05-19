@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { ConvAttr } from "../../core/attr/conv";
+import { ConvAttr } from "../../common/attr/conv";
 import { getGPUDevice } from "../src/gpu";
 import { handleConv } from "../src/layers/conv";
 import { TensorBuilder } from "../src/tensor";

@@ -1,7 +1,7 @@
 import { onnx } from "onnx-proto";
-import { getConvAttr } from "../../core/attr/conv";
-import { getSliceAttr } from "../../core/attr/slice";
-import { getPoolingAttr } from "../../core/attr/pooling";
+import { getConvAttr } from "../../common/attr/conv";
+import { getSliceAttr } from "../../common/attr/slice";
+import { getPoolingAttr } from "../../common/attr/pooling";
 import {
   Tensor,
   handleAvgPool2D,

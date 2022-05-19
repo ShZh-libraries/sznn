@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { PoolingAttr } from "../../core/attr/pooling";
+import { PoolingAttr } from "../../common/attr/pooling";
 import { getGPUDevice } from "../src/gpu";
 import { handleAvgPool2D, handleGlobalAvgPool, handleMaxPool2D } from "../src/layers/pooling";
 import { TensorBuilder } from "../src/tensor";

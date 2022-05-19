@@ -1,4 +1,4 @@
-import { SliceAttr } from "../../../core/attr/slice";
+import { SliceAttr } from "../../../common/attr/slice";
 import { Tensor, TensorBuilder } from "../tensor";
 
 export function handleSlice(input: Tensor, attr: SliceAttr): Tensor {

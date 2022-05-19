@@ -4,7 +4,7 @@ import instancenorm from "./shaders/instancenorm/index.wgsl";
 import { Tensor, TensorBuilder } from "../tensor";
 import { computePass, GPUDataEnum, Program, Resource, ResourceType as RType } from "../gpu";
 
-async function caclMean(input: Tensor, temp: Tensor, device: GPUDevice) {
+async function caclMean(input: Tensor, device: GPUDevice) {
     const channelSize = input.shape[2] * input.shape[3];
     let means = TensorBuilder.withShape([input.shape[0], input.shape[1]]);
     let resources: Resource[] = [
@@ -31,7 +31,7 @@ async function caclMean(input: Tensor, temp: Tensor, device: GPUDevice) {
     return means;
 }
 
-async function calcVariance(input: Tensor, means: Tensor, temp: Tensor, device: GPUDevice) {
+async function calcVariance(input: Tensor, means: Tensor, device: GPUDevice) {
     const channelSize = input.shape[2] * input.shape[3];
     let variances = TensorBuilder.withShape([input.shape[0], input.shape[1]]);
     let resources: Resource[] = [
@@ -102,10 +102,8 @@ async function forward(input: Tensor, weight: Tensor, bias: Tensor, means: Tenso
 }
 
 export async function handleInstanceNorm(input: Tensor, weight: Tensor, bias: Tensor, epsilon: number, device: GPUDevice): Promise<Tensor> {
-    let temp = input.copy();
-
-    const means = await caclMean(input, temp, device);
-    const variances = await calcVariance(input, means, temp, device);
+    const means = await caclMean(input, device);
+    const variances = await calcVariance(input, means, device);
     const output = await forward(input, weight, bias, means, variances, epsilon, device);
 
     return output;

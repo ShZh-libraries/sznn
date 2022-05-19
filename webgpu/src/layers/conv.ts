@@ -1,5 +1,5 @@
 import conv from "./shaders/conv.wgsl";
-import { ConvAttr } from "../../../core/attr/conv";
+import { ConvAttr } from "../../../common/attr/conv";
 import { computePass, GPUDataEnum, Program, Resource, ResourceType as RType } from "../gpu";
 import { Tensor, TensorBuilder } from "../tensor";
 import { handlePadding } from "./padding";

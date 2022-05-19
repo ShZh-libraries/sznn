@@ -1,8 +1,8 @@
 import { onnx } from "onnx-proto";
-import { getConvAttr } from "../../core/attr/conv";
-import { getPaddingAttr } from "../../core/attr/padding";
-import { getPoolingAttr } from "../../core/attr/pooling";
-import { getSliceAttr } from "../../core/attr/slice";
+import { getConvAttr } from "../../common/attr/conv";
+import { getPaddingAttr } from "../../common/attr/padding";
+import { getPoolingAttr } from "../../common/attr/pooling";
+import { getSliceAttr } from "../../common/attr/slice";
 import { getGPUDevice } from "./gpu";
 import { handleBatchNorm } from "./layers/batchnorm";
 import { handleBinaryOp } from "./layers/binaryop";

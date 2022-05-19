@@ -2,8 +2,8 @@ import { onnx } from "onnx-proto";
 import { handle } from "./handler";
 import { Tensor } from "./rs/pkg";
 import { TensorDict } from "./tensor";
-import { loadONNXModel } from "../../core/model";
-import { caclAllTime, ModelStat } from "../../core/perf";
+import { loadONNXModel } from "../../common/model";
+import { caclAllTime, ModelStat } from "../../common/perf";
 import * as Comlink from "comlink";
 
 let startTime: number;

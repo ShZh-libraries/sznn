@@ -1,4 +1,4 @@
-import { PaddingAttr } from "../../../core/attr/padding";
+import { PaddingAttr } from "../../../common/attr/padding";
 import { Tensor, TensorBuilder } from "../tensor";
 
 function isInPadding(outputLoc: number[], inputShape: number[], shapeOffset: number, attr: PaddingAttr) {

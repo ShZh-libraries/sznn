@@ -1,7 +1,7 @@
 import padding from "./shaders/padding.wgsl";
 import { computePass, GPUDataEnum, Program, Resource, ResourceType as RType } from "../gpu";
 import { Tensor, TensorBuilder } from "../tensor";
-import { PaddingAttr } from "../../../core/attr/padding";
+import { PaddingAttr } from "../../../common/attr/padding";
 
 export async function handlePadding(input: Tensor, attr: PaddingAttr, device: GPUDevice): Promise<Tensor> {
     let outputShape = [];
