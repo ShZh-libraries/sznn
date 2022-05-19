@@ -19,6 +19,7 @@ const {
     handleRelu,
     handleLeakyRelu,
     handleInstanceNorm,
+    handleUpSample,
     withAllArgs 
 } = Comlink.wrap(
     new Worker(new URL("./worker.ts", import.meta.url))
@@ -37,6 +38,7 @@ const {
     handleRelu: (input: Tensor) => Promise<Tensor>;
     handleLeakyRelu: (input: Tensor, alpha: number) => Promise<Tensor>;
     handleInstanceNorm: (input: Tensor, weight: Tensor, bias: Tensor, epsilon: number) => Promise<Tensor>;
+    handleUpSample: (input: Tensor, scale: Tensor) => Promise<Tensor>;
     withAllArgs: (data: TensorDataType, shape: number[], dtype?: DType | undefined) => Promise<Tensor>;
 }
 
@@ -64,5 +66,6 @@ export {
     handleRelu,
     handleLeakyRelu,
     handleInstanceNorm,
+    handleUpSample,
     TensorBuilderWrapper as TensorBuilder
 };

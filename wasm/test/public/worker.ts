@@ -14,6 +14,7 @@ import init, {
     handleRelu,
     handleLeakyRelu,
     handleInstanceNorm,
+    handleUpSample,
 } from "../../src/rs/pkg";
 import { TensorBuilder as WasmBuilder } from "../../src/tensor";
 
@@ -81,6 +82,7 @@ Comlink.expose({
     handleRelu: wrapFn(handleRelu),
     handleLeakyRelu: wrapFn(handleLeakyRelu),
     handleInstanceNorm: wrapFn(handleInstanceNorm),
+    handleUpSample: wrapFn(handleUpSample),
     withAllArgs: WasmBuilder.withAllArgs,
 })
 

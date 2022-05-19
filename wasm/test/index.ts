@@ -21,3 +21,4 @@ import "./padding.spec";
 import "./pooling.spec";
 import "./relu.spec";
 import "./unaryop.spec";
+import "./upsample.spec";
