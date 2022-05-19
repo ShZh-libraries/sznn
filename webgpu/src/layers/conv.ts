@@ -1,4 +1,4 @@
-import conv from "./wgsl/conv.wgsl";
+import conv from "./shaders/conv.wgsl";
 import { ConvAttr } from "../../../core/attr/conv";
 import { computePass, GPUDataEnum, Program, Resource, ResourceType as RType } from "../gpu";
 import { Tensor, TensorBuilder } from "../tensor";

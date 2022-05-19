@@ -1,6 +1,6 @@
-import mean from "./wgsl/instancenorm/mean.wgsl";
-import variance from "./wgsl/instancenorm/variance.wgsl";
-import instancenorm from "./wgsl/instancenorm/index.wgsl";
+import mean from "./shaders/instancenorm/mean.wgsl";
+import variance from "./shaders/instancenorm/variance.wgsl";
+import instancenorm from "./shaders/instancenorm/index.wgsl";
 import { Tensor, TensorBuilder } from "../tensor";
 import { computePass, GPUDataEnum, Program, Resource, ResourceType as RType } from "../gpu";
 

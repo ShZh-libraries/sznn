@@ -1,4 +1,4 @@
-import batchnorm from "./wgsl/batchnorm.wgsl";
+import batchnorm from "./shaders/batchnorm.wgsl";
 import { computePass, GPUDataEnum, Program, Resource, ResourceType as RType } from "../gpu";
 import { Tensor, TensorBuilder } from "../tensor";
 

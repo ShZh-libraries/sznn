@@ -1,4 +1,4 @@
-import upsample from "./wgsl/upsample.wgsl";
+import upsample from "./shaders/upsample.wgsl";
 import { computePass, GPUDataEnum, Program, Resource, ResourceType as RType } from "../gpu";
 import { Tensor, TensorBuilder } from "../tensor";
 import { arrayToVec4 } from "../utils";
