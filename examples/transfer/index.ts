@@ -1,6 +1,6 @@
 import { loadModel, TensorBuilder, Tensor } from "sznn-webgpu";
-import { imageToArray, loadImage } from "../share/cv";
-import { displayImage, displayImageWithChannels } from "../share/utils";
+import { imageToArray, loadImage } from "../shared/cv";
+import { displayImage, displayImageWithChannels } from "../shared/utils";
 
 const WIDTH = 224;
 const HEIGHT = 224;

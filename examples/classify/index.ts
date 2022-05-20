@@ -1,7 +1,7 @@
 import Jimp from "jimp/*";
 import { loadModel, TensorBuilder, Tensor } from "sznn-js";
-import { imageToArray, loadImage, normalize } from "../share/cv";
-import { displayImage } from "../share/utils";
+import { imageToArray, loadImage, normalize } from "../shared/cv";
+import { displayImage } from "../shared/utils";
 import { imagenetClasses } from "./image_net";
 
 const HEIGHT = 224;
