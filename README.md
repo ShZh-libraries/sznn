@@ -38,7 +38,7 @@
       <a href="./examples/transfer/">Style Transfer</a>
     </td>
     <td align="center">
-      <a href="./example/detect/">Object Detection(TBD)</a>
+      <a href="./examples/detect/">Object Detection(TBD)</a>
     </td>
   </tr>
 </table>
@@ -54,8 +54,8 @@ Fortunately, we provide a tool as suggestion. Just directly open `tools/schedule
 Two simple API then you can inference ONNX models:
 
 ```js
-  const model = await loadModel("./model.onnx");
-  const output = await model.forward(input);
+const model = await loadModel("./model.onnx");
+const output = await model.forward(input);
 ```
 
 
