@@ -13,7 +13,7 @@
     "dependencies": {
         "jimp": "^0.16.1",
         "onnx-proto": "^8.0.1",
-        "sznn-js": "file:../../js/"
+        "sznn-js": "file:../../packages/js/"
     },
     "devDependencies": {
         "@wasm-tool/wasm-pack-plugin": "^1.6.0",

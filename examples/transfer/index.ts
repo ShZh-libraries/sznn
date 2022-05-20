@@ -1,6 +1,6 @@
-import { loadModel, TensorBuilder, Tensor } from "sznn-js";
-import { imageToArray, loadImage } from "../common/cv";
-import { displayImage, displayImageWithChannels } from "../common/utils";
+import { loadModel, TensorBuilder, Tensor } from "sznn-webgpu";
+import { imageToArray, loadImage } from "../share/cv";
+import { displayImage, displayImageWithChannels } from "../share/utils";
 
 const WIDTH = 224;
 const HEIGHT = 224;
@@ -54,8 +54,8 @@ startBtn!.addEventListener("click", async () => {
 
   // Load model and do inference
   const model = await loadModel("./model/mosaic.onnx");
-  const result = model.forward(tensor)[0];
-  const channels = extractChannels(result);
+  const result = await model.forward(tensor);
+  const channels = extractChannels(result[0]);
 
   // Display image
   const outputCanvas = document.querySelector(
