@@ -21,7 +21,7 @@ pub fn handle_reshape(input: &Tensor, shape: Tensor) -> Tensor {
     // Deal with negative numbers
     let negative_idx = shape.iter().position(|&x| x == -1);
     if let Some(idx) = negative_idx {
-        let remain_len = shape.iter().fold(1, |res, val| res * val) as usize;
+        let remain_len = shape.iter().filter(|x| x.is_positive()).product::<i32>() as usize;
         let remain_size = input.get_length() / remain_len;
         shape[idx] = remain_size as i32;
     }
