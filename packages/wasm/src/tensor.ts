@@ -91,7 +91,7 @@ export class TensorBuilder {
     for (let i = 0; i < length; i++) {
       data[i] = 0;
     }
-    tensor.setDataWithArray(data, dtype? dtype : DType.Float32);
+    tensor.setDataWithArray(data, dtype ? dtype : DType.Float32);
 
     return tensor;
   }

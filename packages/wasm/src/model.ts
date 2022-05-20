@@ -8,7 +8,7 @@ import * as Comlink from "comlink";
 
 let startTime: number;
 let endTime: number;
-let stat: ModelStat = []; 
+let stat: ModelStat = [];
 
 export async function loadModel(path: string) {
   const onnxModel = await loadONNXModel(path);
@@ -29,7 +29,7 @@ export class Model {
   forward(inputPtr: Tensor): Tensor[] {
     console.log("This is wasm!");
     let input = new Tensor();
-    input.free();   // Avoid memory leakage
+    input.free(); // Avoid memory leakage
     Object.assign(input, inputPtr);
 
     // Put input tensor to tensor pool

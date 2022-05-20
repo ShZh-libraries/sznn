@@ -6,7 +6,7 @@ import { ModelStat, caclAllTime } from "../../common/perf";
 
 let startTime: number;
 let endTime: number;
-let stat: ModelStat = []; 
+let stat: ModelStat = [];
 
 export async function loadModel(path: string): Promise<Model> {
   const onnxModel = await loadONNXModel(path);

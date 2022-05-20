@@ -204,7 +204,13 @@ export function handle(
     }
     case "Pad": {
       const attr = getPaddingAttr(attrs);
-      output = handlePadding(inputs[0], attr.pads[2], attr.pads[3], attr.pads[6], attr.pads[7]);
+      output = handlePadding(
+        inputs[0],
+        attr.pads[2],
+        attr.pads[3],
+        attr.pads[6],
+        attr.pads[7]
+      );
       break;
     }
     case "MaxPool": {
@@ -301,14 +307,14 @@ export function handle(
 
 function handleConstant(attributes: onnx.AttributeProto[]): Tensor {
   const dims = attributes[0].t!.dims! as number[];
-  const outShape = dims.length == 0? [1] : dims;
+  const outShape = dims.length == 0 ? [1] : dims;
   let buffer = attributes[0].t!.rawData!.buffer.slice(
     attributes[0].t!.rawData!.byteOffset,
     attributes[0].t!.rawData!.byteOffset + attributes[0].t!.rawData!.byteLength
   );
 
   let outData;
-  switch(attributes[0].t!.dataType) {
+  switch (attributes[0].t!.dataType) {
     case 1:
       outData = new Float32Array(buffer);
       break;

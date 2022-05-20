@@ -7,8 +7,8 @@ chai.use(chaiDeepCloseTo);
 
 // Wait for initializaiton done
 before((done) => {
-    setTimeout(done, 500);  // Wait for 500 miliseconds
-})
+  setTimeout(done, 500); // Wait for 500 miliseconds
+});
 
 const expect = chai.expect;
 export { expect };

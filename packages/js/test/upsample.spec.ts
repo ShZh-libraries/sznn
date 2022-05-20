@@ -18,10 +18,7 @@ describe("Test JS backends for upsample layer", () => {
 
     expect(result.data).toEqual(
       new Float32Array([
-        1, 1, 1, 2, 2, 2, 
-        1, 1, 1, 2, 2, 2, 
-        3, 3, 3, 4, 4, 4, 
-        3, 3, 3, 4, 4, 4,
+        1, 1, 1, 2, 2, 2, 1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4, 3, 3, 3, 4, 4, 4,
       ])
     );
   });

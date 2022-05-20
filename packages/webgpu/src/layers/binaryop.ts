@@ -1,36 +1,51 @@
-import { computePass, GPUDataEnum, GPUDataType, Program, Resource, ResourceType as RType } from "../gpu";
+import {
+  computePass,
+  GPUDataEnum,
+  GPUDataType,
+  Program,
+  Resource,
+  ResourceType as RType,
+} from "../gpu";
 import { Tensor, TensorBuilder } from "../tensor";
 import { arrayToVec4 } from "../utils";
 
 const workgroup_size = 256;
 
-export async function handleBinaryOp(a: Tensor, b: Tensor, binaryop: string, device: GPUDevice): Promise<Tensor> {
-    const outputShape = getBroadcastShape(a.shape, b.shape);
-    let output = TensorBuilder.withShape(outputShape);
-    const len = output.getLength();
+export async function handleBinaryOp(
+  a: Tensor,
+  b: Tensor,
+  binaryop: string,
+  device: GPUDevice
+): Promise<Tensor> {
+  const outputShape = getBroadcastShape(a.shape, b.shape);
+  let output = TensorBuilder.withShape(outputShape);
+  const len = output.getLength();
 
-    const aBroadcastDim = getBroadcastDims(a.shape, outputShape);
-    const bBroadcastDim = getBroadcastDims(b.shape, outputShape);
+  const aBroadcastDim = getBroadcastDims(a.shape, outputShape);
+  const bBroadcastDim = getBroadcastDims(b.shape, outputShape);
 
-    let result: GPUDataType;
-    if (aBroadcastDim.length + bBroadcastDim.length == 0) {
-        let resources: Resource[] = [
-            {
-                rtype: RType.InputTensor,
-                data: a,
-            }, {
-                rtype: RType.InputTensor,
-                data: b,
-            }, {
-                rtype: RType.OutputTensor,
-                data: output,
-            }, {
-                rtype: RType.MetaUInt32Array,
-                data: [len],
-            }
-        ];
-        const program: Program = {
-            code: `
+  let result: GPUDataType;
+  if (aBroadcastDim.length + bBroadcastDim.length == 0) {
+    let resources: Resource[] = [
+      {
+        rtype: RType.InputTensor,
+        data: a,
+      },
+      {
+        rtype: RType.InputTensor,
+        data: b,
+      },
+      {
+        rtype: RType.OutputTensor,
+        data: output,
+      },
+      {
+        rtype: RType.MetaUInt32Array,
+        data: [len],
+      },
+    ];
+    const program: Program = {
+      code: `
                 @group(0) @binding(0) var<storage, read> a: array<f32>;
                 @group(0) @binding(1) var<storage, read> b: array<f32>;
                 @group(0) @binding(2) var<storage, write> output: array<f32>;
@@ -47,52 +62,52 @@ export async function handleBinaryOp(a: Tensor, b: Tensor, binaryop: string, dev
                     output[global_id.x] = a[global_id.x] ${binaryop} b[global_id.x];
                 }
             `,
-            entry: "main"
-        };
+      entry: "main",
+    };
 
-        result = await computePass(resources, [Math.ceil(len / workgroup_size)], program, device, GPUDataEnum.Float32Array);
-    } else {
-        const len = output.getLength();
-        const aStrideVec4 = arrayToVec4(a.getStride()!);
-        const aBroadcastDimVec4 = arrayToVec4(aBroadcastDim);
-        const bStrideVec4 = arrayToVec4(b.getStride()!);
-        const bBroadcastDimVec4 = arrayToVec4(bBroadcastDim);
-        const outStrideVec4 = arrayToVec4(output.getStride()!);
+    result = await computePass(
+      resources,
+      [Math.ceil(len / workgroup_size)],
+      program,
+      device,
+      GPUDataEnum.Float32Array
+    );
+  } else {
+    const len = output.getLength();
+    const aStrideVec4 = arrayToVec4(a.getStride()!);
+    const aBroadcastDimVec4 = arrayToVec4(aBroadcastDim);
+    const bStrideVec4 = arrayToVec4(b.getStride()!);
+    const bBroadcastDimVec4 = arrayToVec4(bBroadcastDim);
+    const outStrideVec4 = arrayToVec4(output.getStride()!);
 
-        const resources: Resource[] = [
-            {
-                rtype: RType.InputTensor,
-                data: a,
-            }, {
-                rtype: RType.MetaUInt32Array,
-                data: [
-                    a.ndim, 0, 0, 0,
-                    ...aStrideVec4,
-                    ...aBroadcastDimVec4
-                ]
-            }, {
-                rtype: RType.InputTensor,
-                data: b,
-            }, {
-                rtype: RType.MetaUInt32Array,
-                data: [
-                    b.ndim, 0, 0, 0,
-                    ...bStrideVec4,
-                    ...bBroadcastDimVec4
-                ]
-            }, {
-                rtype: RType.OutputTensor,
-                data: output
-            }, {
-                rtype: RType.MetaUInt32Array,
-                data: [
-                    len, 0, 0, 0,
-                    ...outStrideVec4
-                ]
-            }
-        ];
-        const program: Program = {
-            code:  `
+    const resources: Resource[] = [
+      {
+        rtype: RType.InputTensor,
+        data: a,
+      },
+      {
+        rtype: RType.MetaUInt32Array,
+        data: [a.ndim, 0, 0, 0, ...aStrideVec4, ...aBroadcastDimVec4],
+      },
+      {
+        rtype: RType.InputTensor,
+        data: b,
+      },
+      {
+        rtype: RType.MetaUInt32Array,
+        data: [b.ndim, 0, 0, 0, ...bStrideVec4, ...bBroadcastDimVec4],
+      },
+      {
+        rtype: RType.OutputTensor,
+        data: output,
+      },
+      {
+        rtype: RType.MetaUInt32Array,
+        data: [len, 0, 0, 0, ...outStrideVec4],
+      },
+    ];
+    const program: Program = {
+      code: `
                 struct InTensorMeta {
                     dim: u32,
                     stride: vec4<u32>,
@@ -168,52 +183,58 @@ export async function handleBinaryOp(a: Tensor, b: Tensor, binaryop: string, dev
                     out[global_id.x] = a[a_idx] ${binaryop} b[b_idx]; 
                 }
             `,
-            entry: "main"
-        };
-        result = await computePass(resources, [Math.ceil(len / workgroup_size)], program, device, GPUDataEnum.Float32Array);
-    }
+      entry: "main",
+    };
+    result = await computePass(
+      resources,
+      [Math.ceil(len / workgroup_size)],
+      program,
+      device,
+      GPUDataEnum.Float32Array
+    );
+  }
 
-    output.data = result!;
+  output.data = result!;
 
-    return output;
+  return output;
 }
 
 function getBroadcastShape(shape1: number[], shape2: number[]): number[] {
-    let result = [];
-    let resultLength =
-        shape1.length > shape2.length ? shape1.length : shape2.length;
+  let result = [];
+  let resultLength =
+    shape1.length > shape2.length ? shape1.length : shape2.length;
 
-    for (let index = 0; index < resultLength; index++) {
-        let a = shape1[shape1.length - 1 - index]
-            ? shape1[shape1.length - 1 - index]
-            : 1;
-        let b = shape2[shape2.length - 1 - index]
-            ? shape2[shape2.length - 1 - index]
-            : 1;
+  for (let index = 0; index < resultLength; index++) {
+    let a = shape1[shape1.length - 1 - index]
+      ? shape1[shape1.length - 1 - index]
+      : 1;
+    let b = shape2[shape2.length - 1 - index]
+      ? shape2[shape2.length - 1 - index]
+      : 1;
 
-        if (a == 1) {
-            result.unshift(b);
-        } else if (b == 1) {
-            result.unshift(a);
-        } else if (a == b) {
-            result.unshift(a);
-        } else {
-            throw new Error("Cannot broadcast!!");
-        }
+    if (a == 1) {
+      result.unshift(b);
+    } else if (b == 1) {
+      result.unshift(a);
+    } else if (a == b) {
+      result.unshift(a);
+    } else {
+      throw new Error("Cannot broadcast!!");
     }
+  }
 
-    return result;
+  return result;
 }
 
 function getBroadcastDims(shape: number[], resultShape: number[]): number[] {
-    const result: number[] = [];
-    for (let i = 0; i < shape.length; i++) {
-        const dim = shape.length - 1 - i;
-        const a = shape[dim] || 1;
-        const b = resultShape[dim] || 1;
-        if (b > 1 && a === 1) {
-            result.unshift(dim);
-        }
+  const result: number[] = [];
+  for (let i = 0; i < shape.length; i++) {
+    const dim = shape.length - 1 - i;
+    const a = shape[dim] || 1;
+    const b = resultShape[dim] || 1;
+    if (b > 1 && a === 1) {
+      result.unshift(dim);
     }
-    return result;
+  }
+  return result;
 }

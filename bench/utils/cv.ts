@@ -13,7 +13,7 @@ export async function loadImage(buffer: Buffer): Promise<Image> {
 }
 
 export function normalize(arr: Float32Array, factor: number) {
-  return arr.map(x => x / factor);
+  return arr.map((x) => x / factor);
 }
 
 export function imageToArray(image: Jimp): Float32Array {
@@ -44,7 +44,10 @@ export function imageToArray(image: Jimp): Float32Array {
 
 export function displayImage(canvas: HTMLCanvasElement, image: Jimp) {
   const context = canvas.getContext("2d")!;
-  const imageData = context.createImageData(image.getWidth(), image.getHeight());
+  const imageData = context.createImageData(
+    image.getWidth(),
+    image.getHeight()
+  );
   for (let i = 0; i < imageData.data.length; i += 4) {
     imageData.data[i + 0] = image.bitmap.data[i + 0]; // R value
     imageData.data[i + 1] = image.bitmap.data[i + 1]; // G value
@@ -55,8 +58,10 @@ export function displayImage(canvas: HTMLCanvasElement, image: Jimp) {
 }
 
 export function displayImageWithChannels(
-  canvas: HTMLCanvasElement, channels: Channels,
-  width: number, height: number
+  canvas: HTMLCanvasElement,
+  channels: Channels,
+  width: number,
+  height: number
 ) {
   const contextOutput = canvas.getContext("2d")!;
   let outputImageData = contextOutput.createImageData(width, height);

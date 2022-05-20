@@ -7,7 +7,9 @@ const HEIGHT = 224;
 const CHANNEL = WIDTH * HEIGHT;
 
 function extractChannels(image: Tensor) {
-  let red = [], blue = [], green = [];
+  let red = [],
+    blue = [],
+    green = [];
   const bitmap = image.toArray();
   for (let i = 0; i < bitmap.length; i++) {
     if (i >= 2 * CHANNEL) {
@@ -34,7 +36,7 @@ uploadBtn!.addEventListener("click", async () => {
 
   // Extract tensor from file content
   const buffer = Buffer.from(content);
-  image = (await loadImage(buffer)).resize(HEIGHT, WIDTH);  // Resize only
+  image = (await loadImage(buffer)).resize(HEIGHT, WIDTH); // Resize only
   const imageData = imageToArray(image);
   tensor = TensorBuilder.withAllArgs(imageData, [1, 3, HEIGHT, WIDTH]);
 

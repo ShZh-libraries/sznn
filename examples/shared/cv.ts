@@ -11,7 +11,7 @@ export async function loadImage(buffer: Buffer): Promise<Image> {
 }
 
 export function normalize(arr: Float32Array, factor: number) {
-  return arr.map(x => x / factor);
+  return arr.map((x) => x / factor);
 }
 
 export function imageToArray(image: Jimp): Float32Array {

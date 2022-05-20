@@ -1,10 +1,18 @@
 import { PaddingAttr } from "../../../common/attr/padding";
 import { Tensor, TensorBuilder } from "../tensor";
 
-function isInPadding(outputLoc: number[], inputShape: number[], shapeOffset: number, attr: PaddingAttr) {
+function isInPadding(
+  outputLoc: number[],
+  inputShape: number[],
+  shapeOffset: number,
+  attr: PaddingAttr
+) {
   for (let index = 0; index < attr.pads.length / 2; index++) {
     const curIdx = shapeOffset + index;
-    if (outputLoc[curIdx] < attr.pads[index] || outputLoc[curIdx] >= inputShape[curIdx] + attr.pads[index]) {
+    if (
+      outputLoc[curIdx] < attr.pads[index] ||
+      outputLoc[curIdx] >= inputShape[curIdx] + attr.pads[index]
+    ) {
       return true;
     }
   }
@@ -12,12 +20,16 @@ function isInPadding(outputLoc: number[], inputShape: number[], shapeOffset: num
   return false;
 }
 
-function toInputIdx(outputLoc: number[], shapeOffset: number, attr: PaddingAttr) {
+function toInputIdx(
+  outputLoc: number[],
+  shapeOffset: number,
+  attr: PaddingAttr
+) {
   let inputLoc = outputLoc.slice();
   for (let index = 0; index < attr.pads.length / 2; index++) {
     const curIdx = shapeOffset + index;
     inputLoc[curIdx] = outputLoc[curIdx] - attr.pads[index];
-  }  
+  }
 
   return inputLoc;
 }
@@ -26,8 +38,10 @@ export function handlePadding(input: Tensor, attr: PaddingAttr): Tensor {
   let outputShape = input.shape.slice();
   const shapeOffset = input.shape.length - attr.pads.length / 2;
   for (let index = 0; index < attr.pads.length / 2; index++) {
-    outputShape[shapeOffset + index] = 
-      attr.pads[index] + input.shape[shapeOffset + index] + attr.pads[index + attr.pads.length / 2];
+    outputShape[shapeOffset + index] =
+      attr.pads[index] +
+      input.shape[shapeOffset + index] +
+      attr.pads[index + attr.pads.length / 2];
   }
   let output = TensorBuilder.withShape(outputShape);
 

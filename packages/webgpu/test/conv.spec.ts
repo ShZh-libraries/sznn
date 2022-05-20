@@ -37,7 +37,9 @@ describe("Test convolutional layer of WebGPU backend", () => {
     const output = await handleConv(device!, attr, data, weight);
 
     expect(output.shape).deep.equal([1, 1, 3, 2]);
-    expect(output.data).deep.equal(new Float32Array([54, 72, 144, 162, 234, 252]));
+    expect(output.data).deep.equal(
+      new Float32Array([54, 72, 144, 162, 234, 252])
+    );
   });
 
   it("Test convolutional layer with padding", async () => {
@@ -49,6 +51,8 @@ describe("Test convolutional layer of WebGPU backend", () => {
 
     const output = await handleConv(device!, attr, data, weight);
     expect(output.shape).deep.equal([1, 1, 4, 2]);
-    expect(output.data).deep.equal(new Float32Array([21, 33, 99, 117, 189, 207, 171, 183]));
+    expect(output.data).deep.equal(
+      new Float32Array([21, 33, 99, 117, 189, 207, 171, 183])
+    );
   });
-})
+});
