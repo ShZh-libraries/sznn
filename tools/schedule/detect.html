@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Browser feature detections</title>
+</head>
+<style>
+    body {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .wrap {
+        margin: 2rem 0;
+    }
+
+    table {
+        table-layout: fixed;
+    }
+
+    th {
+        width: 10rem;
+    }
+
+    h1 {
+        font-size: 3rem;
+        font-family: serif;
+        margin-bottom: 1.5rem;
+    }
+
+    p {
+        margin-top: 5rem;
+        font-style: italic;
+    }
+</style>
+
+<body>
+    <div class="wrap">
+        <h1>Feature detection</h1>
+        <table id="detect" border="1">
+            <tr>
+                <th>JS</th>
+                <th>WASM</th>
+                <th>WASM Threading</th>
+                <th>WASM SIMD</th>
+                <th>WebGPU</th>
+            </tr>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="wrap">
+        <h1>Backend scheduling</h1>
+        <table id="schedule" border="1">
+            <tr>
+                <th>JS backend</th>
+                <th>WASM backend</th>
+                <th>WebGPU backend</th>
+            </tr>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+        </table>
+    </div>
+
+    <p></p>
+</body>
+<script type="module">
+    import { simd, threads } from "https://unpkg.com/wasm-feature-detect?module";
+    // Detect by `wasm-feature-detect`
+    const js = true;
+    const jsBackend = js;
+
+    const wasm = !!WebAssembly;
+    const wasmSIMD = await simd();
+    const wasmThread = await threads();
+    const wasmBackend = wasm && wasmSIMD && wasmThread;
+
+    const webgpu = "gpu" in navigator;
+    const gpuBackend = webgpu;
+
+    // Render first table
+    const features = [js, wasm, wasmThread, wasmSIMD, webgpu];
+    for (let i = 0; i < features.length; i++) {
+        const td = document.querySelector(`#detect td:nth-of-type(${i + 1})`);
+        td.innerHTML = features[i] ? "✅" : "❌";
+    }
+    // Render second table
+    const schedule = [jsBackend, wasmBackend, gpuBackend];
+    for (let i = 0; i < schedule.length; i++) {
+        const td = document.querySelector(`#schedule td:nth-of-type(${i + 1})`);
+        td.innerHTML = schedule[i] ? "✅" : "❌";
+    }
+    // Give recommandation
+    const bestBackend = schedule[2]
+        ? "WebGPU"
+        : schedule[1] ? "WASM" : "JS";
+    const recommand = document.querySelector("p");
+    recommand.innerHTML = bestBackend + " backend is expected to achieve best performance theoretically."
+</script>
+
+</html>
