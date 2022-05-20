@@ -5,22 +5,20 @@ use crate::{DTypes, Tensor};
 use super::extract_data;
 
 macro_rules! batchnorm {
-    ($input: expr, $scale: expr, $bias: expr, $mean: expr, $variance: expr, $dtype: path) => {
-        {
-            let scale = extract_data!(&$scale, $dtype);
-            let bias = extract_data!(&$bias, $dtype);
-            let mean = extract_data!(&$mean, $dtype);
-            let variance = extract_data!(&$variance, $dtype);
-    
-            let mut out = Vec::with_capacity($input.len());
-            for (index, val) in $input.iter().enumerate() {
-                out[index] =
-                    ((val - mean[index]) / variance[index].sqrt()) * scale[index] + bias[index];
-            }
+    ($input: expr, $scale: expr, $bias: expr, $mean: expr, $variance: expr, $dtype: path) => {{
+        let scale = extract_data!(&$scale, $dtype);
+        let bias = extract_data!(&$bias, $dtype);
+        let mean = extract_data!(&$mean, $dtype);
+        let variance = extract_data!(&$variance, $dtype);
 
-            out
+        let mut out = Vec::with_capacity($input.len());
+        for (index, val) in $input.iter().enumerate() {
+            out[index] =
+                ((val - mean[index]) / variance[index].sqrt()) * scale[index] + bias[index];
         }
-    };
+
+        out
+    }};
 }
 
 #[wasm_bindgen(js_name = handleBatchNorm)]

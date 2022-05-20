@@ -3,11 +3,9 @@ use wasm_bindgen::prelude::wasm_bindgen;
 use crate::{DTypes, Tensor};
 
 macro_rules! cast {
-    ($shape: expr, $typ: ty) => {
-        {
-            $shape.iter().map(|&x| x as $typ).collect()
-        }
-    };
+    ($shape: expr, $typ: ty) => {{
+        $shape.iter().map(|&x| x as $typ).collect()
+    }};
 }
 
 #[wasm_bindgen(js_name = handleShape)]

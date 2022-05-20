@@ -1,6 +1,5 @@
-pub mod binaryop;
-pub mod unaryop;
 pub mod batchnorm;
+pub mod binaryop;
 pub mod cast;
 pub mod concat;
 pub mod conv;
@@ -13,6 +12,7 @@ pub mod relu;
 pub mod reshape;
 pub mod shape;
 pub mod slice;
+pub mod unaryop;
 pub mod unsqueeze;
 pub mod upsample;
 

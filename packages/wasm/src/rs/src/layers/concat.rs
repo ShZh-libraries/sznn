@@ -7,46 +7,48 @@ use crate::{DTypes, Tensor, TensorList};
 use super::extract_data;
 
 macro_rules! concat_1d {
-    ($inputs: expr, $typ: path) => {
-        {
-            let mut inputs_data = Vec::new();
-            for input in $inputs.iter() {
-                let data = extract_data!(input, $typ);
-                inputs_data.push(data);
-            }
-
-            inputs_data.into_iter().flatten().cloned().collect::<Vec<_>>()
+    ($inputs: expr, $typ: path) => {{
+        let mut inputs_data = Vec::new();
+        for input in $inputs.iter() {
+            let data = extract_data!(input, $typ);
+            inputs_data.push(data);
         }
-    };
+
+        inputs_data
+            .into_iter()
+            .flatten()
+            .cloned()
+            .collect::<Vec<_>>()
+    }};
 }
 
 macro_rules! concat_2d_axis_0 {
-    ($inputs: expr, $typ: path) => {
-        {
-            concat_1d!($inputs, $typ)
-        }
-    };
+    ($inputs: expr, $typ: path) => {{
+        concat_1d!($inputs, $typ)
+    }};
 }
 
 macro_rules! concat_2d_axis_1 {
-    ($inputs: expr, $typ: path, $height: expr, $width: expr) => {
-        {
-            let mut inputs_data = Vec::new();
-            let mut offset = 0;
+    ($inputs: expr, $typ: path, $height: expr, $width: expr) => {{
+        let mut inputs_data = Vec::new();
+        let mut offset = 0;
 
-            (0..$height).into_iter().for_each(|_| {
-                for input in $inputs.iter() {
-                    let data = extract_data!(input, $typ);
+        (0..$height).into_iter().for_each(|_| {
+            for input in $inputs.iter() {
+                let data = extract_data!(input, $typ);
 
-                    inputs_data.push(&data[offset..(offset + $width)]);
-                }
+                inputs_data.push(&data[offset..(offset + $width)]);
+            }
 
-                offset += $width;
-            });
+            offset += $width;
+        });
 
-            inputs_data.into_iter().flatten().cloned().collect::<Vec<_>>()
-        }
-    };
+        inputs_data
+            .into_iter()
+            .flatten()
+            .cloned()
+            .collect::<Vec<_>>()
+    }};
 }
 
 #[wasm_bindgen(js_name = handleConcat)]
@@ -75,7 +77,10 @@ pub fn handle_concat(inputs: TensorList, axis: usize) -> Tensor {
         .map(|input| {
             let shape = input.get_shape();
             let (height, width) = if axis != 0 {
-                (shape[..axis].iter().product(), shape[axis..].iter().product())
+                (
+                    shape[..axis].iter().product(),
+                    shape[axis..].iter().product(),
+                )
             } else {
                 (1, shape.iter().product())
             };
@@ -112,7 +117,7 @@ fn concat_1D(inputs: Vec<Tensor>) -> Tensor {
         DTypes::I16(_) => DTypes::I16(concat_1d!(inputs, DTypes::I16)),
         DTypes::I32(_) => DTypes::I32(concat_1d!(inputs, DTypes::I32)),
         DTypes::U8(_) => DTypes::U8(concat_1d!(inputs, DTypes::U8)),
-        DTypes::U16(_) => DTypes::U16(concat_1d!(inputs, DTypes::U16)), 
+        DTypes::U16(_) => DTypes::U16(concat_1d!(inputs, DTypes::U16)),
         DTypes::U32(_) => DTypes::U32(concat_1d!(inputs, DTypes::U32)),
         DTypes::F32(_) => DTypes::F32(concat_1d!(inputs, DTypes::F32)),
         DTypes::F64(_) => DTypes::F64(concat_1d!(inputs, DTypes::F64)),
@@ -152,7 +157,7 @@ fn concat_2D_axis_1(inputs: Vec<Tensor>) -> Tensor {
         DTypes::U16(_) => DTypes::U16(concat_2d_axis_1!(inputs, DTypes::U16, height, width)),
         DTypes::U32(_) => DTypes::U32(concat_2d_axis_1!(inputs, DTypes::U32, height, width)),
         DTypes::F32(_) => DTypes::F32(concat_2d_axis_1!(inputs, DTypes::F32, height, width)),
-        DTypes::F64(_) => DTypes::F64(concat_2d_axis_1!(inputs, DTypes::F64, height, width))
+        DTypes::F64(_) => DTypes::F64(concat_2d_axis_1!(inputs, DTypes::F64, height, width)),
     };
 
     Tensor::new(out_data, out_shape)

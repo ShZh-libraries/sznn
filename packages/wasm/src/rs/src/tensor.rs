@@ -37,16 +37,14 @@ pub struct TensorList {
 }
 
 macro_rules! set_data {
-    ($data: expr, $typ: ty) => {
-        {
-            let mut tensor_data = vec![0. as $typ; $data.length() as usize];
-            $data.for_each(&mut |value: JsValue, index: u32, _| {
-                tensor_data[index as usize] = value.as_f64().unwrap() as $typ;
-            });
+    ($data: expr, $typ: ty) => {{
+        let mut tensor_data = vec![0. as $typ; $data.length() as usize];
+        $data.for_each(&mut |value: JsValue, index: u32, _| {
+            tensor_data[index as usize] = value.as_f64().unwrap() as $typ;
+        });
 
-            tensor_data
-        }
-    };
+        tensor_data
+    }};
 }
 
 macro_rules! to_array {

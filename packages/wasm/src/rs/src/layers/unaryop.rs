@@ -12,20 +12,18 @@ macro_rules! par {
 }
 
 macro_rules! simd_par {
-    ($arr: expr, $typ: ty, $simd: ident) => {
-        {
-            let chunks_num: usize = 16 / mem::size_of::<$typ>();
-            let mut out = vec![0 as $typ; $arr.len()];
-            $arr.par_chunks(chunks_num)
-                .zip(out.par_chunks_mut(chunks_num))
-                .for_each(|(src, dst)| unsafe {
-                    let src = v128_load(src.as_ptr() as *const v128);
-                    let result = $simd(src);
-                    v128_store(dst.as_mut_ptr() as *mut v128, result);
-                });
-            out
-        }
-    };
+    ($arr: expr, $typ: ty, $simd: ident) => {{
+        let chunks_num: usize = 16 / mem::size_of::<$typ>();
+        let mut out = vec![0 as $typ; $arr.len()];
+        $arr.par_chunks(chunks_num)
+            .zip(out.par_chunks_mut(chunks_num))
+            .for_each(|(src, dst)| unsafe {
+                let src = v128_load(src.as_ptr() as *const v128);
+                let result = $simd(src);
+                v128_store(dst.as_mut_ptr() as *mut v128, result);
+            });
+        out
+    }};
 }
 
 macro_rules! handle_unary_par_inner {
@@ -59,7 +57,7 @@ macro_rules! handle_unary_simd_float_inner {
                     DTypes::F64(arr) => DTypes::F64(simd_par!(arr, f64, [< f64x2_ $op >])),
                     _ => panic!("Data type not supported in this layer!"),
                 };
-    
+
                 Tensor::new(out_data, out_shape)
             }
         }
@@ -80,7 +78,7 @@ macro_rules! handle_unary_simd_inner {
                     DTypes::F64(arr) => DTypes::F64(simd_par!(arr, f64, [< f64x2_ $op >])),
                     _ => panic!("Data type not supported in this layer!"),
                 };
-    
+
                 Tensor::new(out_data, out_shape)
             }
         }
@@ -88,18 +86,30 @@ macro_rules! handle_unary_simd_inner {
 }
 
 macro_rules! handle_unary_par {
-    ($unary: ident) => { handle_unary_par_inner!($unary, $unary); };
-    ($name: ident, $op: ident) => { handle_unary_par_inner!($name, $op); };
+    ($unary: ident) => {
+        handle_unary_par_inner!($unary, $unary);
+    };
+    ($name: ident, $op: ident) => {
+        handle_unary_par_inner!($name, $op);
+    };
 }
 
 macro_rules! handle_unary_simd_float {
-    ($unary: ident) => { handle_unary_simd_float_inner!($unary, $unary); };
-    ($name: ident, $op: ident) => { handle_unary_simd_float_inner!($name, $op); };
+    ($unary: ident) => {
+        handle_unary_simd_float_inner!($unary, $unary);
+    };
+    ($name: ident, $op: ident) => {
+        handle_unary_simd_float_inner!($name, $op);
+    };
 }
 
 macro_rules! handle_unary_simd {
-    ($unary: ident) => { handle_unary_simd_inner!($unary, $unary); };
-    ($name: ident, $op: ident) => { handle_unary_simd_inner!($name, $op); };
+    ($unary: ident) => {
+        handle_unary_simd_inner!($unary, $unary);
+    };
+    ($name: ident, $op: ident) => {
+        handle_unary_simd_inner!($name, $op);
+    };
 }
 
 handle_unary_simd!(abs);
@@ -136,11 +146,17 @@ pub fn handle_sigmoid(input: &Tensor) -> Tensor {
     let out_shape = input.get_shape();
     let out_data = match &input.get_data() {
         DTypes::F32(arr) => {
-            let out = arr.par_iter().map(|x| 1. / (1. + x.exp())).collect::<Vec<_>>();
+            let out = arr
+                .par_iter()
+                .map(|x| 1. / (1. + x.exp()))
+                .collect::<Vec<_>>();
             DTypes::F32(out)
         }
         DTypes::F64(arr) => {
-            let out = arr.par_iter().map(|x| 1. / (1. + x.exp())).collect::<Vec<_>>();
+            let out = arr
+                .par_iter()
+                .map(|x| 1. / (1. + x.exp()))
+                .collect::<Vec<_>>();
             DTypes::F64(out)
         }
         _ => {

@@ -1,5 +1,5 @@
-use wasm_bindgen::prelude::*;
 use js_sys::Array;
+use wasm_bindgen::prelude::*;
 
 use crate::Tensor;
 
