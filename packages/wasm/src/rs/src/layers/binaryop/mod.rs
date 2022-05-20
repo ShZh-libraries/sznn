@@ -67,7 +67,7 @@ macro_rules! broadcast_inner {
 macro_rules! broadcast {
     ($name: ident, $op: tt) => {
         paste! {
-            fn [< $name _broadcast >](a: &Tensor, b: &Tensor, a_broadcast_dim: &Vec<usize>, b_broadcast_dim: &Vec<usize>, out_shape: Vec<usize>) -> Tensor {
+            fn [< $name _broadcast >](a: &Tensor, b: &Tensor, a_broadcast_dim: &[usize], b_broadcast_dim: &[usize], out_shape: Vec<usize>) -> Tensor {
                 let mut output = Tensor::new_empty();
                 output.set_shape(out_shape);
 
@@ -202,7 +202,7 @@ fn idx_to_loc(index: usize, stride: &Vec<usize>) -> Vec<usize> {
     loc
 }
 
-fn loc_to_idx(loc: &Vec<usize>, stride: &Vec<usize>) -> usize {
+fn loc_to_idx(loc: &[usize], stride: &[usize]) -> usize {
     let mut index = 0;
 
     for i in 0..stride.len() {
@@ -212,7 +212,7 @@ fn loc_to_idx(loc: &Vec<usize>, stride: &Vec<usize>) -> usize {
     index
 }
 
-fn get_broadcast_shape(shape1: &Vec<usize>, shape2: &Vec<usize>) -> Vec<usize> {
+fn get_broadcast_shape(shape1: &[usize], shape2: &[usize]) -> Vec<usize> {
     let mut broadcast_shape: Vec<usize> = Vec::new();
     let broadcast_len = if shape1.len() > shape2.len() {
         shape1.len()
@@ -221,12 +221,12 @@ fn get_broadcast_shape(shape1: &Vec<usize>, shape2: &Vec<usize>) -> Vec<usize> {
     };
 
     for index in 0..broadcast_len {
-        let a = if shape1.len() - 1 >= index {
+        let a = if shape1.len() > index {
             shape1[shape1.len() - 1 - index]
         } else {
             1
         };
-        let b = if shape2.len() - 1 >= index {
+        let b = if shape2.len() > index {
             shape2[shape2.len() - 1 - index]
         } else {
             1
@@ -234,9 +234,7 @@ fn get_broadcast_shape(shape1: &Vec<usize>, shape2: &Vec<usize>) -> Vec<usize> {
 
         if a == 1 {
             broadcast_shape.insert(0, b);
-        } else if b == 1 {
-            broadcast_shape.insert(0, a);
-        } else if a == b {
+        } else if b == 1 || a == b {
             broadcast_shape.insert(0, a);
         } else {
             panic!("Cannot broadcast!!");
@@ -260,11 +258,8 @@ fn get_broadcast_dims(shape: &Vec<usize>, broadcast_shape: &Vec<usize>) -> Vec<u
     broadcast_dims
 }
 
-fn get_broadcast_loc(out_loc: &Vec<usize>, dim: usize, broadcast_dim: &Vec<usize>) -> Vec<usize> {
-    let mut loc = out_loc[(out_loc.len() - dim)..]
-        .into_iter()
-        .cloned()
-        .collect::<Vec<_>>();
+fn get_broadcast_loc(out_loc: &[usize], dim: usize, broadcast_dim: &[usize]) -> Vec<usize> {
+    let mut loc = out_loc[(out_loc.len() - dim)..].to_vec();
     broadcast_dim.iter().for_each(|&dim| loc[dim] = 0);
 
     loc

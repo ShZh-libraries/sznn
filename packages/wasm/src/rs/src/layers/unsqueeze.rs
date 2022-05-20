@@ -11,9 +11,9 @@ pub fn handle_unsqueeze(input: &Tensor, dims: &Array) -> Tensor {
     let len = input.get_dim() + dims.length() as usize;
     let mut out_shape = vec![1; len];
     let mut in_idx = 0;
-    for i in 0..len {
+    for (i, item) in out_shape.iter_mut().enumerate().take(len) {
         if !dims.includes(&JsValue::from_f64(i as f64), 0) {
-            out_shape[i] = in_shape[in_idx];
+            *item = in_shape[in_idx];
             in_idx += 1;
         }
     }

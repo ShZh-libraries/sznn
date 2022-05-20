@@ -11,14 +11,14 @@ pub fn handle_slice(input: &Tensor, axes: &Array, starts: &Array, ends: &Array) 
         let out_shape = vec![end - start];
 
         let out_data = match &input.get_data() {
-            DTypes::I8(arr) => DTypes::I8(arr[start..end].into_iter().cloned().collect()),
-            DTypes::I16(arr) => DTypes::I16(arr[start..end].into_iter().cloned().collect()),
-            DTypes::I32(arr) => DTypes::I32(arr[start..end].into_iter().cloned().collect()),
-            DTypes::U8(arr) => DTypes::U8(arr[start..end].into_iter().cloned().collect()),
-            DTypes::U16(arr) => DTypes::U16(arr[start..end].into_iter().cloned().collect()),
-            DTypes::U32(arr) => DTypes::U32(arr[start..end].into_iter().cloned().collect()),
-            DTypes::F32(arr) => DTypes::F32(arr[start..end].into_iter().cloned().collect()),
-            DTypes::F64(arr) => DTypes::F64(arr[start..end].into_iter().cloned().collect()),
+            DTypes::I8(arr) => DTypes::I8(arr[start..end].to_vec()),
+            DTypes::I16(arr) => DTypes::I16(arr[start..end].to_vec()),
+            DTypes::I32(arr) => DTypes::I32(arr[start..end].to_vec()),
+            DTypes::U8(arr) => DTypes::U8(arr[start..end].to_vec()),
+            DTypes::U16(arr) => DTypes::U16(arr[start..end].to_vec()),
+            DTypes::U32(arr) => DTypes::U32(arr[start..end].to_vec()),
+            DTypes::F32(arr) => DTypes::F32(arr[start..end].to_vec()),
+            DTypes::F64(arr) => DTypes::F64(arr[start..end].to_vec()),
         };
 
         return Tensor::new(out_data, out_shape);

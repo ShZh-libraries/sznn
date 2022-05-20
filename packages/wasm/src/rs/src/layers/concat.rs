@@ -93,7 +93,7 @@ pub fn handle_concat(inputs: TensorList, axis: usize) -> Tensor {
     result.reshape(out_shape)
 }
 
-fn get_concat_shape(inputs: &Vec<Tensor>, axis: usize) -> Vec<usize> {
+fn get_concat_shape(inputs: &[Tensor], axis: usize) -> Vec<usize> {
     let mut axis_size = 0;
     for data in inputs.iter() {
         axis_size += data.get_shape()[axis];
