@@ -2,6 +2,7 @@ import { onnx } from "onnx-proto";
 import { getConvAttr } from "../../common/attr/conv";
 import { getSliceAttr } from "../../common/attr/slice";
 import { getPoolingAttr } from "../../common/attr/pooling";
+import { getPaddingAttr } from "../../common/attr/padding";
 import {
   Tensor,
   handleAvgPool2D,
@@ -51,7 +52,6 @@ import {
 } from "./rs/pkg";
 import { tensorList } from "./utils";
 import { TensorBuilder } from "./tensor";
-import { getPaddingAttr } from "../../common/attr/padding";
 
 export function handle(
   opType: string,

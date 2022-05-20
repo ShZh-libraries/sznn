@@ -9,7 +9,8 @@
   "license": "Apache-2.0",
   "private": false,
   "scripts": {
-    "build": "webpack"
+    "build": "webpack",
+    "test": "jest"
   },
   "devDependencies": {
     "@types/jest": "^27.4.1",
