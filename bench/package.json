@@ -1,0 +1,31 @@
+{
+    "name": "sznn_benchmark",
+    "version": "1.0.0",
+    "description": "sznn backends benchmark.",
+    "repository": "https://github.com/ShZh-libraries/sznn",
+    "author": "Sh-Zh-7",
+    "license": "Apache-2.0",
+    "private": false,
+    "scripts": {
+        "build": "webpack",
+        "serve": "webpack-dev-server"
+    },
+    "dependencies": {
+        "echarts": "^5.3.2",
+        "jimp": "^0.16.1",
+        "onnx-proto": "^8.0.1",
+        "sznn-js": "file:../packages/js/",
+        "sznn-wasm": "file:../packages/wasm/",
+        "sznn-webgpu": "file:../packages/webgpu"
+    },
+    "devDependencies": {
+        "@wasm-tool/wasm-pack-plugin": "^1.6.0",
+        "html-webpack-plugin": "^5.5.0",
+        "node-polyfill-webpack-plugin": "^1.1.4",
+        "ts-loader": "^9.2.8",
+        "typescript": "^4.6.3",
+        "webpack": "^5.71.0",
+        "webpack-cli": "^4.9.2",
+        "webpack-dev-server": "^4.7.4"
+    }
+}

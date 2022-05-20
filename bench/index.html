@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>sznn Benchmark</title>
+    <style>
+      div {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      h1 {
+        font-size: 3rem;
+        font-family: serif;
+        margin-bottom: 2rem;
+      }
+
+      canvas {
+        border-radius: 0.3rem;
+
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+          0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      }
+
+      button {
+        margin-top: 1rem;
+        display: inline-block;
+
+        color: #fff;
+        background-color: #0050b3;
+        border-color: #0050b3;
+
+        padding: 0.8rem 2rem;
+
+        border: 1px solid transparent;
+        font-size: 1.25rem;
+        font-weight: 600;
+        border-radius: 0.3rem;
+        line-height: 1.5;
+
+        transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out,
+          border-color 0.15s ease-in-out;
+      }
+
+      button:hover {
+        cursor: pointer;
+        background-color: #096dd9;
+        border-color: #096dd9;
+      }
+
+      #stat {
+        margin-top: 3rem;
+        margin-bottom: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div>
+      <h1>sznn Backends Benchmark</h1>
+      <canvas height="224" width="224"></canvas>
+      <h2>""</h2>
+      <button id="btn">Start Inference!</button>
+      <h1 id="stat">Statistic</h1>
+      <div id="bench" style="width: 800px; height: 380px;" ></div>
+    </div>
+  </body>
+  <script src="./dist/index.js"></script>
+</html>
