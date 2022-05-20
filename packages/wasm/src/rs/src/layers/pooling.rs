@@ -111,7 +111,7 @@ macro_rules! avgpool {
 
         let mut out_idx = 0;
         let mut out_data = vec![0.; $len];
-        for _n in 0..$out_shape[0] {
+        for _ in 0..$out_shape[0] {
             for c in 0..$out_shape[1] {
                 for y in 0..$out_shape[2] {
                     for x in 0..$out_shape[3] {
@@ -121,8 +121,8 @@ macro_rules! avgpool {
                         let mut sum = 0.;
                         let mut offset =
                             c * in_channel_size + in_start_y * $in_shape[3] + in_start_x;
-                        for _ky in 0..$kernel_height {
-                            for _kx in 0..$kernel_width {
+                        for _ in 0..$kernel_height {
+                            for _ in 0..$kernel_width {
                                 let val = $arr[offset];
 
                                 sum += val;

@@ -188,7 +188,7 @@ macro_rules! handle_binaryop {
     };
 }
 
-fn idx_to_loc(index: usize, stride: &Vec<usize>) -> Vec<usize> {
+fn idx_to_loc(index: usize, stride: &[usize]) -> Vec<usize> {
     let mut loc = vec![0; stride.len()];
     let mut index = index;
 
@@ -244,8 +244,8 @@ fn get_broadcast_shape(shape1: &[usize], shape2: &[usize]) -> Vec<usize> {
     broadcast_shape
 }
 
-fn get_broadcast_dims(shape: &Vec<usize>, broadcast_shape: &Vec<usize>) -> Vec<usize> {
-    let mut broadcast_dims: Vec<usize> = Vec::new();
+fn get_broadcast_dims(shape: &[usize], broadcast_shape: &[usize]) -> Vec<usize> {
+    let mut broadcast_dims = Vec::new();
     for index in 0..shape.len() {
         let dim = shape.len() - 1 - index;
         let a = shape[dim];
