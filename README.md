@@ -38,7 +38,7 @@
       <a href="./examples/transfer/">Style Transfer</a>
     </td>
     <td align="center">
-      <a href=".">Object Detection(TBD)</a>
+      <a href="./example/detect/">Object Detection(TBD)</a>
     </td>
   </tr>
 </table>
@@ -47,7 +47,7 @@
 
 # Usage
 
-Firstly you should determine which backend to use. sznn provides 3 backends(JS, WebAssembly and WebGPU). But currently you could only choose best backend statically by yourself.
+Firstly you should determine which backend to use. sznn provides 3 backends(JS, WASM and WebGPU). But currently you could only choose best backend statically by yourself.
 
 Fortunately, we provide a tool as suggestion. Just directly open `tools/schedule/detect.html` in your target browser and you will see our recommendation.
 
@@ -64,7 +64,7 @@ Two simple API then you can inference ONNX models:
 
 Here is SqueezeNet inference benchmark. Test on my M1 MacBook Pro, Chome Canary v100.
 
-<img src="/Users/shzh7/rust_proj/sznn/assets/benchmark.png" alt="benchmark" style="width: 800px; height: 330px" />
+<img src="./assets/benchmark.png" alt="benchmark" style="width: 800px; height: 330px" />
 
 Obviously, sznn has a long way to go. 😅
 
