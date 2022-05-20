@@ -1,5 +1,5 @@
-import { loadImage, displayImage } from "./utils";
-import { imagenetClasses } from "./image_net";
+import { loadImage, displayImage } from "./utils/cv";
+import { imagenetClasses } from "./utils/image_net";
 import * as echarts from "echarts";
 import { inferenceWebGPU } from "./backends/webgpu";
 import { inferenceWASM } from "./backends/wasm";

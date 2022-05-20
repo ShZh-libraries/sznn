@@ -1,6 +1,6 @@
 import Jimp from "jimp/*";
 import { loadModel, TensorBuilder, Tensor} from "sznn-wasm";
-import { imageToArray, normalize } from "../utils";
+import { imageToArray, normalize } from "../utils/cv";
 
 async function preprocessing(image: Jimp, height: number, width: number) {
     const imageData = imageToArray(image);
