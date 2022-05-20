@@ -39,8 +39,3 @@ export function imageToArray(image: Jimp): Float32Array {
 
   return float32Data;
 }
-
-// [C, H, W] -> [W, H, C]
-export function switchChannels(bitmap: Float32Array) {
-
-}
