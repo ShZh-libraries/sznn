@@ -3,6 +3,7 @@ const NodePolyfillPlugin = require("node-polyfill-webpack-plugin");
 
 module.exports = [
   {
+    // For shorter compilation time
     mode: "development",
     devtool: "source-map",
     entry: path.join(__dirname, "index.ts"),
@@ -28,5 +29,8 @@ module.exports = [
       filename: "index.js",
       path: path.join(__dirname, "./dist"),
     },
+    ignoreWarnings: [{
+      message: /Circular dependency/
+    }],
   },
 ];
