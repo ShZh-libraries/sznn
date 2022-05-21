@@ -1,6 +1,18 @@
 <h1 align="center">sznn</h1>
 <p align="center">🚀 High performance nerual network framework running on Web.</p>
 
+<p align="center">
+    <a href="https://github.com/ShZh-libraries/sznn/issues" style="text-decoration:none" >
+        <img src="https://img.shields.io/github/issues/ShZh-libraries/sznn?color=orange" alt="issues"/>
+    </a>
+    <a href="https://github.com/ShZh-libraries/sznn" style="text-decoration:none" >
+        <img src="https://img.shields.io/github/repo-size/ShZh-libraries/sznn" alt="Size"/>
+    </a>
+  <a href="https://github.com/ShZh-libraries/sznn" style="text-decoration:none">
+        <img src="https://img.shields.io/github/stars/ShZh-libraries/sznn?style=social" alt="Github Star"/>
+    </a>
+</p>
+
 # Overview
 
 <table>
@@ -66,7 +78,14 @@ Obviously, sznn has a long way to go. 😅
 
 # Roadmap
 
-⚠️ **Note**: This project is still heavily in development. Please **DO NOT** use it in production environment! ⚠️
+> **Warning**
+>
+> This project is still heavily in development. Please **DO NOT** use it in production environment!
+
+- [ ] Enrich more ONNX opreators. ([#1](https://github.com/ShZh-libraries/sznn/issues/1))
+- [ ] Add YOLO as detection example. ([#2](https://github.com/ShZh-libraries/sznn/issues/2))
+- [ ] Optimize convolutional layer. ([#3](https://github.com/ShZh-libraries/sznn/issues/3))
+- [ ] Improve backends performace. ([#4](https://github.com/ShZh-libraries/sznn/issues/4)) ([#5](https://github.com/ShZh-libraries/sznn/issues/5))
 
 Let's make sznn better together.
 
