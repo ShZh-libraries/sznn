@@ -43,8 +43,6 @@
   </tr>
 </table>
 
-
-
 # Usage
 
 Firstly you should determine which backend to use. sznn provides 3 backends(JS, WASM and WebGPU). But currently you could only choose best backend statically by yourself.
@@ -58,8 +56,6 @@ const model = await loadModel("./model.onnx");
 const output = await model.forward(input);
 ```
 
-
-
 # Benchmark
 
 Here is SqueezeNet inference benchmark. Test on my M1 MacBook Pro, Chome Canary v100.
@@ -68,15 +64,11 @@ Here is SqueezeNet inference benchmark. Test on my M1 MacBook Pro, Chome Canary 
 
 Obviously, sznn has a long way to go. 😅
 
-
-
 # Roadmap
 
 ⚠️ **Note**: This project is still heavily in development. Please **DO NOT** use it in production environment! ⚠️
 
 Let's make sznn better together.
-
-
 
 # License
 
