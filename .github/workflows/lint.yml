@@ -2,10 +2,10 @@ name: lint
 
 on:
   push:
-    branches: [master]
+    branches: [main]
     paths-ignore: ['**.md']
   pull_request:
-    branches: [master]
+    branches: [main]
     paths-ignore: ['**.md']
     
 jobs:
