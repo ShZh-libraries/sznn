@@ -13,7 +13,6 @@ describe("Test padding layer of WASM backend", () => {
     const shape = await output.shapeToArray();
 
     expect(shape).deep.eq([1n, 1n, 3n, 4n]);
-    console.log(data);
     expect(data).to.be.deep.closeTo(
       [0, 0, 1, 1.2, 0, 0, 2.3, 3.4, 0, 0, 4.5, 5.7],
       1e-4

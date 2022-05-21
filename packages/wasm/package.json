@@ -11,7 +11,10 @@
   "scripts": {
     "build": "webpack",
     "serve": "webpack-dev-server",
-    "test": "webpack --config webpack.test.js"
+    "pretest": "webpack --config webpack.test.js && caddy start",
+    "test": "mocha-headless-chrome -f http://127.0.0.1:2022/dist/test/index.html",
+    "posttest": "killall caddy",
+    "test:browser": "webpack --config webpack.test.js"
   },
   "dependencies": {
     "onnx-proto": "^8.0.1"
@@ -25,6 +28,7 @@
     "comlink": "^4.3.1",
     "html-webpack-plugin": "^5.5.0",
     "mocha": "^10.0.0",
+    "mocha-headless-chrome": "^4.0.0",
     "node-polyfill-webpack-plugin": "^1.1.4",
     "ts-loader": "^9.2.8",
     "typescript": "^4.6.3",
