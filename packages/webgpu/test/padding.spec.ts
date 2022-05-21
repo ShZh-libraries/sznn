@@ -18,7 +18,7 @@ describe("Test padding layer of WebGPU backend", () => {
       ],
     ]);
     const attr = new PaddingAttr();
-    attr.pads = [0, 2, 0, 0];
+    attr.pads = [0, 0, 0, 2, 0, 0, 0, 0];
     const output = await handlePadding(input, attr, device!);
     expect(output.shape).deep.equal([1, 1, 3, 4]);
     expect(output.data).deep.equal(
