@@ -1,0 +1,33 @@
+name: lint
+
+on:
+  push:
+    branches: [master]
+    paths-ignore: ['**.md']
+  pull_request:
+    branches: [master]
+    paths-ignore: ['**.md']
+    
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: "16.x"
+      - name: Cache NPM dependencies
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.cache
+            **/node_modules
+          key: ${{ runner.os }}-${{ hashFiles('**/yarn.lock') }}
+      - name: Install Dependencies
+        run: |
+          npm install -g yarn
+          yarn --frozen-lockfile --non-interactive
+      - name: Lint
+        run: |
+          yarn format-check
+          yarn lint-check
